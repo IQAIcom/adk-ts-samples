@@ -78,9 +78,18 @@ If you have any questions or if you found any problems with this repository, ple
 
 ## 📚 Available Samples
 
-| Agent Name | Use Case | Tag | Interaction Type | Complexity | Agent Type | Vertical |
-|------------|----------|-----|------------------|------------|------------|----------|
-| _Coming Soon_ | - | - | - | - | - | - |
+| Agent Name                  | Use Case                                                                                                                | Tag                                 | Interaction Type | Complexity   | Agent Type  | Vertical              |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ---------------- | ------------ | ----------- | --------------------- |
+| 🧭 **InfoScout**            | Multi-source knowledge lookup agent that fetches and summarizes data from Wikipedia, Gemini, and news APIs.             | `research`, `chat`, `summarization` | Conversational   | Beginner     | Tool-based  | General               |
+| 🌤️ **PlanPal**             | Context-aware daily planner that integrates calendar, weather, and traffic data to optimize schedules.                  | `productivity`, `automation`        | Workflow         | Beginner     | Multi-tool  | Lifestyle             |
+| 🗞️ **TrendLens**           | Trend-tracking agent that analyzes news or crypto data, summarizes insights, and pushes updates to Telegram or Discord. | `automation`, `analysis`            | Workflow         | Beginner     | Tool-based  | Finance / Web3        |
+| ✈️ **IQ Flights**           | Hierarchical multi-agent travel system that coordinates flight, hotel, and itinerary planning.                          | `travel`, `planning`                | Workflow         | Intermediate | Multi-agent | Travel                |
+| 🧠 **TheraMind**            | Multi-agent mental health companion with therapy tools, journaling, and crisis detection.                               | `health`, `ai`, `mental-wellness`   | Conversational   | Intermediate | Multi-agent | Healthcare            |
+| 💼 **BizBot**               | AI business operations assistant handling invoices, scheduling, and client communication.                               | `automation`, `enterprise`          | Workflow         | Intermediate | Multi-agent | Business              |
+| 💰 **DeFi Analyst**         | Monitors DeFi protocols, tracks yield, and generates AI-driven risk assessments.                                        | `defi`, `analytics`                 | Workflow         | Advanced     | Tool-based  | Finance / Web3        |
+| 🧾 **SmartTax Advisor**     | Reads wallet transactions, classifies activity, and generates tax summaries for users.                                  | `finance`, `automation`             | Workflow         | Advanced     | Multi-tool  | Finance / Web3        |
+| 🤖 **DAO Strategist**       | Multi-agent governance system that analyzes proposals, simulates outcomes, and recommends votes for DAO members.        | `governance`, `dao`, `ai`           | Workflow         | Advanced     | Multi-agent | Web3 / Governance     |
+| 🧩 **ChainBridge Operator** | Cross-chain asset transfer coordinator that uses AI agents to monitor bridge status and detect anomalies.               | `bridge`, `monitoring`, `security`  | Workflow         | Advanced     | Multi-agent | Web3 / Infrastructure |
 
 ## 🤝 Contributing
 
