@@ -18,7 +18,7 @@ Each idea includes:
 These examples should help new contributors and internal devs understand the **breadth of what’s possible with ADK-TS** — and make it easier for others to build upon them later.
 
 > [!IMPORTANT]
-> **Status Tracking:** When you start working on an agent, please update the Status column from "Available" to "WIP - github_username" to avoid duplicate work. When completed, change it to "Built". This helps coordinate efforts across the team.
+> **Status Tracking:** When you start working on an agent, please update the Status column from "Available" to "WIP - @github_username" to avoid duplicate work. When completed, change it to "Built". This helps coordinate efforts across the team.
 
 ## 🚀 Proposed Agents
 
