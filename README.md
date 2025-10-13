@@ -37,11 +37,11 @@ To learn more, check out the [ADK-TS Documentation](https://adk.iqai.com/docs), 
 ## 🌳 Repository Structure
 
 ```text
-├── agents/                    # Sample agent projects
-│   ├── README.md             # Setup and testing guide
-│   └── [sample-projects]/    # Individual example projects
-├── .github/                  # GitHub templates and workflows
-└── README.md                # This file
+├── agents/                # Sample agent projects
+│   ├── README.md          # Setup and testing guide
+│   └── [sample-projects]/  # Individual example projects
+├── .github/               # GitHub templates and workflows
+└── README.md              # This file
 ```
 
 ## ℹ️ Getting Help
