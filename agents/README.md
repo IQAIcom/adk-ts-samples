@@ -16,8 +16,8 @@ When contributing a new agent example, please update the table in the default Re
 
 When creating your agent project, ensure it includes the following:
 
-- **Readme**: A detailed README file with setup, usage, and contribution instructions
-- `env.example`: Example environment variable file for configuration
+- **`README.md`**: A detailed README file with setup, usage, and contribution instructions
+- **`env.example`**: Example environment variable file for configuration
 - **Source Code**: Well-structured and commented code demonstrating ADK-TS usage
 
 ## Things to Include in Your Readme
