@@ -23,8 +23,8 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 | 🧭 InfoScout | Beginner | Tool-based | General | Available |
 | 🌤️ PlanPal | Beginner | Multi-tool | Lifestyle | Available |
 | 🗞️ TrendLens | Beginner | Tool-based | Finance / Web3 | Available |
-| ✈️ IQ Flights | Intermediate | Multi-agent | Travel | WIP - @Adebesin-Cell |
-| ✍️ WriteLab | Intermediate | Multi-agent | General | WIP - @Timonwa |
+| ✈️ IQ Flights | Intermediate | Multi-agent | Travel | WIP - @Adebesin-Cell|
+| ✍️ WriteLab | Intermediate | Multi-agent | General | WIP - @Timonwa|
 | 🧠 TheraMind | Intermediate | Multi-agent | Healthcare | Available |
 | 💼 BizBot | Intermediate | Multi-agent | Business | Available |
 | 💰 DeFi Analyst | Advanced | Tool-based | Finance / Web3 | Available |
