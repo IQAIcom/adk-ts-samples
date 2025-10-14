@@ -20,21 +20,21 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 | Agent Name | Complexity | Agent Type | Vertical | Status |
 |------------|------------|------------|----------|--------|
-| 🧭 InfoScout | Beginner | Tool-based | General | Available |
-| 🌤️ PlanPal | Beginner | Multi-tool | Lifestyle | Available |
-| 🗞️ TrendLens | Beginner | Tool-based | Finance / Web3 | Available |
-| ✈️ IQ Flights | Intermediate | Multi-agent | Travel | WIP - @Adebesin-Cell|
-| ✍️ WriteLab | Intermediate | Multi-agent | General | WIP - @Timonwa|
-| 🧠 TheraMind | Intermediate | Multi-agent | Healthcare | Available |
-| 💼 BizBot | Intermediate | Multi-agent | Business | Available |
-| 💰 DeFi Analyst | Advanced | Tool-based | Finance / Web3 | Available |
-| 🧾 SmartTax Advisor | Advanced | Multi-tool | Finance / Web3 | Available |
-| 🤖 DAO Strategist | Advanced | Multi-agent | Web3 / Governance | Available |
-| 🧩 ChainBridge Operator | Advanced | Multi-agent | Web3 / Infrastructure | Available |
+| Research & Summary Tool | Beginner | Tool-based | General | Available |
+| Smart Schedule Optimizer | Beginner | Multi-tool | Lifestyle | Available |
+| Trend Monitor & Alerts | Beginner | Tool-based | Finance / Web3 | Available |
+| Writing Assistant | Intermediate | Multi-agent | General | WIP - @Timonwa |
+| Travel Itinerary Planner | Intermediate | Multi-agent | Travel | WIP - @Adebesin-Cell |
+| Mental Health Companion | Intermediate | Multi-agent | Healthcare | Available |
+| Business Operations Manager | Intermediate | Multi-agent | Business | Available |
+| DeFi Risk Analyzer | Advanced | Tool-based | Finance / Web3 | Available |
+| Crypto Tax Calculator | Advanced | Multi-tool | Finance / Web3 | Available |
+| DAO Proposal Analyzer | Advanced | Multi-agent | Web3 / Governance | Available |
+| Cross-Chain Bridge Monitor | Advanced | Multi-agent | Web3 / Infrastructure | Available |
 
 ---
 
-## 🧭 InfoScout
+## 🧭 Research & Summary Tool
 
 **Description:** Multi-source knowledge lookup agent that fetches and summarizes data from Wikipedia, IQ.wiki, and news APIs.
 
@@ -59,7 +59,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 ---
 
-## 🌤️ PlanPal
+## 🌤️ Smart Schedule Optimizer
 
 **Description:** Context-aware daily planner that integrates calendar, weather, and traffic data to optimize schedules.
 
@@ -85,7 +85,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 ---
 
-## 🗞️ TrendLens
+## 🗞️ Trend Monitor & Alerts
 
 **Description:** Trend-tracking agent that analyzes news or crypto data, summarizes insights, and pushes updates to Telegram or Discord.
 
@@ -111,7 +111,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 ---
 
-## ✈️ IQ Flights
+## ✈️ Travel Itinerary Planner
 
 **Description:** Hierarchical multi-agent travel system that coordinates flight, hotel, and itinerary planning.
 
@@ -137,7 +137,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 ---
 
-## ✍️ WriteLab
+## ✍️ Writing Assistant
 
 **Description:** Multi-agent writing assistant that helps users research, write, and edit content with real-time feedback and suggestions.
 
@@ -164,7 +164,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 ---
 
-## 🧠 TheraMind
+## 🧠 Mental Health Companion
 
 **Description:** Multi-agent mental health companion with therapy tools, journaling, and crisis detection.
 
@@ -190,7 +190,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 ---
 
-## 💼 BizBot
+## 💼 Business Operations Manager
 
 **Description:** AI business operations assistant handling invoices, scheduling, and client communication.
 
@@ -216,7 +216,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 ---
 
-## 💰 DeFi Analyst
+## 💰 DeFi Risk Analyzer
 
 **Description:** Monitors DeFi protocols, tracks yield, and generates AI-driven risk assessments.
 
@@ -242,7 +242,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 ---
 
-## 🧾 SmartTax Advisor
+## 🧾 Crypto Tax Calculator
 
 **Description:** Reads wallet transactions, classifies activity, and generates tax summaries for users.
 
@@ -268,7 +268,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 ---
 
-## 🤖 DAO Strategist
+## 🤖 DAO Proposal Analyzer
 
 **Description:** Multi-agent governance system that analyzes proposals, simulates outcomes, and recommends votes for DAO members.
 
@@ -294,7 +294,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 ---
 
-## 🧩 ChainBridge Operator
+## 🧩 Cross-Chain Bridge Monitor
 
 **Description:** Cross-chain asset transfer coordinator that uses AI agents to monitor bridge status and detect anomalies.
 
