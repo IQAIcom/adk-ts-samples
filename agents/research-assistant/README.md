@@ -1,13 +1,10 @@
 <div align="center">
   <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
   <br/>
-
-# AI Research Assistant
-
-**A sample project to build your own agent with the `@iqai/adk` library.**
-
-_Minimal • Extensible • TypeScript_
-
+  <h1>Research Assistant</h1>
+  <b>Sample agent to assist with research tasks using the `@iqai/adk` library.</b>
+  <br/>
+  <i>Minimal • Extensible • TypeScript</i>
 </div>
 
 ---

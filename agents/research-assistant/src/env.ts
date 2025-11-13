@@ -15,7 +15,6 @@ export const envSchema = z.object({
   GOOGLE_API_KEY: z.string(),
   LLM_MODEL: z.string().default("gemini-2.5-flash"),
   GOOGLE_CX: z.string(),
-  OPENAI_API_KEY: z.string(),
 });
 
 /**
