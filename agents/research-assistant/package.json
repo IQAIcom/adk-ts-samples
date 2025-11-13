@@ -1,0 +1,50 @@
+{
+  "name": "ai-research-assistant",
+  "version": "1.0.0",
+  "description": "A sophisticated AI Research Assistant built with ADK-TS that conducts web research on any topic, analyzes findings, and generates comprehensive structured reports with transfer controls and interactive user interface",
+  "main": "dist/index.js",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "clean": "rimraf dist",
+    "prebuild": "pnpm clean"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Timonwa/ai-research-assistant.git"
+  },
+  "keywords": [
+    "ai",
+    "research",
+    "assistant",
+    "agent",
+    "mcp",
+    "adk-ts",
+    "IQAI",
+    "web-search",
+    "analysis",
+    "report-generation",
+    "transfer-controls",
+    "interactive"
+  ],
+  "author": "IQAI",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Timonwa/ai-research-assistant/issues"
+  },
+  "homepage": "https://github.com/Timonwa/ai-research-assistant#readme",
+  "dependencies": {
+    "@iqai/adk": "^0.5.5",
+    "cheerio": "^1.1.2",
+    "dotenv": "^17.2.2",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}
