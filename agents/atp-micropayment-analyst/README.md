@@ -1,11 +1,11 @@
 <div align="center">
- <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
- <br/>
- <h1>ATP Micropayment Analyst</h1>
- <b>Sample monetized agent that blends ADK-TS, IQ AI's Agent Tokenization Platform, and x402 micropayments</b>
- <br/>
+  <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
+  <br/>
+  <h1>ATP Micropayment Analyst</h1>
+  <b>Sample monetized agent that blends ADK-TS, IQ AI's Agent Tokenization Platform, and x402 micropayments</b>
+  <br/>
   <i>LLM-powered • x402 Micropayments • IQ AI ATP Integration • TypeScript</i>
-  </div>
+</div>
 
 ---
 
