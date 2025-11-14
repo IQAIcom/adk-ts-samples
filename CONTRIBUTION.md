@@ -1,4 +1,3 @@
-
 # 🤝 Contributing Guide for ADK-TS Samples
 
 First of all, thank you for taking the time to contribute! 🎉
