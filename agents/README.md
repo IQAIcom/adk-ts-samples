@@ -1,4 +1,10 @@
-# WIP
+# ADK-TS Sample Agents
+
+## Available Agents
+
+| Agent | Path | Highlights | Complexity |
+|-------|------|------------|-------------|
+| Research Assistant | `agents/research-assistant` | Tavily-powered research workflow with parallel report generation and structured state sharing. | Intermediate |
 
 ## How to Add Your Agent
 

@@ -80,7 +80,7 @@ If you have any questions or if you found any problems with this repository, ple
 
 | Agent Name | Use Case | Tag | Interaction Type | Complexity | Agent Type | Vertical |
 |------------|----------|-----|------------------|------------|------------|----------|
-| _Coming Soon_ | - | - | - | - | - | - |
+| Research Assistant | Parallel Tavily-powered research with analysis + comprehensive reports. | `research`, `analysis` | Conversational | Intermediate | Multi-agent | General |
 
 ## 🤝 Contributing
 
