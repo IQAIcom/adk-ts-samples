@@ -22,8 +22,6 @@ An AI-powered research assistant that conducts targeted web research and generat
 - 🎯 **Topic Agnostic**: Works with any research topic across all domains
 - 💬 **User-Friendly**: Clear confirmation process with silent, efficient execution
 
-> **Note**: This project demonstrates advanced agent orchestration in ADK-TS with parallel processing, state management, and tool integration.
-
 ## Architecture and Workflow
 
 This project demonstrates efficient agent orchestration in ADK-TS with sequential data collection followed by parallel report generation:
@@ -95,8 +93,8 @@ graph TB
 1. Clone this repository
 
 ```bash
-git clone https://github.com/Timonwa/ai-research-assistant.git
-cd ai-research-assistant
+git clone https://github.com/IQAIcom/adk-ts-samples.git
+cd adk-ts-samples/agents/research-assistant
 ```
 
 2. Install dependencies
@@ -122,7 +120,7 @@ TAVILY_API_KEY=your_tavily_api_key_here
 ### Running the Assistant
 
 ```bash
-# Development mode (with hot reloading)
+# Run the test script
 pnpm dev
 
 # Interactive testing with ADK CLI
@@ -181,15 +179,15 @@ This AI Research Assistant is part of the [ADK-TS Samples](https://github.com/IQ
 We welcome contributions to the ADK-TS Samples repository! You can:
 
 - **Add new sample projects** showcasing different ADK-TS features
-- **Improve existing samples** with better documentation, new features, extend functionality, or better workflows and optimizations
+- **Improve existing samples** with better documentation, new features, or optimizations
 - **Fix bugs** in current implementations
 - **Update dependencies** and keep samples current
 
-Please see our [Contributing Guide](CONTRIBUTING.md) for detailed guidelines.
+Please see our [Contributing Guide](../../CONTRIBUTING.md) for detailed guidelines.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
 
 ---
 

@@ -12,30 +12,6 @@
     "prebuild": "pnpm clean",
     "tavily-test": "tsx src/scripts/tavily-test.ts"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Timonwa/research-assistant.git"
-  },
-  "keywords": [
-    "ai",
-    "research",
-    "assistant",
-    "agent",
-    "mcp",
-    "adk-ts",
-    "IQAI",
-    "web-search",
-    "analysis",
-    "report-generation",
-    "transfer-controls",
-    "interactive"
-  ],
-  "author": "IQAI",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Timonwa/research-assistant/issues"
-  },
-  "homepage": "https://github.com/Timonwa/research-assistant#readme",
   "dependencies": {
     "@iqai/adk": "^0.5.5",
     "@tavily/core": "^0.5.12",
