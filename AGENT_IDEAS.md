@@ -29,6 +29,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 | Business Operations Manager | Intermediate | Multi-agent | Business | Available |
 | DeFi Risk Analyzer | Advanced | Tool-based | Finance / Web3 | Available |
 | Crypto Tax Calculator | Advanced | Multi-tool | Finance / Web3 | Available |
+| ATP Micropayment Analyst | Advanced | Multi-tool | Web3 / Analytics | Built |
 | DAO Proposal Analyzer | Advanced | Multi-agent | Web3 / Governance | Available |
 | Cross-Chain Bridge Monitor | Advanced | Multi-agent | Web3 / Infrastructure | Available |
 
@@ -265,6 +266,31 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 - Calculate tax implications for activities
 - Generate comprehensive tax summaries
 - Support multiple blockchain networks
+
+---
+
+## 💸 ATP Micropayment Analyst
+
+**Description:** Micropayment-enabled ATP insights agent that pays for IQ AI premium endpoints using the x402 protocol.
+
+**Tags:** `defi`, `payments`, `automation`
+
+**Interaction Type:** Conversational
+
+**Complexity:** Advanced
+
+**Agent Type:** Multi-tool
+
+**Vertical:** Web3 / Analytics
+
+**Status:** Built
+
+**Scope:**
+
+- Proxy ATP endpoints behind an x402 payment server
+- Disclose endpoint pricing and request confirmation before charged calls
+- Fetch IQ AI token prices, agent stats, wallet holdings, and leaderboards
+- Provide concise investment-style summaries with clear payment receipts
 
 ---
 

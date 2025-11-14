@@ -1,6 +1,6 @@
-# ADK-TS x402 Payment Server
+# ATP Micropayment Analyst – Payment Server
 
-HTTP server that proxies IQ AI's ATP API with x402 micropayment protection.
+Hono + x402 payment gateway that proxies IQ AI's Agent Tokenization Platform (ATP) API with pay-per-call protection.
 
 ## Features
 
@@ -11,17 +11,24 @@ HTTP server that proxies IQ AI's ATP API with x402 micropayment protection.
 
 ## Setup
 
-1. Create `.env` file:
+1. Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+1. Update `.env` with your payment details:
 
 ```env
 FACILITATOR_URL="https://x402.org/facilitator"
-ADDRESS=your_wallet_address_here # Your wallet address (to receive payments)
+ADDRESS=your_wallet_address_here # Wallet that receives x402 payments
 NETWORK=base-sepolia
 ```
 
-2. Start server:
+1. Install dependencies and start the server:
 
 ```bash
+pnpm install
 pnpm dev
 ```
 

@@ -4,7 +4,7 @@ import { z } from "zod";
 config();
 
 /**
- * Environment variable schema definition for the simple agent.
+ * Environment variable schema definition for the ATP Micropayment Analyst agent.
  *
  * Defines and validates required environment variables including:
  * - DEBUG: Optional debug mode flag (defaults to "false")

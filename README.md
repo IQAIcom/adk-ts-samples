@@ -80,7 +80,8 @@ If you have any questions or if you found any problems with this repository, ple
 
 | Agent Name | Use Case | Tag | Interaction Type | Complexity | Agent Type | Vertical |
 |------------|----------|-----|------------------|------------|------------|----------|
-| _Coming Soon_ | - | - | - | - | - | - |
+| Research Assistant | Parallel web research with Tavily and dual report generation. | `research`, `analysis` | Conversational | Intermediate | Multi-agent | General |
+| ATP Micropayment Analyst | x402-gated ATP insights agent delivering pay-per-call market data. | `defi`, `payments` | Conversational | Advanced | Multi-tool | Web3 / Analytics |
 
 ## 🤝 Contributing
 

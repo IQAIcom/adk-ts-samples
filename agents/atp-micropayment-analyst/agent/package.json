@@ -1,7 +1,7 @@
 {
 	"name": "agent",
 	"version": "1.0.0",
-	"description": "Agent built with ADK-TS that has specialized knowledge on IQAI's ATP",
+	"description": "Micropayment-enabled ATP analyst agent built with ADK-TS",
 	"main": "dist/index.js",
 	"private": true,
 	"scripts": {

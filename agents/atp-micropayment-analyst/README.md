@@ -1,45 +1,36 @@
 <div align="center">
  <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
  <br/>
- <h1>IQ AI x x402 Agent Template</h1>
- <b>Starter template for creating monetized AI Agents with ADK-TS, IQ AI, and x402 payment protocol</b>
+ <h1>ATP Micropayment Analyst</h1>
+ <b>Sample monetized agent that blends ADK-TS, IQ AI's Agent Tokenization Platform, and x402 micropayments</b>
  <br/>
   <i>LLM-powered • x402 Micropayments • IQ AI ATP Integration • TypeScript</i>
   </div>
 
 ---
 
-# x402 Agent Template - Monetized AI Agents with x402 Protocol
+# ATP Micropayment Analyst – Monetized ATP Insights
 
-A template showing how to build AI agents that access IQ AI's Agent Tokenization Platform (ATP) through paid API endpoints using the x402 micropayment protocol. The agent pays for API calls automatically using cryptocurrency, enabling new business models for AI-powered services.
+Reference implementation for building an ATP insights assistant that pays for premium IQ AI Agent Tokenization Platform (ATP) endpoints with the x402 micropayment protocol. The project demonstrates how to combine ADK-TS tooling, a payment-gated proxy server, and responsible user messaging so developers can ship revenue-ready agents.
 
 **Built with [ADK-TS](https://adk.iqai.com/) - Agent Development Kit (ADK) for TypeScript**
 
-## 🎯 What This Template Shows
+## 🎯 What You’ll Learn
 
-This template demonstrates how to build **monetized AI agents** that:
-
-1. **🤖 Access IQ AI's ATP** (Agent Tokenization Platform) through paid API endpoints:
-   - **Token Prices**: Get current token prices for IQ AI agents
-   - **Agent Holdings**: Get wallet holdings for IQ AI agents
-   - **Agent Info**: Retrieve agent metadata by token contract address
-   - **Agent Stats**: Get performance statistics for agents
-   - **Top Agents**: List top-performing agents by market cap, holders, or inferences
-
-2. **💰 Implement micropayments** using the x402 protocol for API access monetization
-3. **🔐 Automatic payment handling** with Web3 wallet integration
-
-4. **🌐 Provides monetized API server** that proxies premium endpoints
+- **Micropayment-enabled tooling**: Use x402 to protect ATP endpoints and settle charges transparently.
+- **Responsible UX patterns**: Present pricing, request approval, and fall back gracefully when the user declines.
+- **Full-stack sample**: Pair an ADK-TS agent with a Hono-powered payment server that proxies IQ AI’s ATP API.
+- **Extensible architecture**: Add new paid endpoints or tools with minimal changes.
 
 ## 🏗️ How It Works
 
-```
+```text
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────────┐
-│   AI Agent      │    │   x402 Server    │    │   IQ AI ATP API     │
-│   (ADK-TS)      │    │                  │    │                     │
+│   ADK-TS Agent  │    │ x402 Payment API │    │   IQ AI ATP API     │
+│                 │    │ (Hono Proxy)     │    │                     │
 │ • Wallet Client │───▶│ • Payment Gates  │───▶│ • Premium Endpoints │
-│ • Premium Tools │    │ • Proxy Routes   │    │ • ATP Data          │
-│ • Auto Payment  │    │ • Price Config   │    │ • Agent Analytics   │
+│ • Premium Tools │    │ • Price Config   │    │ • Agent Analytics   │
+│ • Auto Payment  │    │ • Usage Logging  │    │ • Market Data       │
 └─────────────────┘    └──────────────────┘    └─────────────────────┘
 ```
 
@@ -47,94 +38,51 @@ This template demonstrates how to build **monetized AI agents** that:
 
 ### Prerequisites
 
-- Node.js 18+ and pnpm
-- A Google account (for free AI API access)
-- A crypto wallet with Base Sepolia ETH and USDC for micropayments
-- Basic understanding of cryptocurrency/Web3
+- Node.js 18+ and [pnpm](https://pnpm.io/)
+- Google AI API key (Gemini) for LLM access
+- Base Sepolia wallet funded with test ETH and, optionally, test USDC
+- Basic understanding of x402 payment flows
 
-## Step 1: Clone and Install
+### 1. Install dependencies
 
 ```bash
-# Clone this repository
-git clone https://github.com/IQAIcom/iqai-x402-agent.git
-cd iqai-x402-agent
-
-# Install dependencies
 pnpm install
 ```
 
-### Step 2: Get Your API Keys
+### 1. Configure environment variables
 
-#### 🔑 Google AI API Key (Required)
-
-1. Visit [Google AI Studio](https://aistudio.google.com/api-keys)
-2. Sign in with your Google account
-3. Click "Create API Key"
-4. Copy the generated key
-
-#### 🔑 Wallet Private Key (Required)
-
-You need a wallet private key with Base Sepolia ETH for micropayments:
-
-1. **Create a new wallet** (recommended for testing):
-   - Use [MetaMask](https://metamask.io/), [Rainbow](https://rainbow.me/), or any Ethereum wallet
-   - Export the private key (keep this secure!)
-
-2. **Fund with Base Sepolia ETH**:
-   - Get Base Sepolia ETH from [Base Sepolia Faucet](https://docs.base.org/base-chain/tools/network-faucets?ref=blog.iqai.com) or [Google Sepolia Faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia)
-
-3. **Fund with testnet USDC**:
-   - Get testnet USDC from [Circle Testnet Faucet](https://faucet.circle.com/)
-
-### Step 3: Configure Environment
-
-Create environment files for both server and agent:
-
-**Server Configuration (.env in `/server` folder):**
+Create env files for both the payment server and the agent:
 
 ```bash
-# Navigate to server directory and copy environment file
-cd server
-cp .env.example .env
+cd server && cp .env.example .env && cd ..
+cd agent && cp .env.example .env && cd ..
 ```
 
-Edit `server/.env`:
+Fill in the required values:
 
 ```env
+# server/.env
 FACILITATOR_URL="https://x402.org/facilitator"
-ADDRESS=your_wallet_address_here # Your wallet address (to receive payments)
+ADDRESS=your_wallet_address_here
 NETWORK=base-sepolia
-```
 
-**Agent Configuration (.env in `/agent` folder):**
-
-```bash
-# Navigate to agent directory and copy environment file
-cd ../agent
-cp .env.example .env
-```
-
-Edit `agent/.env`:
-
-```env
-ADK_DEBUG=false # Enable debug mode
+# agent/.env
+ADK_DEBUG=false
 WALLET_PRIVATE_KEY=your_wallet_private_key_here
 GOOGLE_API_KEY=your_google_api_key_here
+LLM_MODEL=gemini-2.5-flash
 ```
 
-## Step 4: Start the Services
-
-Start both the payment server and AI agent:
+### 1. Start both services
 
 ```bash
-# Start both server and agent in development mode
 pnpm dev
 ```
 
-This will start:
+The script launches:
 
-- **Server** on `http://localhost:3001` - handles x402 payments and proxies IQ AI ATP API
-- **Agent** on `https://adk-web.iqai.com` - provides web interface to interact with the agent
+- `server/` on `http://localhost:3001` (x402 payment proxy)
+- `agent/` via `adk web` for a browser-based chat interface
 
 ## 🧪 Testing Your Template
 
@@ -159,23 +107,13 @@ Expected response showing endpoint prices:
 }
 ```
 
-### Interact with the Agent
+### Interact with the agent
 
-1. **Open the web interface** at `https://adk-web.iqai.com`
-2. **Start a conversation** - the agent will greet you and show current endpoint prices
-3. **Ask for agent insights**:
-   - "Show me the top agents by market cap"
-   - "Get holdings for address 0x..."
-   - "Tell me about agent at address 0x..."
+1. Open `https://adk-web.iqai.com` in your browser.
+1. Start a chat; the agent displays pricing pulled from `GET_PRICES`.
+1. Approve or decline paid actions as the agent surfaces data requests (e.g., “Get top agents by market cap?”).
 
-### Test Micropayments
-
-The agent will:
-
-1. ✨ **Show prices** when you start a conversation
-2. 🔐 **Ask permission** before making any paid calls
-3. 💸 **Automatically pay** using your wallet when you approve
-4. 📊 **Return data** from IQ AI's ATP API
+Behind the scenes the wallet executes x402 micropayments, then the proxy returns ATP data to the agent.
 
 ## 🛠️ Development and Testing
 
@@ -197,7 +135,7 @@ cd agent && npx @iqai/adk-cli run
 ### Payment Server Details
 
 - **Base URL**: `http://localhost:3001`
-- **Network**: Base Sepolia
+- **Network**: Base Sepolia (configurable)
 - **Payment Protocol**: x402
 - **Facilitator**: `https://x402.org/facilitator`
 
@@ -215,19 +153,19 @@ cd agent && npx @iqai/adk-cli run
 ## 📁 Template Structure
 
 ```text
-x402-agent/
+atp-micropayment-analyst/
 ├── agent/                      # AI Agent (ADK-TS)
 │   ├── src/
 │   │   ├── agents/
-│   │   │   └── x402/
-│   │   │       ├── agent.ts    # Main agent configuration
-│   │   │       └── tools.ts    # Payment-enabled API tools
+│   │   │   └── atp-micropayment-analyst/
+│   │   │       ├── agent.ts    # Agent behaviour + instructions
+│   │   │       └── tools.ts    # Payment-enabled ATP tools
 │   │   └── env.ts              # Environment configuration
 │   ├── package.json
 │   └── README.md
 ├── server/                     # Payment Server (Hono + x402)
 │   ├── src/
-│   │   └── index.ts            # Payment middleware & ATP proxy
+│   │   └── index.ts            # x402 middleware & ATP proxy routes
 │   ├── package.json
 │   └── README.md
 ├── package.json                # Root workspace configuration
@@ -238,7 +176,7 @@ x402-agent/
 
 ### Adding New Agent Tools
 
-1. **Create new tools** in `agent/src/agents/x402/tools.ts`:
+1. **Create new tools** in `agent/src/agents/atp-micropayment-analyst/tools.ts`:
 
 ```typescript
 const getNewTool = createTool({
@@ -256,7 +194,7 @@ const getNewTool = createTool({
 });
 ```
 
-2. **Add to clientTools** array and update agent instructions
+1. **Add to clientTools** array and update agent instructions
 
 ### Adding New Payment Endpoints
 
@@ -275,7 +213,7 @@ app.get("/api/new-endpoint", async (c) => {
 });
 ```
 
-2. **Update agent tools** to use the new endpoint
+1. **Update agent tools** to use the new endpoint
 
 ### Changing Payment Prices
 
@@ -306,7 +244,7 @@ NETWORK=mainnet  # or polygon, optimism, etc.
 
 ### "Invalid private key" or "Wallet connection failed"
 
-- Verify the private key is valid and has Base Sepolia ETH
+- Verify the private key is valid and funded with Base Sepolia ETH
 - Check that the address matches between agent and server config
 
 ### "Google API key invalid"
@@ -342,7 +280,7 @@ NETWORK=mainnet  # or polygon, optimism, etc.
 
 ## 🤝 Contributing
 
-This [template](https://github.com/IQAIcom/iqai-x402-agent) is open source and contributions are welcome! Feel free to:
+This sample is part of the [ADK-TS Samples](https://github.com/IQAIcom/adk-ts-examples) repository. Contributions are welcome! Feel free to:
 
 - Report bugs or suggest improvements
 - Add new tool examples
@@ -351,4 +289,4 @@ This [template](https://github.com/IQAIcom/iqai-x402-agent) is open source and c
 
 ---
 
-**💰 Ready to monetize?** This template gives you everything you need to start building profitable AI-powered applications with micropayments!
+**💰 Ready to monetize?** Use this sample as a launchpad for x402-powered ATP experiences.
