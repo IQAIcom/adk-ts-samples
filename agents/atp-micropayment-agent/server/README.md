@@ -1,13 +1,20 @@
 # ATP Micropayment Agent – Payment Server
 
-Local x402 payment server that demonstrates how to protect API endpoints with pay-per-call micropayments. Built with Hono and x402-hono middleware to proxy IQ AI's ATP API.
+A local x402 payment server that demonstrates how to protect API endpoints with pay-per-call micropayments. Built with Hono and x402-hono middleware, this server acts as a payment proxy for IQ AI's Agent Tokenization Platform (ATP) API, enabling developers to monetize API access through the x402 micropayment protocol.
 
 ## Features
 
-- **Payment Protection**: x402 middleware for all ATP endpoints
-- **Transparent Pricing**: `/api/price-list` shows costs
-- **IQAI ATP Proxy**: Direct access to agent data
-- **Base Sepolia**: Built for Base network
+💳 **Payment Protection**: x402 middleware automatically validates payments for all ATP endpoints
+
+💰 **Transparent Pricing**: Free `/api/price-list` endpoint displays all endpoint costs
+
+🔗 **ATP API Proxy**: Seamless proxying to IQ AI's Agent Tokenization Platform
+
+⚡ **Base Sepolia Network**: Built for Base testnet with production-ready architecture
+
+🛡️ **Secure Payments**: Facilitator-based payment verification with wallet address configuration
+
+🚀 **Lightweight & Fast**: Hono framework for minimal overhead and high performance
 
 ## Setup
 
@@ -34,7 +41,7 @@ pnpm dev
 
 Server runs on `http://localhost:3001`
 
-## Endpoints
+## Available Endpoints
 
 | Endpoint | Price | Description |
 |----------|-------|-------------|

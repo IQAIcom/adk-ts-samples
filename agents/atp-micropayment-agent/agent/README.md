@@ -1,13 +1,24 @@
 # ATP Micropayment Agent
 
-Example ADK-TS agent demonstrating x402 micropayment integration. Shows how to build agents that access paid APIs by disclosing pricing, requesting user approval, and automatically handling payments for premium endpoints like IQ AI's ATP data.
+An example ADK-TS agent that demonstrates x402 micropayment integration for accessing premium APIs. This agent shows how to build AI assistants that transparently disclose costs, request user approval, and automatically handle payments for pay-per-request endpoints using IQ AI's Agent Tokenization Platform (ATP) as a real-world example.
 
-## Capabilities
+## Features
 
-- **x402 Micropayments**: Uses `x402-axios` + wallet private key to pay for premium ATP requests.
-- **ATP Insights**: Fetches token prices, wallet holdings, agent metadata, stats, and leaderboards.
-- **Transparent UX**: Always surfaces per-call pricing before paid requests and seeks confirmation.
-- **Web Chat Interface**: Runs through `adk web` for an interactive experience.
+💳 **x402 Micropayments**: Automatic payment handling using `x402-axios` interceptor with wallet integration
+
+📈 **ATP Data Access**: Fetches token prices, wallet holdings, agent metadata, performance stats, and leaderboards
+
+🔍 **Transparent Pricing**: Always discloses per-call costs before making paid requests
+
+✅ **User Confirmation**: Seeks explicit approval before executing any paid operation
+
+💡 **Smart Tool Selection**: Agent intelligently chooses the right ATP endpoint based on user queries
+
+🚀 **Production-Ready**: Built with ADK-TS best practices and error handling
+
+💬 **Web Chat Interface**: Interactive testing through `adk web` interface
+
+⚡ **Base Sepolia Network**: Configured for Base testnet with easy mainnet migration
 
 ## Setup
 
@@ -20,7 +31,7 @@ cp .env.example .env
 Set the required values:
 
 ```env
-ADK_DEBUG=false
+ADK_DEBUG=false # Enable debug mode
 WALLET_PRIVATE_KEY=your_wallet_private_key_here
 GOOGLE_API_KEY=your_google_api_key_here
 ```
@@ -32,9 +43,11 @@ pnpm install
 pnpm dev
 ```
 
-The `adk web` interface launches automatically.
+The `adk web` interface launches automatically at `https://adk-web.iqai.com`
 
 ## Available Tools
+
+The agent has access to five ATP-powered tools:
 
 | Tool | Description | Pricing |
 | --- | --- | --- |

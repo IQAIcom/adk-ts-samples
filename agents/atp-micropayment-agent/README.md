@@ -55,6 +55,53 @@ atp-micropayment-agent/
 
 ### Data Flow
 
+```mermaid
+graph TB
+    %% User Interaction
+    User[👤 User Query] --> Agent[🤖 ADK-TS Agent<br/>ATP Micropayment Agent]
+    
+    %% Agent Processing
+    Agent --> ToolSelection[🔍 Tool Selection<br/>Identifies required ATP endpoint]
+    ToolSelection --> PriceDisclosure[💰 Price Disclosure<br/>Shows cost to user]
+    
+    %% User Confirmation
+    PriceDisclosure --> Confirmation{✅ User Confirms?}
+    Confirmation -->|No| Cancel[❌ Operation Cancelled]
+    Confirmation -->|Yes| Payment[💳 Payment Execution]
+    
+    %% Payment Flow
+    Payment --> x402Client[🔐 x402-axios Client<br/>Adds payment headers]
+    x402Client --> PaymentServer[🛡️ Payment Server<br/>Hono + x402 middleware]
+    
+    %% Server Processing
+    PaymentServer --> Validate[✓ Validate Payment<br/>Check facilitator]
+    Validate -->|Invalid| PaymentError[❌ Payment Failed]
+    Validate -->|Valid| ProxyRequest[📡 Proxy to ATP API<br/>Forward request]
+    
+    %% ATP API
+    ProxyRequest --> ATPAPI[🏢 IQ AI ATP API<br/>Token prices, stats, holdings]
+    ATPAPI --> Response[📊 ATP Data Response]
+    
+    %% Return Flow
+    Response --> PaymentServer
+    PaymentServer --> Agent
+    Agent --> Format[📝 Format Response<br/>Present to user]
+    Format --> UserResponse[💬 Final Response<br/>ATP data with references]
+
+    %% Styling
+    classDef userLayer fill:#e1f5fe,color:#01579b
+    classDef agentLayer fill:#fff3e0,color:#e65100
+    classDef paymentLayer fill:#f3e5f5,color:#4a148c
+    classDef serverLayer fill:#e8f5e9,color:#1b5e20
+    classDef apiLayer fill:#fce4ec,color:#880e4f
+
+    class User,Confirmation,Cancel userLayer
+    class Agent,ToolSelection,PriceDisclosure,Format,UserResponse agentLayer
+    class Payment,x402Client,Validate,PaymentError paymentLayer
+    class PaymentServer,ProxyRequest serverLayer
+    class ATPAPI,Response apiLayer
+```
+
 ## Getting Started
 
 ### Prerequisites
