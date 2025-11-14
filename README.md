@@ -77,7 +77,7 @@ If you have any questions or if you found any problems with this repository, ple
 | Agent Name | Use Case | Tag | Interaction Type | Complexity | Agent Type | Vertical |
 |------------|----------|-----|------------------|------------|------------|----------|
 | Research Assistant | Parallel web research with Tavily and dual report generation. | `research`, `analysis` | Conversational | Intermediate | Multi-agent | General |
-| ATP Micropayment Analyst | x402-gated ATP insights agent delivering pay-per-call market data. | `defi`, `payments` | Conversational | Advanced | Multi-tool | Web3 / Analytics |
+| ATP Micropayment Agent | Example demonstrating x402 micropayments for accessing paid ATP endpoints. | `web3`, `payments` | Conversational | Advanced | Multi-tool | Web3 / Analytics |
 
 ## 🤝 Contributing
 

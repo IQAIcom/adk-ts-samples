@@ -1,6 +1,4 @@
-# WIP
-
-## How to Add Your Agent
+# How to Add Your Agent
 
 When contributing a new agent example, please update the table in the default Readme with your agent's details:
 

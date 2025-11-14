@@ -1,6 +1,6 @@
-# ATP Micropayment Analyst (Agent)
+# ATP Micropayment Agent
 
-Micropayment-enabled market analyst that helps users explore IQ AI's Agent Tokenization Platform (ATP). The agent discloses x402 endpoint pricing, asks for approval, and then retrieves token prices, wallet holdings, and performance metrics.
+Example ADK-TS agent demonstrating x402 micropayment integration. Shows how to build agents that access paid APIs by disclosing pricing, requesting user approval, and automatically handling payments for premium endpoints like IQ AI's ATP data.
 
 ## Capabilities
 

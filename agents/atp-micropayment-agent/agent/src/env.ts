@@ -4,17 +4,17 @@ import { z } from "zod";
 config();
 
 /**
- * Environment variable schema definition for the ATP Micropayment Analyst agent.
+ * Environment variable schema definition for the ATP Micropayment Agent.
  *
  * Defines and validates required environment variables including:
  * - DEBUG: Optional debug mode flag (defaults to "false")
  * - GOOGLE_API_KEY: Required API key for Google/Gemini model access
  */
 export const envSchema = z.object({
-	ADK_DEBUG: z.coerce.boolean().default(false),
-	GOOGLE_API_KEY: z.string(),
-	LLM_MODEL: z.string().default("gemini-2.5-flash"),
-	WALLET_PRIVATE_KEY: z.string(),
+  ADK_DEBUG: z.coerce.boolean().default(false),
+  GOOGLE_API_KEY: z.string(),
+  LLM_MODEL: z.string().default("gemini-2.5-flash"),
+  WALLET_PRIVATE_KEY: z.string(),
 });
 
 /**

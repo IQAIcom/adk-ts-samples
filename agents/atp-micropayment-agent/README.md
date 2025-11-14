@@ -1,17 +1,17 @@
 <div align="center">
   <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
   <br/>
-  <h1>ATP Micropayment Analyst</h1>
-  <b>Sample monetized agent that blends ADK-TS, IQ AI's Agent Tokenization Platform, and x402 micropayments</b>
+ <h1>ATP Micropayment Agent</h1>
+ <b>Example agent demonstrating how to build monetized, pay-per-request AI workflows with ADK-TS and x402</b>
   <br/>
   <i>LLM-powered • x402 Micropayments • IQ AI ATP Integration • TypeScript</i>
 </div>
 
 ---
 
-# ATP Micropayment Analyst – Monetized ATP Insights
+# ATP Micropayment Agent – Building Monetized AI Workflows
 
-Reference implementation for building an ATP insights assistant that pays for premium IQ AI Agent Tokenization Platform (ATP) endpoints with the x402 micropayment protocol. The project demonstrates how to combine ADK-TS tooling, a payment-gated proxy server, and responsible user messaging so developers can ship revenue-ready agents.
+Example project showing how to build agents that access paid API endpoints using the x402 micropayment protocol. This sample demonstrates the complete pattern: an ADK-TS agent with payment-enabled tools, a local x402 server that proxies premium endpoints, and user-friendly pricing disclosure. Developers can use this as a foundation for building their own monetized AI services.
 
 **Built with [ADK-TS](https://adk.iqai.com/) - Agent Development Kit (ADK) for TypeScript**
 
@@ -153,11 +153,11 @@ cd agent && npx @iqai/adk-cli run
 ## 📁 Template Structure
 
 ```text
-atp-micropayment-analyst/
+atp-micropayment-agent/
 ├── agent/                      # AI Agent (ADK-TS)
 │   ├── src/
 │   │   ├── agents/
-│   │   │   └── atp-micropayment-analyst/
+│   │   │   └── atp-micropayment-agent/
 │   │   │       ├── agent.ts    # Agent behaviour + instructions
 │   │   │       └── tools.ts    # Payment-enabled ATP tools
 │   │   └── env.ts              # Environment configuration
@@ -176,7 +176,7 @@ atp-micropayment-analyst/
 
 ### Adding New Agent Tools
 
-1. **Create new tools** in `agent/src/agents/atp-micropayment-analyst/tools.ts`:
+1. **Create new tools** in `agent/src/agents/atp-micropayment-agent/tools.ts`:
 
 ```typescript
 const getNewTool = createTool({

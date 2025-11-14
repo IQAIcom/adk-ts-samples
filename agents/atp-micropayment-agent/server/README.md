@@ -1,6 +1,6 @@
-# ATP Micropayment Analyst – Payment Server
+# ATP Micropayment Agent – Payment Server
 
-Hono + x402 payment gateway that proxies IQ AI's Agent Tokenization Platform (ATP) API with pay-per-call protection.
+Local x402 payment server that demonstrates how to protect API endpoints with pay-per-call micropayments. Built with Hono and x402-hono middleware to proxy IQ AI's ATP API.
 
 ## Features
 

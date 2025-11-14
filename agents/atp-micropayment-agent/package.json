@@ -1,7 +1,7 @@
 {
-  "name": "atp-micropayment-analyst",
+  "name": "atp-micropayment-agent",
   "version": "1.0.0",
-  "description": "Sample ATP Micropayment Analyst demonstrating x402 monetized tools for IQAI's Agent Tokenization Platform",
+  "description": "Sample ATP Micropayment Agent demonstrating x402 monetized tools for IQAI's Agent Tokenization Platform",
   "private": true,
   "scripts": {
     "dev": "concurrently \"pnpm run dev:server\" \"pnpm run dev:agent\"",
