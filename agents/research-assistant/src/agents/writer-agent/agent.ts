@@ -5,7 +5,7 @@ import { getReportAgent } from "../comprehensive-report-agent/agent";
 /**
  * Creates and configures a writing agent that produces two reports simultaneously.
  *
- * This agent takes search results with extracted content and creates two parallel reports:
+ * This agent takes search results and creates two parallel reports:
  * 1. Analysis Report - detailed analysis and insights from the research data
  * 2. Comprehensive Report - complete research report with recommendations
  *

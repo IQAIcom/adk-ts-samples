@@ -1,7 +1,7 @@
 {
-  "name": "ai-research-assistant",
+  "name": "research-assistant",
   "version": "1.0.0",
-  "description": "A sophisticated AI Research Assistant built with ADK-TS that conducts web research on any topic, analyzes findings, and generates comprehensive structured reports with transfer controls and interactive user interface",
+  "description": "AI Research Assistant built with ADK-TS that conducts web research on any topic using Tavily API, performs analysis, and generates comprehensive structured reports with proper references and citations",
   "main": "dist/index.js",
   "private": true,
   "scripts": {
@@ -9,11 +9,12 @@
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "clean": "rimraf dist",
-    "prebuild": "pnpm clean"
+    "prebuild": "pnpm clean",
+    "tavily-test": "tsx src/scripts/tavily-test.ts"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Timonwa/ai-research-assistant.git"
+    "url": "git+https://github.com/Timonwa/research-assistant.git"
   },
   "keywords": [
     "ai",
@@ -32,11 +33,12 @@
   "author": "IQAI",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Timonwa/ai-research-assistant/issues"
+    "url": "https://github.com/Timonwa/research-assistant/issues"
   },
-  "homepage": "https://github.com/Timonwa/ai-research-assistant#readme",
+  "homepage": "https://github.com/Timonwa/research-assistant#readme",
   "dependencies": {
     "@iqai/adk": "^0.5.5",
+    "@tavily/core": "^0.5.12",
     "cheerio": "^1.1.2",
     "dotenv": "^17.2.2",
     "zod": "^4.1.5"

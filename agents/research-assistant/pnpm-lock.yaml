@@ -11,6 +11,9 @@ importers:
       '@iqai/adk':
         specifier: ^0.5.5
         version: 0.5.5(@opentelemetry/core@2.2.0(@opentelemetry/api@1.9.0))(@types/node@24.9.1)(@types/pg@8.15.5)(typescript@5.9.3)(ws@8.18.3)
+      '@tavily/core':
+        specifier: ^0.5.12
+        version: 0.5.12
       cheerio:
         specifier: ^1.1.2
         version: 1.1.2
@@ -820,6 +823,9 @@ packages:
   '@standard-schema/spec@1.0.0':
     resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
 
+  '@tavily/core@0.5.12':
+    resolution: {integrity: sha512-QLX4zNqBn7WVXS6uPX8jphXqhnLZOh3GjrDq0Ux6m0L7BtJuMvm56rKnbzAqEkYpg+YmbE/dEfKJLXQrBKSXOg==}
+
   '@tootallnate/once@2.0.0':
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
     engines: {node: '>= 10'}
@@ -1540,6 +1546,9 @@ packages:
   jackspeak@4.1.1:
     resolution: {integrity: sha512-zptv57P3GpL+O0I7VdMJNBZCu+BPHVQUk55Ft8/QCJjTVxrnJHuVuX/0Bl2A6/+2oyR/ZMEuFKwmzqqZ/U5nPQ==}
     engines: {node: 20 || >=22}
+
+  js-tiktoken@1.0.21:
+    resolution: {integrity: sha512-biOj/6M5qdgx5TKjDnFT1ymSpM5tbd3ylwDtrQvFQSu0Z7bBYko2dF+W/aUkXUPuk6IVpRxk/3Q2sHOzGlS36g==}
 
   json-bigint@1.0.0:
     resolution: {integrity: sha512-SiPv/8VpZuWbvLSMtTDU8hEfrZWg/mH/nV/b4o0CYbSxu1UIQPLdwKOCIyLQX+VIPO5vrLX3i8qtqFyhdPSUSQ==}
@@ -3125,6 +3134,15 @@ snapshots:
 
   '@standard-schema/spec@1.0.0': {}
 
+  '@tavily/core@0.5.12':
+    dependencies:
+      axios: 1.12.2
+      https-proxy-agent: 7.0.6
+      js-tiktoken: 1.0.21
+    transitivePeerDependencies:
+      - debug
+      - supports-color
+
   '@tootallnate/once@2.0.0': {}
 
   '@tsconfig/node10@1.0.11': {}
@@ -3887,6 +3905,10 @@ snapshots:
   jackspeak@4.1.1:
     dependencies:
       '@isaacs/cliui': 8.0.2
+
+  js-tiktoken@1.0.21:
+    dependencies:
+      base64-js: 1.5.1
 
   json-bigint@1.0.0:
     dependencies:

@@ -2,58 +2,53 @@
   <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
   <br/>
   <h1>Research Assistant</h1>
-  <b>Sample agent to assist with research tasks using the `@iqai/adk` library.</b>
+  <b>Sample agent to assist with research tasks using the <code>@iqai/adk</code> library.</b>
   <br/>
   <i>Minimal • Extensible • TypeScript</i>
 </div>
 
 ---
 
-An AI-powered research assistant that processes any research topic through a sophisticated agent workflow: data collection with content extraction, followed by parallel analysis and report generation. Built with ADK-TS to demonstrate advanced agent orchestration, structured outputs, and state management.
+An AI-powered research assistant that conducts targeted web research and generates comprehensive reports. Features a streamlined workflow with topic confirmation, automated web search using Tavily API, and parallel report generation for efficient research assistance.
 
 ## Features
 
-- 🔍 **Smart Data Collection**: Searches web sources and extracts full article content from URLs
-- 📊 **Parallel Analysis**: Analysis and comprehensive reports generated simultaneously
-- 📝 **Structured Outputs**: Data collection agent uses Zod schema for consistent data structure
-- 🤖 **Sequential + Parallel Processing**: Data collection → [Analysis + Report] parallel execution
-- 🛡️ **State Management**: Agents pass structured data through session state
-- 💬 **Interactive Interface**: User-friendly greeting and topic confirmation system
-- 🎯 **Topic Agnostic**: Works with any research topic (technology, business, health, etc.)
-- 📄 **Content Extraction**: Automatically extracts and processes full webpage content
+- 🔍 **Targeted Web Research**: Uses Tavily API for high-quality web search with content extraction
+- 📊 **Dual Report Generation**: Creates analytical insights and comprehensive reports simultaneously
+- 🤖 **Streamlined Workflow**: Single confirmation → 3 automated searches → parallel report generation
+- 🛡️ **Smart Search Limiting**: Prevents excessive API usage with built-in 3-search maximum
+- 📝 **State-Driven Architecture**: Agents communicate through structured state management
+- 📄 **Professional Reports**: Both reports include complete references and citations
+- 🎯 **Topic Agnostic**: Works with any research topic across all domains
+- 💬 **User-Friendly**: Clear confirmation process with silent, efficient execution
 
-> **Note**: This project currently uses the built-in Google Search tool that returns dummy data for demonstration purposes. For real data, you can extend it just as it's done in `GoogleSearchTool.ts` to fetch real results from Google Custom Search API.
+> **Note**: This project demonstrates advanced agent orchestration in ADK-TS with parallel processing, state management, and tool integration.
 
 ## Architecture and Workflow
 
-This project demonstrates advanced agent orchestration in ADK-TS with sequential data collection followed by parallel report generation:
+This project demonstrates efficient agent orchestration in ADK-TS with sequential data collection followed by parallel report generation:
 
-1. **Root Agent** (`ai_research_assistant`) - Handles user interaction and topic confirmation
-2. **Research Workflow Agent** (`research_workflow_agent`) - SequentialAgent that orchestrates the research process
-3. **Data Collection Agent** (`data_collection_agent`) - Searches web sources and extracts full content from URLs
-4. **Writer Workflow Agent** (`writer_workflow_agent`) - ParallelAgent that coordinates report generation
-5. **Analysis Report Agent** (`analysis_report_agent`) - Generates analytical insights in parallel
-6. **Comprehensive Report Agent** (`comprehensive_report_agent`) - Creates detailed reports in parallel
+1. **Root Agent** (`ai_research_assistant`) - Handles user interaction and orchestrates the complete workflow
+2. **Writer Workflow Agent** (`writer_workflow_agent`) - ParallelAgent that coordinates simultaneous report generation
+3. **Analysis Report Agent** (`analysis_report_agent`) - Generates analytical insights from search data
+4. **Comprehensive Report Agent** (`comprehensive_report_agent`) - Creates detailed reports with references
+5. **Tavily Search Tool** - Web search tool with state accumulation and search limiting
 
 ### Project Structure
 
 ```text
 ├── src/
 │   ├── agents/
-│   │   ├── agent.ts                      # Root orchestrator agent (ai_research_assistant)
-│   │   ├── research-agent/
-│   │   │   └── agent.ts                  # Sequential workflow coordinator (research_workflow_agent)
-│   │   ├── data-collection-agent/        # Web research + content extraction (data_collection_agent)
-│   │   │   ├── agent.ts
-│   │   │   └── tools/
-│   │   │       ├── GoogleSearchTool.ts
-│   │   │       └── ContentExtractorTool.ts
-│   │   ├── writer-agent/                 # Parallel writer coordinator (writer_workflow_agent)
-│   │   │   └── agent.ts
-│   │   ├── analysis-report-agent/        # Analysis specialist (analysis_report_agent)
-│   │   │   └── agent.ts
-│   │   └── comprehensive-report-agent/   # Report specialist (comprehensive_report_agent)
-│   │       └── agent.ts
+│   │   ├── agent.ts                      # Root orchestrator agent
+│   │   ├── analysis-report-agent/
+│   │   │   └── agent.ts                  # Analysis report generator
+│   │   ├── comprehensive-report-agent/
+│   │   │   └── agent.ts                  # Comprehensive report generator
+│   │   └── writer-agent/                 # Parallel report coordinator
+│   │       ├── agent.ts
+│   │       └── tools/
+│   │           └── TavilySearchTool.ts   # Web search with state management
+│   ├── constants.ts                      # State key definitions
 │   ├── env.ts                            # Environment configuration
 │   └── index.ts                          # Main execution entry
 ```
@@ -63,32 +58,27 @@ This project demonstrates advanced agent orchestration in ADK-TS with sequential
 ```mermaid
 graph TB
     %% User Interaction
-    User[👤 User Input] --> Greeting[💬 Interactive Greeting]
+    User[👤 User Input] --> Confirm[✅ Topic Confirmation<br/>Asks: Should I proceed?]
 
-    %% Topic Confirmation
-    Greeting --> Confirm[✅ Topic Confirmation<br/>Asks: Should I proceed?]
+    %% Research Process
+    Confirm --> Search[🔍 Web Research<br/>• 3 targeted Tavily searches<br/>• Content extraction & truncation<br/>• Saves: search_results]
 
-    %% Sequential Data Collection → Parallel Report Generation
-    Confirm --> DataAgent[🔍 Data Collection Agent<br/>• Uses Google Search Tool<br/>• Extracts webpage content<br/>• Saves: search_results<br/>📄 Output 1: Raw Research Data]
-
-    DataAgent --> WriterWorkflow[🔄 Writer Workflow Agent<br/>ParallelAgent coordinator]
+    Search --> WriterWorkflow[🔄 Writer Workflow Agent<br/>ParallelAgent coordinator]
     
-    WriterWorkflow --> AnalysisAgent[📊 Analysis Report Agent<br/>• Reads search_results<br/>• Creates analytical insights<br/>• Saves: analysis_report<br/>📄 Output 2: Analysis Report]
+    WriterWorkflow --> AnalysisAgent[📊 Analysis Report Agent<br/>• Reads search_results<br/>• Creates analytical insights<br/>• Saves: analysis_report<br/>📄 Output: Analysis Report]
     
-    WriterWorkflow --> ReportAgent[📝 Comprehensive Report Agent<br/>• Reads search_results<br/>• Creates detailed report<br/>• Saves: comprehensive_report<br/>📄 Output 3: Comprehensive Report]
+    WriterWorkflow --> ReportAgent[📝 Comprehensive Report Agent<br/>• Reads search_results<br/>• Creates detailed report<br/>• Saves: comprehensive_report<br/>📄 Output: Comprehensive Report]
 
-    AnalysisAgent --> Output[📄 Three Distinct Research Outputs]
+    AnalysisAgent --> Output[📄 Two Research Reports<br/>with Complete References]
     ReportAgent --> Output
 
     %% Styling
     classDef userLayer fill:#e1f5fe,color:#01579b
-    classDef confirmLayer fill:#fff3e0,color:#e65100
     classDef agentLayer fill:#e8f5e8,color:#1b5e20
     classDef outputLayer fill:#fce4ec,color:#880e4f
 
-    class User,Greeting userLayer
-    class Confirm confirmLayer
-    class DataAgent,WriterWorkflow,AnalysisAgent,ReportAgent agentLayer
+    class User,Confirm userLayer
+    class Search,ResearchAgent,AnalysisAgent,ReportAgent agentLayer
     class Output outputLayer
 ```
 
@@ -97,15 +87,16 @@ graph TB
 ### Prerequisites
 
 - Node.js 18+
-- A Google API key for web search functionality
+- LLM API key (OpenAI, Google, or other supported providers)
+- Tavily API key for web search
 
 ### Installation
 
 1. Clone this repository
 
 ```bash
-git clone https://github.com/IQAIcom/adk-ts-samples
-cd agents/ai-research-assistant
+git clone https://github.com/Timonwa/ai-research-assistant.git
+cd ai-research-assistant
 ```
 
 2. Install dependencies
@@ -123,9 +114,9 @@ cp .env.example .env
 Edit `.env` and add your API keys:
 
 ```env
-GOOGLE_API_KEY=your_google_api_key_here
-GOOGLE_CX=your_google_custom_search_engine_id_here
-LLM_MODEL=gemini-2.5-flash
+OPENAI_API_KEY=your_openai_api_key_here
+LLM_MODEL=your_preferred_model_here
+TAVILY_API_KEY=your_tavily_api_key_here
 ```
 
 ### Running the Assistant
@@ -134,10 +125,6 @@ LLM_MODEL=gemini-2.5-flash
 # Development mode (with hot reloading)
 pnpm dev
 
-# Production build and run
-pnpm build
-pnpm start
-
 # Interactive testing with ADK CLI
 adk run   # CLI chat interface
 adk web   # Web interface
@@ -145,29 +132,46 @@ adk web   # Web interface
 
 ## Usage Examples
 
-The assistant can research any topic and generate comprehensive reports. Here are sample interactions:
+The assistant can research any topic and generate comprehensive reports with proper references. Here's a sample interaction:
 
 ```text
-👤 User: Hi! Can you help me research cybersecurity threats and solutions for small businesses?
-🤖 Agent: 👋 Hello! I understand you'd like me to research: cybersecurity threats and solutions for small businesses. Should I proceed with the research? (yes/no)
+👤 User: Hi! Can you help me research the latest developments in quantum computing?
+🤖 Agent: Hello! I understand you'd like me to research: the latest developments in quantum computing. Should I proceed with the research? (yes/no)
 👤 User: Yes, please proceed!
-🤖 Agent: [Research process outputs three distinct results]
+🤖 Agent: [Performs 3 targeted web searches using Tavily API, then generates two reports]
 ```
 
-**Example Queries:**
+**Example Research Topics:**
 
 - "Latest trends in renewable energy technology 2024"
 - "Impact of artificial intelligence on healthcare industry"
 - "Market analysis for electric vehicles in Europe"
 - "Recent developments in quantum computing"
+- "Cybersecurity threats and solutions for small businesses"
+
+**Generated Outputs:**
+
+- **Analysis Report**: Key insights, trends, and analytical findings
+- **Comprehensive Report**: Detailed information with complete source references and citations
 
 ## Useful Resources
 
+### ADK-TS Framework
+
 - [ADK-TS Documentation](https://adk.iqai.com/)
 - [ADK-TS CLI Documentation](https://adk.iqai.com/docs/cli)
-- [Google API Keys](https://aistudio.google.com/api-keys)
-- [Google Custom Search API Documentation](https://developers.google.com/custom-search/v1/overview)
-- [GitHub Repository](https://github.com/IQAICOM/adk-ts)
+- [ADK-TS Samples Repository](https://github.com/IQAIcom/adk-ts-samples)
+- [ADK-TS GitHub Repository](https://github.com/IQAICOM/adk-ts)
+
+### APIs & Services
+
+- [OpenAI API Keys](https://platform.openai.com/api-keys)
+- [Tavily API Keys](https://app.tavily.com/)
+- [Tavily Documentation](https://docs.tavily.com/welcome)
+
+### Community
+
+- [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
 - [Discord Community](https://discord.gg/w2Uk6ACK4D)
 
 ## Contributing
@@ -177,7 +181,7 @@ This AI Research Assistant is part of the [ADK-TS Samples](https://github.com/IQ
 We welcome contributions to the ADK-TS Samples repository! You can:
 
 - **Add new sample projects** showcasing different ADK-TS features
-- **Improve existing samples** with better documentation, code quality, or new features
+- **Improve existing samples** with better documentation, new features, extend functionality, or better workflows and optimizations
 - **Fix bugs** in current implementations
 - **Update dependencies** and keep samples current
 
@@ -189,9 +193,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**🎉 Ready to build?** This sample project provides a solid foundation for creating your own AI research assistant using the ADK-TS framework. Happy coding!
-
-## TO DO
-
-- [ ] Update `.env` and `env.ts` to use gemini model by default
-- [ ] Update README and package.json with current features
+**🎉 Ready to research?** This project showcases efficient AI research assistant implementation using ADK-TS framework with web search integration and parallel report generation.
