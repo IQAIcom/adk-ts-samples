@@ -117,3 +117,7 @@ logs
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+
+# turbo
+.turbo
