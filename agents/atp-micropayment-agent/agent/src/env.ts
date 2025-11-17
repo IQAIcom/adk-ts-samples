@@ -15,6 +15,7 @@ export const envSchema = z.object({
   GOOGLE_API_KEY: z.string(),
   LLM_MODEL: z.string().default("gemini-2.5-flash"),
   WALLET_PRIVATE_KEY: z.string(),
+  API_SERVER_URL: z.string().url().default("http://localhost:3001"),
 });
 
 /**
@@ -22,3 +23,5 @@ export const envSchema = z.object({
  * Throws an error if required environment variables are missing or invalid.
  */
 export const env = envSchema.parse(process.env);
+// Export API_SERVER_URL for convenience
+export const API_SERVER_URL = env.API_SERVER_URL;

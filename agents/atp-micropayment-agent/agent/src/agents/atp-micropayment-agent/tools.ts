@@ -13,7 +13,7 @@ import { withPaymentInterceptor } from "x402-axios";
 import { z } from "zod";
 import { env } from "../../env";
 
-const API_BASE_URL = "http://localhost:3001";
+const API_BASE_URL = env.API_SERVER_URL;
 
 // Base axios instance without payment interceptor
 const baseApiClient = axios.create({

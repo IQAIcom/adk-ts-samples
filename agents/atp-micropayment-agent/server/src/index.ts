@@ -39,8 +39,6 @@ app.get("/api/price-list", c => {
   return c.json({ prices: PAID_ROUTES });
 });
 
-const IQ_API_BASE = "https://app.iqai.com/api";
-
 /**
  * Factory function to create a proxy handler for upstream API endpoints
  * Reduces boilerplate by handling common patterns: URL construction, query params, error handling
@@ -64,7 +62,7 @@ function createProxyHandler(
     }
 
     try {
-      const url = new URL(`${IQ_API_BASE}${endpoint}`);
+      const url = new URL(`${env.IQ_API_BASE_URL}${endpoint}`);
 
       // Add query parameters to the URL
       if (options?.queryParams) {

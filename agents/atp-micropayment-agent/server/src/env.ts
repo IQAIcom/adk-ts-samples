@@ -28,6 +28,7 @@ const envSchema = z.object({
       "iotex",
     ] as const)
     .default("base-sepolia"),
+  IQ_API_BASE_URL: z.string().url().default("https://app.iqai.com/api"),
 });
 
 /**
