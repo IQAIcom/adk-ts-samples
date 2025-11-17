@@ -3,15 +3,21 @@
 	"tasks": {
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": [".next/**", "!.next/cache/**"]
+			"outputs": ["dist/**"],
+			"cache": true
 		},
-		"format": {},
-		"lint": {},
 		"dev": {
 			"persistent": true,
-			"cache": false
+			"cache": false,
+			"dependsOn": ["^build"]
 		},
 		"clean": {
+			"cache": false
+		},
+		"lint": {
+			"cache": false
+		},
+		"format": {
 			"cache": false
 		}
 	}
