@@ -85,11 +85,17 @@ function createProxyHandler(
       }
 
       const res = await fetch(url);
-      if (!res.ok) return c.json({ error: "Upstream error" }, 502);
+      if (!res.ok) {
+        console.error(
+          `❌ Upstream error for ${endpoint}: ${res.status} ${res.statusText}`
+        );
+        return c.json({ error: "Upstream error" }, 502);
+      }
 
       const text = await res.text();
       return c.body(text, 200, { "Content-Type": "application/json" });
-    } catch {
+    } catch (error) {
+      console.error(`❌ Error handling request to ${endpoint}:`, error);
       return c.json({ error: errorMessage }, 502);
     }
   };
