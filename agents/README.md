@@ -6,6 +6,7 @@ When contributing a new agent example, please update the table in the default Re
 
 - **Agent Name**: The name/title of your agent example
 - **Use Case**: Brief description of what the agent does
+- **Learn**: Key concepts demonstrated (e.g., State management, Tool integration)
 - **Tag**: Category tags (e.g., `chat`, `automation`, `analysis`)
 - **Interaction Type**: Workflow or Conversational
 - **Complexity**: Beginner, Intermediate, or Advanced
