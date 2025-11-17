@@ -11,15 +11,15 @@ import { STATE_KEYS } from "../../constants";
  */
 
 export const getReportAgent = () => {
-  const reportAgent = new LlmAgent({
-    name: "comprehensive_report_agent",
-    description:
-      "Creates professional, well-structured reports and documents from research data",
-    model: env.LLM_MODEL,
-    outputKey: STATE_KEYS.COMPREHENSIVE_REPORT,
-    disallowTransferToParent: true, // Cannot escalate to parent agents
-    disallowTransferToPeers: true, // Cannot delegate to sibling agents
-    instruction: `You are a PROFESSIONAL REPORT WRITER. Your ONLY job is to write a comprehensive report.
+	const reportAgent = new LlmAgent({
+		name: "comprehensive_report_agent",
+		description:
+			"Creates professional, well-structured reports and documents from research data",
+		model: env.LLM_MODEL,
+		outputKey: STATE_KEYS.COMPREHENSIVE_REPORT,
+		disallowTransferToParent: true, // Cannot escalate to parent agents
+		disallowTransferToPeers: true, // Cannot delegate to sibling agents
+		instruction: `You are a PROFESSIONAL REPORT WRITER. Your ONLY job is to write a comprehensive report.
 
 Research Data: {${STATE_KEYS.SEARCH_RESULTS}}
 
@@ -87,7 +87,7 @@ Example format:
 2. "Second Source Title" - URL - Date - Brief relevance note]
 
 CRITICAL: Complete your report above and STOP. Do NOT transfer to any other agents. Your job ends here.`,
-  });
+	});
 
-  return reportAgent;
+	return reportAgent;
 };

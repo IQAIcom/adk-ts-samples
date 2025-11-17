@@ -2,8 +2,8 @@ import { AgentBuilder } from "@iqai/adk";
 import { env } from "../env";
 import { getWriterAgent } from "./writer-agent/agent";
 import {
-  tavilySearchTool,
-  clearSearchStateTool,
+	tavilySearchTool,
+	clearSearchStateTool,
 } from "./tools/TavilySearchTool";
 
 /**
@@ -24,16 +24,16 @@ import {
  */
 
 export const getRootAgent = async () => {
-  const writerAgent = await getWriterAgent();
+	const writerAgent = await getWriterAgent();
 
-  return AgentBuilder.create("ai_research_assistant")
-    .withDescription(
-      "AI Research Assistant that performs web research using Tavily and coordinates report generation"
-    )
-    .withModel(env.LLM_MODEL)
-    .withTools(tavilySearchTool, clearSearchStateTool)
-    .withInstruction(
-      `You are an AI Research Assistant that handles web research and coordinates report generation. Handle user interactions professionally and perform research tasks efficiently.
+	return AgentBuilder.create("ai_research_assistant")
+		.withDescription(
+			"AI Research Assistant that performs web research using Tavily and coordinates report generation",
+		)
+		.withModel(env.LLM_MODEL)
+		.withTools(tavilySearchTool, clearSearchStateTool)
+		.withInstruction(
+			`You are an AI Research Assistant that handles web research and coordinates report generation. Handle user interactions professionally and perform research tasks efficiently.
 
 CONVERSATION RULES:
 - Start EVERY conversation with: "👋 Hello! I'm your AI Research Assistant. I help you research any topic and provide you with 2 different outputs: an analysis report and a comprehensive report!"
@@ -85,8 +85,8 @@ CRITICAL RULES:
 TOOL EXECUTION PATTERN:
 User confirms → tavily_search call 1 → tavily_search call 2 → tavily_search call 3 → transfer to writer_workflow_agent
 
-IMPORTANT: After confirmation, your next action must be calling tavily_search, not sending a message.`
-    )
-    .withSubAgents([writerAgent])
-    .build();
+IMPORTANT: After confirmation, your next action must be calling tavily_search, not sending a message.`,
+		)
+		.withSubAgents([writerAgent])
+		.build();
 };
