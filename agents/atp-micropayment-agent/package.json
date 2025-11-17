@@ -1,29 +1,45 @@
 {
-	"name": "@iqai/atp-micropayment-agent-client",
+	"name": "atp-micropayment-agent",
 	"version": "1.0.0",
-	"description": "Example ATP micropayment agent built with ADK-TS and x402",
-	"main": "dist/index.js",
+	"description": "ATP Micropayment Agent - demonstrating x402 monetized tools for IQAI's Agent Tokenization Platform. Includes both agent client and server in a single project.",
 	"private": true,
+	"type": "module",
 	"scripts": {
+		"dev": "concurrently \"pnpm run dev:server\" \"pnpm run dev:agent\"",
+		"dev:server": "tsx watch src/server/index.ts",
+		"dev:agent": "adk web",
 		"build": "tsc",
-		"dev": "adk web",
-		"start": "adk web",
+		"start": "concurrently \"node dist/server/index.js\" \"adk web\"",
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
+		"@hono/node-server": "^1.14.0",
 		"@iqai/adk": "workspace:*",
 		"axios": "^1.11.0",
 		"dedent": "^1.7.0",
 		"dotenv": "^17.2.2",
+		"hono": "^4.6.17",
+		"uuid": "^11.0.6",
 		"viem": "^2.37.7",
 		"x402-axios": "^0.6.0",
-		"zod": "^4.1.5"
+		"x402-hono": "^0.4.0",
+		"zod": "^4.1.12"
 	},
 	"devDependencies": {
 		"@types/dedent": "^0.7.2",
 		"@types/node": "^24.3.1",
+		"@types/uuid": "^10.0.0",
+		"concurrently": "^8.2.2",
 		"rimraf": "^6.0.1",
 		"tsx": "^4.20.5",
 		"typescript": "^5.9.2"
-	}
+	},
+	"keywords": [
+		"agent",
+		"adk",
+		"x402",
+		"monetization"
+	],
+	"author": "IQAICOM",
+	"license": "MIT"
 }
