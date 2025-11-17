@@ -1,7 +1,10 @@
 import { config } from "dotenv";
 config();
 
-import { tavily as createTavilyClient } from "@tavily/core";
+import {
+  tavily as createTavilyClient,
+  TavilySearchResponse,
+} from "@tavily/core";
 
 /**
  * Test script for Tavily search functionality
@@ -67,7 +70,8 @@ async function testTavilySearch() {
 
     // Display first result details
     if (response.results && response.results.length > 0) {
-      const firstResult = response.results[0] as any;
+      const firstResult = response
+        .results[0] as TavilySearchResponse["results"][0];
       console.log("📄 First result details:");
       console.log(`   URL: ${firstResult.url}`);
       console.log(`   Title: ${firstResult.title || "(no title)"}`);
