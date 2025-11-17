@@ -1,21 +1,13 @@
 import { serve } from "@hono/node-server";
-import { config } from "dotenv";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { type Network, paymentMiddleware, type Resource } from "x402-hono";
+import { paymentMiddleware, type Resource, type Network } from "x402-hono";
+import { env } from "./env.js";
 
-config();
-
-// Configuration from environment variables
-const facilitatorUrl =
-  (process.env.FACILITATOR_URL as Resource) || "https://x402.org/facilitator";
-const payTo = process.env.ADDRESS as `0x${string}`;
-const network = (process.env.NETWORK as Network) || "base-sepolia";
-
-if (!payTo) {
-  console.error("❌ Please set your wallet ADDRESS in the .env file");
-  process.exit(1);
-}
+// Configuration from validated environment variables
+const facilitatorUrl = env.FACILITATOR_URL as Resource;
+const payTo = env.ADDRESS as `0x${string}`;
+const network = env.NETWORK;
 
 const app = new Hono();
 

@@ -10,11 +10,12 @@
 		"start": "node dist/index.js"
 	},
 	"dependencies": {
-		"hono": "^4.6.17",
 		"@hono/node-server": "^1.14.0",
-		"x402-hono": "^0.4.0",
 		"dotenv": "^16.5.0",
-		"uuid": "^11.0.6"
+		"hono": "^4.6.17",
+		"uuid": "^11.0.6",
+		"x402-hono": "^0.4.0",
+		"zod": "^4.1.12"
 	},
 	"devDependencies": {
 		"@types/node": "^22.15.3",
