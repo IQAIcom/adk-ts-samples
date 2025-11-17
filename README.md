@@ -74,10 +74,9 @@ If you have any questions or if you found any problems with this repository, ple
 
 ## 📚 Available Samples
 
-| Agent Name | Use Case | Tag | Interaction Type | Complexity | Agent Type | Vertical |
-|------------|----------|-----|------------------|------------|------------|----------|
-| Research Assistant | Parallel web research with Tavily and dual report generation. | `research`, `analysis` | Conversational | Intermediate | Multi-agent | General |
-| ATP Micropayment Agent | Example demonstrating x402 micropayments for accessing paid ATP endpoints. | `web3`, `payments` | Conversational | Advanced | Multi-tool | Web3 / Analytics |
+| Agent Name | Use Case | Learn | Tag | Interaction Type | Complexity | Agent Type | Vertical |
+|------------|----------|-----|------------------|------------|------------|----------|-------|
+| ATP Micropayment Agent | AI agent with monetized API endpoints and web server using x402 protocol for payment handling | API proxying, Payment middleware, x402 integration | `monetization`, `payments`, `api` | REST API + Agent | Intermediate | Agentic API | General |
 
 ## 🤝 Contributing
 
