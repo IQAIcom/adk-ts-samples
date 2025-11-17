@@ -130,7 +130,7 @@ pnpm install
 
    - **Google AI API Key**: Visit [Google AI Studio](https://aistudio.google.com/api-keys) and create an API key
    - **Wallet Private Key**: Create a test wallet with [MetaMask](https://metamask.io/) and export the private key
-   - **Fund Wallet**: Get Base Sepolia ETH from [Base Faucet](https://docs.base.org/base-chain/tools/network-faucets) or [Google Sepolia Faucet](https://cloud.google.com/application/web3/faucet/ethereum/sepolia) and testnet USDC from [Circle Testnet Faucet](https://faucet.circle.com/)
+   - **Fund Wallet**: Get Base Sepolia ETH from [Base Faucet](https://docs.base.org/base-chain/tools/network-faucets) and testnet USDC from [Circle Testnet Faucet](https://faucet.circle.com/)
 
 4. Set up environment variables
 
@@ -249,7 +249,7 @@ Expected response showing endpoint prices:
 - [ADK-TS Documentation](https://adk.iqai.com/)
 - [ADK-TS CLI Documentation](https://adk.iqai.com/docs/cli)
 - [ADK-TS Samples Repository](https://github.com/IQAIcom/adk-ts-samples)
-- [ADK-TS GitHub Repository](https://github.com/IQAICOM/adk-ts)
+- [ADK-TS GitHub Repository](https://github.com/IQAIcom/adk-ts)
 
 ### x402 Protocol
 
