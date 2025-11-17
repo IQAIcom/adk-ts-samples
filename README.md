@@ -78,9 +78,9 @@ If you have any questions or if you found any problems with this repository, ple
 
 ## 📚 Available Samples
 
-| Agent Name | Use Case | Tag | Interaction Type | Complexity | Agent Type | Vertical |
-|------------|----------|-----|------------------|------------|------------|----------|
-| Research Assistant | Parallel Tavily-powered research with analysis + comprehensive reports. | `research`, `analysis` | Conversational | Intermediate | Multi-agent | General |
+| Agent Name | Use Case | Learn | Tag | Interaction Type | Complexity | Agent Type | Vertical |
+|------------|----------|-----|------------------|------------|------------|---------|-------|
+| Research Assistant | Web research with targeted searches, analysis generation, and comprehensive report writing | State management, Parallel workflows, Tool integration, Multi-agent orchestration | `research`, `analysis` | Conversational | Intermediate | Multi-agent | General |
 
 ## 🤝 Contributing
 
