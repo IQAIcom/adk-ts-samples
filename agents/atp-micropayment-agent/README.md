@@ -46,7 +46,8 @@ atp-micropayment-agent/
 │   └── README.md
 ├── server/                     # Payment Server (Hono + x402)
 │   ├── src/
-│   │   └── index.ts            # x402 middleware & ATP proxy routes
+│   │   ├── index.ts            # x402 middleware & ATP proxy routes
+│   │   └── env.ts  
 │   ├── package.json
 │   └── README.md
 ├── package.json                # Root workspace configuration
