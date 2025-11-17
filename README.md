@@ -86,7 +86,7 @@ If you have any questions or if you found any problems with this repository, ple
 
 We welcome contributions! Whether you want to:
 
-- Add new example projects
+- Add new sample projects
 - Improve existing samples  
 - Fix bugs or issues
 - Enhance documentation
