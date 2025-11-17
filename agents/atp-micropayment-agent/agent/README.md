@@ -31,9 +31,11 @@ cp .env.example .env
 Set the required values:
 
 ```env
-ADK_DEBUG=false # Enable debug mode
 WALLET_PRIVATE_KEY=your_wallet_private_key_here
 GOOGLE_API_KEY=your_google_api_key_here
+LLM_MODEL=gemini-2.5-flash
+API_SERVER_URL=http://localhost:3001
+ADK_DEBUG=false
 ```
 
 1. Install dependencies and start the agent:

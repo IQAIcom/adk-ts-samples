@@ -28,8 +28,9 @@ cp .env.example .env
 
 ```env
 FACILITATOR_URL="https://x402.org/facilitator"
-ADDRESS=your_wallet_address_here # Wallet that receives x402 payments
+ADDRESS=your_wallet_address_here
 NETWORK=base-sepolia
+IQ_API_BASE_URL=https://app.iqai.com/api
 ```
 
 1. Install dependencies and start the server:

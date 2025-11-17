@@ -145,15 +145,17 @@ Edit `server/.env`:
 FACILITATOR_URL="https://x402.org/facilitator"
 ADDRESS=your_wallet_address_here
 NETWORK=base-sepolia
+IQ_API_BASE_URL=https://app.iqai.com/api
 ```
 
 Edit `agent/.env`:
 
 ```env
-ADK_DEBUG=false
 WALLET_PRIVATE_KEY=your_wallet_private_key_here
 GOOGLE_API_KEY=your_google_api_key_here
 LLM_MODEL=gemini-2.5-flash
+API_SERVER_URL=http://localhost:3001
+ADK_DEBUG=false
 ```
 
 ### Running the Agent

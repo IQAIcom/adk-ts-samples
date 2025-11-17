@@ -94,23 +94,13 @@ const getAgentStats = createTool({
 const getTopAgents = createTool({
 	name: "GET_TOP_AGENTS",
 	description: "Get top agents list",
-	schema: z
-		.object({
-			sort: z.enum(["mcap", "holders", "inferences"]).default("mcap"),
-			limit: z.number().int().min(1).max(100).default(10),
-		})
-		.partial(),
-	fn: async ({
-		sort,
-		limit,
-	}: {
-		sort?: "mcap" | "holders" | "inferences";
-		limit?: number;
-	}) => {
-		const resolvedSort = sort ?? "mcap";
-		const resolvedLimit = limit ?? 10;
+	schema: z.object({
+		sort: z.enum(["mcap", "holders", "inferences"]).default("mcap"),
+		limit: z.number().int().min(1).max(100).default(10),
+	}),
+	fn: async ({ sort, limit }) => {
 		const response = await apiClient.get(`/api/agents/top`, {
-			params: { sort: resolvedSort, limit: resolvedLimit },
+			params: { sort, limit },
 		});
 		return response.data;
 	},
