@@ -53,7 +53,7 @@ function createProxyHandler(
     queryParams?: string[];
   }
 ) {
-  return async (c: any) => {
+  return async (c: Context) => {
     // Validate required query parameters
     if (options?.requiredParams) {
       for (const param of options.requiredParams) {
