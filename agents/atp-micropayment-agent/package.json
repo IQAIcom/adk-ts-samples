@@ -1,21 +1,21 @@
 {
-  "name": "atp-micropayment-agent",
-  "version": "1.0.0",
-  "description": "Sample ATP Micropayment Agent demonstrating x402 monetized tools for IQAI's Agent Tokenization Platform",
-  "private": true,
-  "scripts": {
-    "dev": "concurrently \"pnpm run dev:server\" \"pnpm run dev:agent\"",
-    "dev:server": "cd server && pnpm run dev",
-    "dev:agent": "cd agent && pnpm run dev",
-    "build": "cd server && pnpm run build && cd ../agent && pnpm run build",
-    "start": "concurrently \"cd server && pnpm run start\" \"cd agent && pnpm run start\"",
-    "postinstall": "cd server && pnpm install && cd ../agent && pnpm install"
-  },
-  "devDependencies": {
-    "concurrently": "^8.2.2"
-  },
-  "keywords": [],
-  "author": "IQAICOM",
-  "license": "MIT",
-  "packageManager": "pnpm@10.13.1"
+	"name": "atp-micropayment-agent",
+	"version": "1.0.0",
+	"description": "Sample ATP Micropayment Agent demonstrating x402 monetized tools for IQAI's Agent Tokenization Platform",
+	"private": true,
+	"scripts": {
+		"dev": "concurrently \"pnpm run dev:server\" \"pnpm run dev:agent\"",
+		"dev:server": "cd server && pnpm run dev",
+		"dev:agent": "cd agent && pnpm run dev",
+		"build": "cd server && pnpm run build && cd ../agent && pnpm run build",
+		"start": "concurrently \"cd server && pnpm run start\" \"cd agent && pnpm run start\"",
+		"postinstall": "cd server && pnpm install && cd ../agent && pnpm install"
+	},
+	"devDependencies": {
+		"concurrently": "^8.2.2"
+	},
+	"keywords": [],
+	"author": "IQAICOM",
+	"license": "MIT",
+	"packageManager": "pnpm@10.13.1"
 }
