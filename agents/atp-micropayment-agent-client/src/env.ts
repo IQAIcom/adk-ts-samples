@@ -11,11 +11,11 @@ config();
  * - GOOGLE_API_KEY: Required API key for Google/Gemini model access
  */
 export const envSchema = z.object({
-  ADK_DEBUG: z.coerce.boolean().default(false),
-  GOOGLE_API_KEY: z.string(),
-  LLM_MODEL: z.string().default("gemini-2.5-flash"),
-  WALLET_PRIVATE_KEY: z.string(),
-  API_SERVER_URL: z.string().url().default("http://localhost:3001"),
+	ADK_DEBUG: z.coerce.boolean().default(false),
+	GOOGLE_API_KEY: z.string(),
+	LLM_MODEL: z.string().default("gemini-2.5-flash"),
+	WALLET_PRIVATE_KEY: z.string(),
+	API_SERVER_URL: z.string().url().default("http://localhost:3001"),
 });
 
 /**
