@@ -43,9 +43,9 @@ This project demonstrates efficient agent orchestration in ADK-TS with sequentia
 │   │   ├── comprehensive-report-agent/
 │   │   │   └── agent.ts                  # Comprehensive report generator
 │   │   └── writer-agent/                 # Parallel report coordinator
-│   │       ├── agent.ts
-│   │       └── tools/
-│   │           └── TavilySearchTool.ts   # Web search with state management
+│   │       └── agent.ts
+│   │   └── tools/
+│   │       └── TavilySearchTool.ts   # Web search with state management
 │   ├── constants.ts                      # State key definitions
 │   ├── env.ts                            # Environment configuration
 │   └── index.ts                          # Main execution entry
@@ -59,7 +59,7 @@ graph TB
     User[👤 User Input] --> Confirm[✅ Topic Confirmation<br/>Asks: Should I proceed?]
 
     %% Research Process
-    Confirm --> Search[🔍 Web Research<br/>• 3 targeted Tavily searches<br/>• Content extraction & truncation<br/>• Saves: search_results]
+    Confirm --> Search[🔍 Web Research<br/>• 3 targeted Tavily searches<br/>• Saves: search_results]
 
     Search --> WriterWorkflow[🔄 Writer Workflow Agent<br/>ParallelAgent coordinator]
     
