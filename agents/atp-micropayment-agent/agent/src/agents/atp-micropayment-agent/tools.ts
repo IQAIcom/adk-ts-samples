@@ -9,7 +9,7 @@ import {
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
-import { withPaymentInterceptor } from "x402-axios";
+import { Signer, withPaymentInterceptor } from "x402-axios";
 import { z } from "zod";
 import { env } from "../../env";
 
@@ -36,8 +36,7 @@ function getWalletClient(): WalletClient {
 // This will be dynamically set based on wallet connection
 const apiClient: AxiosInstance = withPaymentInterceptor(
 	baseApiClient,
-	// biome-ignore lint/suspicious/noExplicitAny: <>
-	getWalletClient() as any,
+	getWalletClient() as Signer,
 );
 
 const getPrices = createTool({
