@@ -12,7 +12,7 @@
     "prebuild": "pnpm clean"
   },
   "dependencies": {
-    "@iqai/adk": "^0.3.3",
+    "@iqai/adk": "^0.5.6",
     "axios": "^1.11.0",
     "dedent": "^1.7.0",
     "dotenv": "^17.2.2",

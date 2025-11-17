@@ -8,8 +8,8 @@ importers:
   .:
     dependencies:
       "@iqai/adk":
-        specifier: ^0.3.3
-        version: 0.3.3(@opentelemetry/core@2.1.0(@opentelemetry/api@1.9.0))(@types/node@24.3.1)(@types/pg@8.15.5)(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(ws@8.18.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+        specifier: ^0.5.6
+        version: 0.5.6(@opentelemetry/core@2.1.0(@opentelemetry/api@1.9.0))(@types/node@24.3.1)(@types/pg@8.15.5)(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(ws@8.18.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       axios:
         specifier: ^1.11.0
         version: 1.11.0
@@ -472,10 +472,10 @@ packages:
     engines: { node: ">=6" }
     hasBin: true
 
-  "@iqai/adk@0.3.3":
+  "@iqai/adk@0.5.6":
     resolution:
       {
-        integrity: sha512-yYdLEYCmZ71aqAfJHPZNHOuStgtOsjPrLQDJH8Eg0t2DbsZa7ic7JiG8RXbvEDM2x3v5H5usJJa+IJDJTwP7YQ==,
+        integrity: sha512-rf+BeW7lt6Z46HYM4xvdFr4gdBI5bzbP2gFdyz3SG8WAp84qJD3yiLBORYBKorVKn9wLWhtS+mV/u6tZ5M7PwA==,
       }
     engines: { node: ">=22.0" }
     hasBin: true
@@ -5773,7 +5773,7 @@ snapshots:
       protobufjs: 7.5.3
       yargs: 17.7.2
 
-  "@iqai/adk@0.3.3(@opentelemetry/core@2.1.0(@opentelemetry/api@1.9.0))(@types/node@24.3.1)(@types/pg@8.15.5)(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(ws@8.18.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))":
+  "@iqai/adk@0.5.6(@opentelemetry/core@2.1.0(@opentelemetry/api@1.9.0))(@types/node@24.3.1)(@types/pg@8.15.5)(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(ws@8.18.0(bufferutil@4.0.9)(utf-8-validate@5.0.10))":
     dependencies:
       "@anthropic-ai/sdk": 0.61.0
       "@clack/prompts": 0.11.0
