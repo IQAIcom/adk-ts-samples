@@ -1,0 +1,114 @@
+import { createTool } from "@iqai/adk";
+import type { AxiosInstance } from "axios";
+import axios from "axios";
+import {
+	type Address,
+	createWalletClient,
+	http,
+	type WalletClient,
+} from "viem";
+import { privateKeyToAccount } from "viem/accounts";
+import { baseSepolia } from "viem/chains";
+import { Signer, withPaymentInterceptor } from "x402-axios";
+import { env } from "../../env.js";
+import { z } from "zod";
+
+const API_BASE_URL = env.API_SERVER_URL;
+
+// Base axios instance without payment interceptor
+const baseApiClient = axios.create({
+	baseURL: API_BASE_URL,
+	headers: {
+		"Content-Type": "application/json",
+	},
+});
+
+function getWalletClient(): WalletClient {
+	const account = privateKeyToAccount(env.WALLET_PRIVATE_KEY as Address);
+
+	return createWalletClient({
+		account,
+		chain: baseSepolia,
+		transport: http(),
+	});
+}
+
+// This will be dynamically set based on wallet connection
+const apiClient: AxiosInstance = withPaymentInterceptor(
+	baseApiClient,
+	getWalletClient() as Signer,
+);
+
+const getPriceList = createTool({
+	name: "GET_PRICE_LIST",
+	description: "Get x402 endpoint prices (free) to inform users about costs",
+	fn: async () => {
+		const response = await baseApiClient.get("/api/price-list");
+		return response.data;
+	},
+});
+
+const getHoldings = createTool({
+	name: "GET_HOLDINGS",
+	description: "Get wallet holdings for IQ AI agents",
+	schema: z.object({
+		address: z.string().describe("wallet address to fetch holdings for"),
+	}),
+	fn: async ({ address }) => {
+		const response = await apiClient.get(`/api/holdings`, {
+			params: { address },
+		});
+		return response.data;
+	},
+});
+
+const getAgentInfo = createTool({
+	name: "GET_AGENT_INFO",
+	description: "Get agent metadata by token contract address",
+	schema: z.object({
+		address: z.string().describe("agent token contract address"),
+	}),
+	fn: async ({ address }) => {
+		const response = await apiClient.get(`/api/agents/info`, {
+			params: { address },
+		});
+		return response.data;
+	},
+});
+
+const getAgentStats = createTool({
+	name: "GET_AGENT_STATS",
+	description: "Get agent stats by token contract address",
+	schema: z.object({
+		address: z.string().describe("agent token contract address"),
+	}),
+	fn: async ({ address }) => {
+		const response = await apiClient.get(`/api/agents/stats`, {
+			params: { address },
+		});
+		return response.data;
+	},
+});
+
+const getTopAgents = createTool({
+	name: "GET_TOP_AGENTS",
+	description: "Get top agents list",
+	schema: z.object({
+		sort: z.enum(["mcap", "holders", "inferences"]).default("mcap"),
+		limit: z.number().int().min(1).max(100).default(10),
+	}),
+	fn: async ({ sort, limit }) => {
+		const response = await apiClient.get(`/api/agents/top`, {
+			params: { sort, limit },
+		});
+		return response.data;
+	},
+});
+
+export const clientTools = [
+	getPriceList,
+	getHoldings,
+	getAgentInfo,
+	getAgentStats,
+	getTopAgents,
+];

@@ -1,27 +1,23 @@
 <div align="center">
+  <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
+  <br/>
 
-<img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
+  <h1>ADK-TS Samples</h1>
+  <b>Real-world sample projects and agents built with ADK-TS (Agent Development Kit for TypeScript) to demonstrate framework capabilities and best practices.</b>
+  <br />
+  <i>Sample Projects • Agent Samples • Learning Resources</i>
 
-<br/>
-
-# ADK-TS Samples
-
-**Real-world sample projects and agents built with ADK-TS (Agent Development Kit for TypeScript) to demonstrate framework capabilities and best practices.**
-
-_Sample Projects • Agent Samples • Learning Resources_
-
-<p align="center">
-  <a href="https://github.com/IQAIcom/adk-ts/blob/main/LICENSE.md">
-    <img src="https://img.shields.io/npm/l/@iqai/adk" alt="License" />
-  </a>
-  <a href="https://github.com/IQAIcom/adk-ts-samples">
-    <img src="https://img.shields.io/github/stars/IQAIcom/adk-ts-samples?style=social" alt="GitHub Stars" />
-  </a>
-</p>
+  <p align="center">
+    <a href="https://github.com/IQAIcom/adk-ts/blob/main/LICENSE.md">
+      <img src="https://img.shields.io/npm/l/@iqai/adk" alt="License" />
+    </a>
+    <a href="https://github.com/IQAIcom/adk-ts-samples">
+      <img src="https://img.shields.io/github/stars/IQAIcom/adk-ts-samples?style=social" alt="GitHub Stars" />
+    </a>
+  </p>
+</div>
 
 ---
-
-</div>
 
 Welcome to the ADK-TS Samples repository! This collection provides ready-to-use sample projects and agents built with the [Agent Development Kit (ADK) for TypeScript](https://adk.iqai.com), designed to demonstrate real-world use cases and accelerate your development process. These samples cover a range of complexities, from simple conversational agents to complex multi-agent workflows.
 
@@ -78,9 +74,9 @@ If you have any questions or if you found any problems with this repository, ple
 
 ## 📚 Available Samples
 
-| Agent Name | Use Case | Tag | Interaction Type | Complexity | Agent Type | Vertical |
-|------------|----------|-----|------------------|------------|------------|----------|
-| _Coming Soon_ | - | - | - | - | - | - |
+| Agent Name | Use Case | Learn | Tag | Interaction Type | Complexity | Agent Type | Vertical |
+|------------|----------|-----|------------------|------------|------------|----------|-------|
+| ATP Micropayment Agent | AI agent with monetized API endpoints and web server using x402 protocol for payment handling | API proxying, Payment middleware, x402 integration | `monetization`, `payments`, `api` | REST API + Agent | Intermediate | Agentic API | General |
 
 ## 🤝 Contributing
 
