@@ -35,22 +35,19 @@ This project demonstrates a complete micropayment-enabled agent architecture:
 
 ```text
 atp-micropayment-agent/
-├── agent/                      # AI Agent (ADK-TS)
-│   ├── src/
-│   │   ├── agents/
-│   │   │   └── atp-micropayment-agent/
-│   │   │       ├── agent.ts    # Agent behaviour + instructions
-│   │   │       └── tools.ts    # Payment-enabled ATP tools
-│   │   └── env.ts              # Environment configuration
-│   ├── package.json
-│   └── README.md
-├── server/                     # Payment Server (Hono + x402)
-│   ├── src/
-│   │   ├── index.ts            # x402 middleware & ATP proxy routes
-│   │   └── env.ts  
-│   ├── package.json
-│   └── README.md
-├── package.json                # Root workspace configuration
+├── src/
+│   ├── agent/                          # AI Agent (ADK-TS)
+│   │   └── agents/
+│   │       └── atp-micropayment-agent/
+│   │           ├── agent.ts            # Agent behaviour + instructions
+│   │           └── tools.ts            # Payment-enabled ATP tools
+│   ├── server/                         # Payment Server (Hono + x402)
+│   │   └── index.ts                    # x402 middleware & ATP proxy routes
+│   └── env.ts                          # Shared environment configuration
+├── .adk/
+│   └── entrypoint                      # ADK agent entrypoint
+├── package.json                        # Dependencies and scripts
+├── tsconfig.json                       # TypeScript configuration
 └── README.md
 ```
 
@@ -149,42 +146,39 @@ pnpm install
 4. Set up environment variables
 
 ```bash
-cp server/.env.example server/.env
-cp agent/.env.example agent/.env
+cp .env.example .env
 ```
 
-Edit `server/.env`:
+Edit `.env` with your configuration:
 
 ```env
-FACILITATOR_URL="https://x402.org/facilitator"
-ADDRESS=your_wallet_address_here
-NETWORK=base-sepolia
-IQ_API_BASE_URL=https://app.iqai.com/api
-```
-
-Edit `agent/.env`:
-
-```env
+# === Agent Configuration ===
 WALLET_PRIVATE_KEY=your_wallet_private_key_here
 GOOGLE_API_KEY=your_google_api_key_here
 LLM_MODEL=gemini-2.5-flash
 API_SERVER_URL=http://localhost:3001
 ADK_DEBUG=false
+
+# === Server Configuration ===
+FACILITATOR_URL=https://x402.org/facilitator
+ADDRESS=your_wallet_address_here
+NETWORK=base-sepolia
+IQ_API_BASE_URL=https://app.iqai.com/api
 ```
 
 ### Running the Agent
 
 ```bash
-# Start both server and agent
+# Start both server and agent together
 pnpm dev
 
 # Or run separately
-cd server && pnpm dev  # Terminal 1
-cd agent && pnpm dev   # Terminal 2
+pnpm dev:server  # Terminal 1 - starts server on http://localhost:3001
+pnpm dev:agent   # Terminal 2 - starts agent with ADK web interface
 
 # Interactive testing with ADK CLI
-cd agent && adk run   # CLI chat interface
-cd agent && adk web   # Web interface
+adk run   # CLI chat interface
+adk web   # Web interface
 ```
 
 This will start:

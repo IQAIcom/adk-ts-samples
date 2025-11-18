@@ -2,17 +2,38 @@
 	"name": "atp-micropayment-agent",
 	"version": "1.0.0",
 	"description": "Sample ATP Micropayment Agent demonstrating x402 monetized tools for IQAI's Agent Tokenization Platform",
+	"main": "dist/index.js",
+	"type": "module",
 	"private": true,
 	"scripts": {
 		"dev": "concurrently \"pnpm run dev:server\" \"pnpm run dev:agent\"",
-		"dev:server": "cd server && pnpm run dev",
-		"dev:agent": "cd agent && pnpm run dev",
-		"build": "cd server && pnpm run build && cd ../agent && pnpm run build",
-		"start": "concurrently \"cd server && pnpm run start\" \"cd agent && pnpm run start\"",
-		"postinstall": "cd server && pnpm install && cd ../agent && pnpm install"
+		"dev:server": "tsx watch src/server/index.ts",
+		"dev:agent": "adk web",
+		"build": "tsc",
+		"start": "concurrently \"node dist/server/index.js\" \"adk web\"",
+		"clean": "rimraf dist"
+	},
+	"dependencies": {
+		"@hono/node-server": "^1.14.0",
+		"@iqai/adk": "^0.5.6",
+		"axios": "^1.11.0",
+		"dedent": "^1.7.0",
+		"dotenv": "^17.2.2",
+		"hono": "^4.6.17",
+		"uuid": "^11.0.6",
+		"viem": "^2.37.7",
+		"x402-axios": "^0.6.0",
+		"x402-hono": "^0.4.0",
+		"zod": "^4.1.12"
 	},
 	"devDependencies": {
-		"concurrently": "^8.2.2"
+		"@types/dedent": "^0.7.2",
+		"@types/node": "^24.3.1",
+		"@types/uuid": "^10.0.0",
+		"concurrently": "^8.2.2",
+		"rimraf": "^6.0.1",
+		"tsx": "^4.20.5",
+		"typescript": "^5.9.2"
 	},
 	"keywords": [],
 	"author": "IQAICOM",

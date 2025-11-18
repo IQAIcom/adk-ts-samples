@@ -2,7 +2,7 @@ import { serve } from "@hono/node-server";
 import { Hono, Context } from "hono";
 import { cors } from "hono/cors";
 import { paymentMiddleware, type Resource, type Network } from "x402-hono";
-import { env } from "./env.js";
+import { env } from "../env.js";
 
 // Configuration from validated environment variables
 const facilitatorUrl = env.FACILITATOR_URL as Resource;

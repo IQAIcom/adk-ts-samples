@@ -1,7 +1,7 @@
 import { AgentBuilder } from "@iqai/adk";
 import dedent from "dedent";
-import { env } from "../../env";
-import { clientTools } from "./tools";
+import { env } from "../../env.js";
+import { clientTools } from "./tools.js";
 
 const getAtpMicropaymentAgent = async () =>
 	AgentBuilder.create("ATP_Micropayment_Agent")
