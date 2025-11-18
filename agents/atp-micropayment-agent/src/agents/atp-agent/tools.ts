@@ -39,8 +39,8 @@ const apiClient: AxiosInstance = withPaymentInterceptor(
 	getWalletClient() as Signer,
 );
 
-const getPrices = createTool({
-	name: "GET_PRICES",
+const getPriceList = createTool({
+	name: "GET_PRICE_LIST",
 	description: "Get x402 endpoint prices (free) to inform users about costs",
 	fn: async () => {
 		const response = await baseApiClient.get("/api/price-list");
@@ -106,7 +106,7 @@ const getTopAgents = createTool({
 });
 
 export const clientTools = [
-	getPrices,
+	getPriceList,
 	getHoldings,
 	getAgentInfo,
 	getAgentStats,

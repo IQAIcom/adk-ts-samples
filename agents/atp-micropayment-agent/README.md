@@ -36,16 +36,13 @@ This project demonstrates a complete micropayment-enabled agent architecture:
 ```text
 atp-micropayment-agent/
 ├── src/
-│   ├── agent/                          # AI Agent (ADK-TS)
-│   │   └── agents/
-│   │       └── atp-micropayment-agent/
-│   │           ├── agent.ts            # Agent behaviour + instructions
-│   │           └── tools.ts            # Payment-enabled ATP tools
+│   └── agents/
+│       └── atp-agent/
+│           ├── agent.ts            # Agent behaviour + instructions
+│           └── tools.ts            # Payment-enabled ATP tools
 │   ├── server/                         # Payment Server (Hono + x402)
 │   │   └── index.ts                    # x402 middleware & ATP proxy routes
 │   └── env.ts                          # Shared environment configuration
-├── .adk/
-│   └── entrypoint                      # ADK agent entrypoint
 ├── package.json                        # Dependencies and scripts
 ├── tsconfig.json                       # TypeScript configuration
 └── README.md

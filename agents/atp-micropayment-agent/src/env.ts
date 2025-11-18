@@ -44,7 +44,3 @@ export const envSchema = z.object({
  * Throws an error if required environment variables are missing or invalid.
  */
 export const env = envSchema.parse(process.env);
-
-// Export convenience constants
-export const API_SERVER_URL = env.API_SERVER_URL;
-export const IQ_API_BASE_URL = env.IQ_API_BASE_URL;
