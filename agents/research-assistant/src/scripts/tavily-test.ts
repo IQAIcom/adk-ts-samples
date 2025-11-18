@@ -1,9 +1,10 @@
 import { config } from "dotenv";
+
 config();
 
 import {
 	tavily as createTavilyClient,
-	TavilySearchResponse,
+	type TavilySearchResponse,
 } from "@tavily/core";
 
 /**
