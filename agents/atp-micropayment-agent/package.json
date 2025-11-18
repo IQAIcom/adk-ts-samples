@@ -1,9 +1,10 @@
 {
 	"name": "atp-micropayment-agent",
 	"version": "1.0.0",
-	"description": "ATP Micropayment Agent - demonstrating x402 monetized tools for IQAI's Agent Tokenization Platform. Includes both agent client and server in a single project.",
-	"private": true,
+	"description": "Sample ATP Micropayment Agent demonstrating x402 monetized tools for IQAI's Agent Tokenization Platform",
+	"main": "dist/index.js",
 	"type": "module",
+	"private": true,
 	"scripts": {
 		"dev": "concurrently \"pnpm run dev:server\" \"pnpm run dev:agent\"",
 		"dev:server": "tsx watch src/server/index.ts",
@@ -14,7 +15,7 @@
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.14.0",
-		"@iqai/adk": "workspace:*",
+		"@iqai/adk": "^0.5.6",
 		"axios": "^1.11.0",
 		"dedent": "^1.7.0",
 		"dotenv": "^17.2.2",
@@ -34,12 +35,8 @@
 		"tsx": "^4.20.5",
 		"typescript": "^5.9.2"
 	},
-	"keywords": [
-		"agent",
-		"adk",
-		"x402",
-		"monetization"
-	],
+	"keywords": [],
 	"author": "IQAICOM",
-	"license": "MIT"
+	"license": "MIT",
+	"packageManager": "pnpm@10.13.1"
 }

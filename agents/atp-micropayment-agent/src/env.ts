@@ -4,10 +4,18 @@ import { z } from "zod";
 config();
 
 /**
- * Environment variables schema for the ATP Micropayment Server
- * Validates and provides type-safe access to server configuration
+ * Environment variable schema definition for the ATP Micropayment Agent.
+ * Validates both agent and server configuration.
  */
-const envSchema = z.object({
+export const envSchema = z.object({
+	// Agent configuration
+	ADK_DEBUG: z.coerce.boolean().default(false),
+	GOOGLE_API_KEY: z.string(),
+	LLM_MODEL: z.string().default("gemini-2.5-flash"),
+	WALLET_PRIVATE_KEY: z.string(),
+	API_SERVER_URL: z.string().url().default("http://localhost:3001"),
+
+	// Server configuration
 	FACILITATOR_URL: z
 		.string()
 		.url("FACILITATOR_URL must be a valid URL")
@@ -36,3 +44,7 @@ const envSchema = z.object({
  * Throws an error if required environment variables are missing or invalid.
  */
 export const env = envSchema.parse(process.env);
+
+// Export convenience constants
+export const API_SERVER_URL = env.API_SERVER_URL;
+export const IQ_API_BASE_URL = env.IQ_API_BASE_URL;
