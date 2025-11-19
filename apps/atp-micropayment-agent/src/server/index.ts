@@ -1,7 +1,7 @@
 import { serve } from "@hono/node-server";
-import { Hono, Context } from "hono";
+import { type Context, Hono } from "hono";
 import { cors } from "hono/cors";
-import { paymentMiddleware, type Resource, type Network } from "x402-hono";
+import { type Network, paymentMiddleware, type Resource } from "x402-hono";
 import { env } from "../env.js";
 
 // Configuration from validated environment variables

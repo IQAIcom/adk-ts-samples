@@ -9,9 +9,9 @@ import {
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { baseSepolia } from "viem/chains";
-import { Signer, withPaymentInterceptor } from "x402-axios";
-import { env } from "../../env.js";
+import { type Signer, withPaymentInterceptor } from "x402-axios";
 import { z } from "zod";
+import { env } from "../../env.js";
 
 const API_BASE_URL = env.API_SERVER_URL;
 
