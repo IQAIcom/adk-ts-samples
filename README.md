@@ -77,7 +77,6 @@ If you have any questions or if you found any problems with this repository, ple
 | Agent Name | Use Case | Learn | Tag | Interaction Type | Complexity | Agent Type | Vertical |
 |------------|----------|-----|------------------|------------|------------|---------|-------|
 | Research Assistant | Web research with targeted searches, analysis generation, and comprehensive report writing | State management, Parallel workflows, Tool integration, Multi-agent orchestration | `research`, `analysis` | Conversational | Intermediate | Multi-agent | General |
-|------------|----------|-----|------------------|------------|------------|----------|-------|
 | ATP Micropayment Agent | AI agent with monetized API endpoints and web server using x402 protocol for payment handling | API proxying, Payment middleware, x402 integration | `monetization`, `payments`, `api` | REST API + Agent | Intermediate | Agentic API | General |
 
 ## 🤝 Contributing
