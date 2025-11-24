@@ -54,39 +54,39 @@ atp-micropayment-agent/
 graph TB
     %% User Interaction
     User[👤 User Query] --> Agent[🤖 ADK-TS Agent<br/>ATP Micropayment Agent]
-    
+
     %% Initial Price Fetch (Free)
     Agent --> GetPrices[📋 GET_PRICES Tool<br/>Free endpoint - no payment]
     GetPrices --> baseApiClient[📡 Base Axios Client<br/>No payment interceptor]
     baseApiClient --> PriceListEndpoint[🆓 /api/price-list<br/>Free endpoint on server]
     PriceListEndpoint --> PriceResponse[💰 Price Information<br/>Returns endpoint costs]
-    
+
     %% Agent shows prices to user
     PriceResponse --> Agent
     Agent --> ShowPrices[💬 Disclose Costs<br/>Show pricing to user]
-    
+
     %% User makes request for paid data
     ShowPrices --> UserRequest[👤 User Requests Data]
     UserRequest --> ToolSelection[🔍 Tool Selection<br/>Identifies required ATP endpoint]
-    
+
     %% User Confirmation
     ToolSelection --> Confirmation{✅ User Confirms Payment?}
     Confirmation -->|No| Cancel[❌ Operation Cancelled]
     Confirmation -->|Yes| Payment[💳 Payment Execution]
-    
+
     %% Payment Flow via x402-axios
     Payment --> x402Client[🔐 x402-axios Interceptor<br/>Adds payment headers]
     x402Client --> PaymentServer[🛡️ Payment Server<br/>Hono + x402 middleware]
-    
+
     %% Server Processing
     PaymentServer --> Validate[✓ Validate Payment<br/>Check with facilitator]
     Validate -->|Invalid| PaymentError[❌ Payment Failed<br/>Return 402]
     Validate -->|Valid| ProxyRequest[📡 Proxy Handler<br/>Forward to ATP API]
-    
+
     %% ATP API
     ProxyRequest --> ATPAPI[🏢 IQ AI ATP API<br/>Token prices, stats, holdings]
     ATPAPI --> Response[📊 ATP Data Response]
-    
+
     %% Return Flow
     Response --> PaymentServer
     PaymentServer --> x402Client
@@ -135,7 +135,6 @@ pnpm install
 ```
 
 3. Get Your API Keys
-
    - **Google AI API Key**: Visit [Google AI Studio](https://aistudio.google.com/api-keys) and create an API key
    - **Wallet Private Key**: Create a test wallet with [MetaMask](https://metamask.io/) and export the private key
    - **Fund Wallet**: Get Base Sepolia ETH from [Base Faucet](https://docs.base.org/base-chain/tools/network-faucets) and testnet USDC from [Circle Testnet Faucet](https://faucet.circle.com/)
@@ -195,7 +194,7 @@ The agent demonstrates micropayment workflows for accessing ATP data. Here's a s
         - /api/agents/info: $0.05
         - /api/agents/stats: $0.05
         - /api/agents/top: $0.10
-        
+
         To get the top agents by market cap, I'll need to make a paid call ($0.10). Should I proceed?
 👤 User: Yes, proceed
 🤖 Agent: [Executes x402 payment and retrieves data] Here are the top agents by market cap...
@@ -219,14 +218,14 @@ The agent demonstrates micropayment workflows for accessing ATP data. Here's a s
 
 ## Available Endpoints
 
-| Endpoint | Price | Description |
-|----------|-------|-------------|
-| `/api/price-list` | Free | Get endpoint pricing information |
-| `/api/prices` | $0.01 | Get current token prices |
-| `/api/holdings` | $0.05 | Get wallet holdings for IQ AI agents |
-| `/api/agents/info` | $0.05 | Get agent metadata by contract address |
-| `/api/agents/stats` | $0.05 | Get agent performance statistics |
-| `/api/agents/top` | $0.10 | Get top agents by various metrics |
+| Endpoint            | Price | Description                            |
+| ------------------- | ----- | -------------------------------------- |
+| `/api/price-list`   | Free  | Get endpoint pricing information       |
+| `/api/prices`       | $0.01 | Get current token prices               |
+| `/api/holdings`     | $0.05 | Get wallet holdings for IQ AI agents   |
+| `/api/agents/info`  | $0.05 | Get agent metadata by contract address |
+| `/api/agents/stats` | $0.05 | Get agent performance statistics       |
+| `/api/agents/top`   | $0.10 | Get top agents by various metrics      |
 
 ### Check Server Status
 
@@ -239,13 +238,13 @@ Expected response showing endpoint prices:
 
 ```json
 {
-  "prices": {
-    "/api/prices": { "price": "$0.01", "network": "base-sepolia" },
-    "/api/holdings": { "price": "$0.05", "network": "base-sepolia" },
-    "/api/agents/info": { "price": "$0.05", "network": "base-sepolia" },
-    "/api/agents/stats": { "price": "$0.05", "network": "base-sepolia" },
-    "/api/agents/top": { "price": "$0.10", "network": "base-sepolia" }
-  }
+ "prices": {
+  "/api/prices": { "price": "$0.01", "network": "base-sepolia" },
+  "/api/holdings": { "price": "$0.05", "network": "base-sepolia" },
+  "/api/agents/info": { "price": "$0.05", "network": "base-sepolia" },
+  "/api/agents/stats": { "price": "$0.05", "network": "base-sepolia" },
+  "/api/agents/top": { "price": "$0.10", "network": "base-sepolia" }
+ }
 }
 ```
 

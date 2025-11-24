@@ -18,19 +18,19 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 ## 📋 Summary of Agent Ideas
 
-| Agent Name | Complexity | Agent Type | Vertical | Status |
-|------------|------------|------------|----------|--------|
-| Research & Summary Tool | Beginner | Tool-based | General | Available |
-| Smart Schedule Optimizer | Beginner | Multi-tool | Lifestyle | Available |
-| Trend Monitor & Alerts | Beginner | Tool-based | Finance / Web3 | Available |
-| Writing Assistant | Intermediate | Multi-agent | General | WIP - @Timonwa |
-| Travel Itinerary Planner | Intermediate | Multi-agent | Travel | WIP - @Adebesin-Cell |
-| Mental Health Companion | Intermediate | Multi-agent | Healthcare | Available |
-| Business Operations Manager | Intermediate | Multi-agent | Business | Available |
-| DeFi Risk Analyzer | Advanced | Tool-based | Finance / Web3 | Available |
-| Crypto Tax Calculator | Advanced | Multi-tool | Finance / Web3 | Available |
-| DAO Proposal Analyzer | Advanced | Multi-agent | Web3 / Governance | Available |
-| Cross-Chain Bridge Monitor | Advanced | Multi-agent | Web3 / Infrastructure | Available |
+| Agent Name                  | Complexity   | Agent Type  | Vertical              | Status               |
+| --------------------------- | ------------ | ----------- | --------------------- | -------------------- |
+| Research & Summary Tool     | Beginner     | Tool-based  | General               | Available            |
+| Smart Schedule Optimizer    | Beginner     | Multi-tool  | Lifestyle             | Available            |
+| Trend Monitor & Alerts      | Beginner     | Tool-based  | Finance / Web3        | Available            |
+| Writing Assistant           | Intermediate | Multi-agent | General               | WIP - @Timonwa       |
+| Travel Itinerary Planner    | Intermediate | Multi-agent | Travel                | WIP - @Adebesin-Cell |
+| Mental Health Companion     | Intermediate | Multi-agent | Healthcare            | Available            |
+| Business Operations Manager | Intermediate | Multi-agent | Business              | Available            |
+| DeFi Risk Analyzer          | Advanced     | Tool-based  | Finance / Web3        | Available            |
+| Crypto Tax Calculator       | Advanced     | Multi-tool  | Finance / Web3        | Available            |
+| DAO Proposal Analyzer       | Advanced     | Multi-agent | Web3 / Governance     | Available            |
+| Cross-Chain Bridge Monitor  | Advanced     | Multi-agent | Web3 / Infrastructure | Available            |
 
 ---
 

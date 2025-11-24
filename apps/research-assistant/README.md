@@ -62,9 +62,9 @@ graph TB
     Confirm --> Search[🔍 Web Research<br/>• 3 targeted Tavily searches<br/>• Saves: search_results]
 
     Search --> WriterWorkflow[🔄 Writer Workflow Agent<br/>ParallelAgent coordinator]
-    
+
     WriterWorkflow --> AnalysisAgent[📊 Analysis Report Agent<br/>• Reads search_results<br/>• Creates analytical insights<br/>• Saves: analysis_report<br/>📄 Output: Analysis Report]
-    
+
     WriterWorkflow --> ReportAgent[📝 Comprehensive Report Agent<br/>• Reads search_results<br/>• Creates detailed report<br/>• Saves: comprehensive_report<br/>📄 Output: Comprehensive Report]
 
     AnalysisAgent --> Output[📄 Two Research Reports<br/>with Complete References]

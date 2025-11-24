@@ -36,7 +36,7 @@ export const addReminder = createTool({
 		if (scheduledTime) {
 			try {
 				const parsedDate = parseTimeInput(scheduledTime);
-				
+
 				if (!isValid(parsedDate)) {
 					return {
 						success: false,
@@ -141,7 +141,7 @@ export const updateReminder = createTool({
 		if (scheduledTime) {
 			try {
 				const scheduledDate = parseTimeInput(scheduledTime);
-				
+
 				if (!isValid(scheduledDate)) {
 					return {
 						success: false,

@@ -5,6 +5,7 @@ Your intelligent personal productivity assistant powered by the `@iqai/adk` libr
 ## ✨ Features
 
 ### 🔔 Smart Reminder Management
+
 - **Add reminders** with flexible time parsing ("in 2 hours", "tomorrow at 3pm", "next Monday")
 - **Schedule reminders** for specific dates and times
 - **Recurring reminders** (daily, weekly, monthly with custom intervals)
@@ -12,6 +13,7 @@ Your intelligent personal productivity assistant powered by the `@iqai/adk` libr
 - **View and manage** all your reminders with filtering options
 
 ### � Shopping List Assistant
+
 - **Add items** to your shopping list with quantities
 - **Mark items as completed** when purchased
 - **Update or delete** items easily
@@ -19,6 +21,7 @@ Your intelligent personal productivity assistant powered by the `@iqai/adk` libr
 - **View organized lists** with pending and completed sections
 
 ### 🤖 Intelligent Agent System
+
 - **Multi-agent architecture** with specialized sub-agents
 - **Natural language understanding** for routing requests
 - **Persistent state management** with database storage
@@ -33,6 +36,7 @@ pnpm install
 ```
 
 ## ⚙️ Environment Setup
+
 Create a `.env` file with the following variables:
 
 ```bash
@@ -53,6 +57,7 @@ ADK_DEBUG=false
 ```
 
 ### Setting up Telegram
+
 1. Create a new bot with [@BotFather](https://t.me/botfather)
 2. Get your bot token and add it to `.env`
 3. Get your channel/chat ID where you want notifications sent
@@ -64,6 +69,7 @@ pnpm dev
 ```
 
 ## 📁 Project Structure
+
 ```
 ├── src/
 │   ├── agents/
@@ -91,6 +97,7 @@ pnpm dev
 Once TaskMaster is running, you can interact with it via Telegram:
 
 ### Reminder Commands
+
 - "Remind me to call mom tomorrow at 3pm"
 - "Add a task to finish the project"
 - "What are my reminders?"
@@ -98,6 +105,7 @@ Once TaskMaster is running, you can interact with it via Telegram:
 - "Update my first reminder"
 
 ### Shopping List Commands
+
 - "Add milk to my shopping list"
 - "Add 3 apples to shopping"
 - "What's on my shopping list?"
@@ -107,6 +115,7 @@ Once TaskMaster is running, you can interact with it via Telegram:
 TaskMaster intelligently understands your requests and routes them to the appropriate assistant while maintaining context across conversations.
 
 ## 🧰 Tech Stack
+
 - **[@iqai/adk](https://github.com/IQAICOM/adk-ts)**: AI agent development kit
 - **TypeScript**: Type-safe development
 - **PostgreSQL**: Persistent state storage
@@ -117,6 +126,7 @@ TaskMaster intelligently understands your requests and routes them to the approp
 ## 🏗️ Architecture
 
 ### Agent Hierarchy
+
 ```
 TaskMaster Agent (Main Coordinator)
 ├── Reminder Agent
@@ -138,6 +148,7 @@ Telegram Agent (Communication Interface)
 ```
 
 ### Key Components
+
 - **TaskMaster Agent**: Main coordinator that understands user intent and routes to specialized sub-agents
 - **Telegram Agent**: Handles Telegram bot integration, message processing, and real-time communication
 - **Sub-Agents**: Specialized agents for reminders and shopping lists with their own tools and logic
@@ -146,7 +157,9 @@ Telegram Agent (Communication Interface)
 - **Tool System**: Modular functions that agents can use to perform specific actions
 
 ## 🧰 Dev Tools
+
 This project includes:
+
 - 🏗️ **TypeScript**: Type safety and better developer experience
 - 📦 **PNPM**: Fast and efficient package manager
 - 🔧 **tsx**: Fast TypeScript execution for development
@@ -156,41 +169,47 @@ This project includes:
 ## 🎯 Extending TaskMaster
 
 ### Adding New Sub-Agents
+
 1. Create a new agent in `src/agents/task-master-agent/sub-agents/`
 2. Define tools in the agent's `tools.ts` file
 3. Register the agent in `src/agents/task-master-agent/agent.ts`
 4. Update TaskMaster's instructions to route to your new agent
 
 ### Adding New Main Agents
+
 1. Create a new agent directory in `src/agents/`
 2. Implement the agent with its tools and functionality
 3. Initialize and wire the agent in `src/index.ts`
 4. Update the routing logic as needed
 
 ### Adding New Tools
+
 1. Create tools using `createTool()` from `@iqai/adk`
 2. Define the tool's schema with Zod validation
 3. Implement the tool's functionality with state management
 4. Add the tool to the appropriate agent
 
 ### Customizing Behavior
+
 - Modify agent instructions in the respective agent files
 - Update the task master agent's routing logic
 - Customize notification messages in `reminder-notification.ts`
 - Add new data types in `types.ts`
 
 ## 📚 Links
+
 - [ADK Library Documentation](https://github.com/IQAICOM/adk-ts)
 - [Telegram Bot API](https://core.telegram.org/bots/api)
 - [Google AI Studio](https://aistudio.google.com/) (for API keys)
 
-
 ## 📄 License
+
 MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🔧 Troubleshooting
 
 ### Common Issues
+
 - **Database connection errors**: Ensure PostgreSQL is running and DATABASE_URL is correct
 - **Telegram bot not responding**: Verify TELEGRAM_BOT_TOKEN and that the bot is started
 - **Notifications not working**: Check TELEGRAM_CHANNEL_ID and bot permissions
