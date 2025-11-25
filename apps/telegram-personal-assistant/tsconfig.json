@@ -4,7 +4,12 @@
 		"module": "NodeNext",
 		"outDir": "./dist",
 		"rootDir": "./src",
-		"moduleResolution": "nodenext"
+		"moduleResolution": "nodenext",
+		"baseUrl": "./",
+		"paths": {
+			"@/*": ["./src/*"],
+			"@/env": ["./src/env"]
+		}
 	},
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"]

@@ -4,7 +4,7 @@
 	"description": "IQAI Agent Development Kit TypeScript samples and agents",
 	"private": true,
 	"scripts": {
-		"format": "biome format . --write",
+		"format": "biome format . --write && prettier --write '**/*.{md,mdx}'",
 		"lint": "lint-staged --allow-empty",
 		"prepare": "husky",
 		"clean": "turbo clean && rm -rf node_modules pnpm-lock.yaml",
@@ -16,6 +16,7 @@
 		"@iqai/adk": "workspace:*",
 		"husky": "9.1.7",
 		"lint-staged": "^16.2.6",
+		"prettier": "^3.4.2",
 		"turbo": "^2.6.1"
 	},
 	"packageManager": "pnpm@10.0.0",
@@ -26,6 +27,9 @@
 		"*.{js,ts,jsx,tsx,cjs,mjs,cts,mts,json,jsonc}": [
 			"biome lint --write --no-errors-on-unmatched",
 			"biome format --write"
+		],
+		"*.{md,mdx}": [
+			"prettier --write"
 		]
 	}
 }
