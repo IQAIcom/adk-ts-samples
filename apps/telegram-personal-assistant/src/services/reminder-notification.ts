@@ -99,6 +99,9 @@ export class ReminderNotificationService {
 				this.session.id,
 			);
 
+			if (!activeSession) {
+				return;
+			}
 			const state = activeSession?.state as PersonalAgentState;
 			const { reminders = [] } = state;
 
@@ -131,19 +134,23 @@ export class ReminderNotificationService {
 			}
 
 			// Remove sent reminders from the state (unless they're recurring)
-			const updatedReminders = reminders.filter((reminder) => {
-				const isDue = dueReminders.some((due) => due.id === reminder.id);
-				if (!isDue) {
-					return true;
-				}
+			const updatedReminders = reminders
+				.map((reminder) => {
+					const isDue = dueReminders.some((due) => due.id === reminder.id);
+					if (!isDue) {
+						return reminder;
+					}
 
-				// Keep recurring reminders but schedule the next occurrence
-				if (reminder.recurring) {
-					return this.scheduleNextRecurrence(reminder);
-				}
+					// For recurring reminders, schedule the next occurrence
+					if (reminder.recurring) {
+						this.scheduleNextRecurrence(reminder);
+						return reminder;
+					}
 
-				return false;
-			});
+					// For non-recurring reminders, mark for removal
+					return null;
+				})
+				.filter((reminder): reminder is Reminder => reminder !== null);
 
 			// Update the session state by creating a state update event
 			const updateEvent = new Event({

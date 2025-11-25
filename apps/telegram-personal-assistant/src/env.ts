@@ -39,8 +39,8 @@ export const envSchema = z.object({
 		.describe("LLM Model common to use by all the agents"),
 
 	// How often to check for due reminders (in milliseconds)
-	REMINDER_POLLING_MS: z
-		.coerce.number()
+	REMINDER_POLLING_MS: z.coerce
+		.number()
 		.default(30_000)
 		.describe("Polling interval for checking reminders in MS"),
 });
