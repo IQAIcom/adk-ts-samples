@@ -43,6 +43,7 @@ export const envSchema = z.object({
 		.coerce.number()
 		.default(30_000)
 		.describe("Polling interval for checking reminders in MS"),
+});
 
 /**
  * Validated and type-safe environment variables
