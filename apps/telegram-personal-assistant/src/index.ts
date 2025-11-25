@@ -29,11 +29,18 @@ config();
  * @see README.md for detailed setup instructions and usage examples
  */
 
+/**
+ * Application entry point
+ * Initializes all agents and services, then starts the bot
+ */
 async function main() {
 	console.log("🤖 Initializing Telegram bot agent...");
 
-	// Initialize agents
+	// Initialize the main TaskMaster agent with database session and sub-agents
 	const { sessionService, session, runner } = await createTaskMasterAgent();
+
+	// Initialize the Telegram agent for bot communication
+	// Pass the TaskMaster's ask function as the sampling handler for message routing
 	const { runner: telegramRunner } = await createTelegramAgent(
 		createSamplingHandler(runner.ask),
 	);
@@ -41,7 +48,8 @@ async function main() {
 	console.log("✅ Telegram bot agent initialized successfully!");
 	console.log("🚀 Bot is now running and ready to receive messages...");
 
-	// Start the reminder notification service
+	// Start the background service that monitors for due reminders
+	// and sends notifications via Telegram
 	const reminderService = new ReminderNotificationService(
 		session,
 		sessionService,
@@ -49,16 +57,16 @@ async function main() {
 	);
 	reminderService.start();
 
-	// Handle graceful shutdown
+	// Handle graceful shutdown on Ctrl+C
 	process.on("SIGINT", () => {
 		console.log("\n👋 Shutting down Telegram bot gracefully...");
 		reminderService.stop();
 		process.exit(0);
 	});
 
-	// Keep the process alive
+	// Keep the Node.js process running
 	setInterval(() => {
-		// Just keep the process running
+		// Prevents the process from exiting
 	}, 1000);
 }
 

@@ -1,6 +1,22 @@
+/**
+ * Shopping List Agent - Sub-agent for Shopping List Management
+ *
+ * Specialized agent focused exclusively on managing shopping lists and grocery items.
+ * Handles adding, updating, completing, and organizing shopping items.
+ *
+ * Capabilities:
+ * - Add items with quantities
+ * - View pending and completed items
+ * - Update item names and quantities
+ * - Mark items as purchased/completed
+ * - Delete items from the list
+ * - Clear completed items
+ *
+ * @returns Configured LlmAgent instance with shopping list tools
+ */
+
 import { LlmAgent } from "@iqai/adk";
 import dedent from "dedent";
-import { env } from "@/env";
 import {
 	addItem,
 	clearCompletedItems,
@@ -9,6 +25,7 @@ import {
 	updateItem,
 	viewShoppingList,
 } from "./tools";
+import { env } from "@/env";
 
 export const createShoppingListAgent = async () => {
 	return new LlmAgent({

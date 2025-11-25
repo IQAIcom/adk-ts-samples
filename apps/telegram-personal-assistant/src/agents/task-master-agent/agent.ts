@@ -1,25 +1,49 @@
+/**
+ * TaskMaster Agent - Main Coordinator
+ *
+ * This is the primary agent that receives user requests and routes them to
+ * specialized sub-agents (reminder-agent and shopping-list-agent).
+ *
+ * Key responsibilities:
+ * - Understanding user intent and context
+ * - Routing requests to appropriate sub-agents
+ * - Managing conversation state and history
+ * - Providing a unified interface for the user
+ * - Orchestrating multi-agent workflows
+ *
+ * @returns Object containing the agent runner, session, and session service
+ */
+
 import { AgentBuilder, createDatabaseSessionService } from "@iqai/adk";
 import dedent from "dedent";
-import { env } from "@/env";
 import { createReminderAgent } from "./sub-agents/reminder-agent/agent";
 import { createShoppingListAgent } from "./sub-agents/shopping-list-agent/agent";
+import { env } from "@/env";
 
+// Application identifiers for session management
 const APP_NAME = "task_master";
 const USER_ID = "default_user";
 const SESSION_ID = "default_session";
 
 export const createTaskMasterAgent = async () => {
+	// Initialize specialized sub-agents for specific task domains
 	const reminderAgent = await createReminderAgent();
 	const shoppingListAgent = await createShoppingListAgent();
+
+	// Set up PostgreSQL database for persistent state storage
 	const sessionService = createDatabaseSessionService(env.DATABASE_URL);
+
+	// Define initial empty state structure
 	const initialState = {
 		reminders: [],
 		shopping_list: [],
 	};
 
+	// Retrieve or create a session for state persistence
 	let session = await sessionService.getSession(APP_NAME, USER_ID, SESSION_ID);
 
 	if (!session) {
+		// Create a new session if none exists
 		session = await sessionService.createSession(
 			APP_NAME,
 			USER_ID,
@@ -35,7 +59,8 @@ export const createTaskMasterAgent = async () => {
 		.withSessionService(sessionService, { userId: USER_ID, appName: APP_NAME })
 		.withSession(session)
 		.withModel(env.LLM_MODEL)
-		.withInstruction(dedent`
+		.withInstruction(
+			dedent`
 			You are a helpful personal productivity assistant designed to help users manage their daily tasks and shopping needs.
 			Your role is to understand user requests and direct them to the appropriate specialized agent while maintaining context.
 
@@ -100,7 +125,8 @@ export const createTaskMasterAgent = async () => {
 			- "I'll help you manage that task. My reminder agent can handle scheduling and notifications..."
 
 			Always provide a smooth handoff to the appropriate agent and follow up on the results to ensure the user's needs are met.
-		`)
+		`,
+		)
 		.withSubAgents([reminderAgent, shoppingListAgent])
 		.build();
 

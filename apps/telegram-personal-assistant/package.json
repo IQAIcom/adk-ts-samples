@@ -1,7 +1,7 @@
 {
 	"name": "telegram-personal-assistant",
 	"version": "1.0.0",
-	"description": "telegram-personal-assistant is a starter project for creating simple adk agent",
+	"description": "AI-powered Telegram personal assistant built with ADK-TS framework. Features multi-agent architecture with specialized sub-agents for reminder management, shopping lists, and intelligent task routing. Includes PostgreSQL persistence, natural language processing, and real-time notifications.",
 	"main": "dist/index.js",
 	"private": true,
 	"scripts": {

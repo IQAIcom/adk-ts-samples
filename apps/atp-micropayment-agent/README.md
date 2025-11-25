@@ -238,13 +238,13 @@ Expected response showing endpoint prices:
 
 ```json
 {
- "prices": {
-  "/api/prices": { "price": "$0.01", "network": "base-sepolia" },
-  "/api/holdings": { "price": "$0.05", "network": "base-sepolia" },
-  "/api/agents/info": { "price": "$0.05", "network": "base-sepolia" },
-  "/api/agents/stats": { "price": "$0.05", "network": "base-sepolia" },
-  "/api/agents/top": { "price": "$0.10", "network": "base-sepolia" }
- }
+	"prices": {
+		"/api/prices": { "price": "$0.01", "network": "base-sepolia" },
+		"/api/holdings": { "price": "$0.05", "network": "base-sepolia" },
+		"/api/agents/info": { "price": "$0.05", "network": "base-sepolia" },
+		"/api/agents/stats": { "price": "$0.05", "network": "base-sepolia" },
+		"/api/agents/top": { "price": "$0.10", "network": "base-sepolia" }
+	}
 }
 ```
 

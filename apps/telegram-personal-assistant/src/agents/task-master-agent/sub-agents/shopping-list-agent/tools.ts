@@ -1,3 +1,17 @@
+/**
+ * Shopping List Agent Tools
+ *
+ * Complete set of tools for managing a shopping list:
+ * - Add items with quantities
+ * - View all items (separated by pending/completed status)
+ * - Update item details
+ * - Delete items
+ * - Mark items as completed/purchased
+ * - Clear all completed items at once
+ *
+ * All tools use 1-based indexing for user-friendly interaction.
+ */
+
 import { createTool } from "@iqai/adk";
 import { z } from "zod";
 import type { ShoppingListItem } from "@/types";
@@ -34,6 +48,10 @@ export const addItem = createTool({
 	},
 });
 
+/**
+ * Tool: View Shopping List
+ * Displays all shopping list items, separated into pending and completed
+ */
 export const viewShoppingList = createTool({
 	name: "view_shopping_list",
 	description: "View all items in the shopping list",
@@ -131,6 +149,10 @@ export const deleteItem = createTool({
 	},
 });
 
+/**
+ * Tool: Mark Item Completed
+ * Toggles the completion status of a shopping list item
+ */
 export const markItemCompleted = createTool({
 	name: "mark_item_completed",
 	description: "Mark an item as completed/purchased in the shopping list",
@@ -166,6 +188,10 @@ export const markItemCompleted = createTool({
 	},
 });
 
+/**
+ * Tool: Clear Completed Items
+ * Removes all completed items from the shopping list in one operation
+ */
 export const clearCompletedItems = createTool({
 	name: "clear_completed_items",
 	description: "Remove all completed items from the shopping list",

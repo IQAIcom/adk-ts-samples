@@ -1,3 +1,16 @@
+/**
+ * Reminder Agent Tools
+ *
+ * Comprehensive set of tools for managing reminders, including:
+ * - Basic CRUD operations (add, view, update, delete)
+ * - Flexible time scheduling with natural language parsing
+ * - Recurring reminder management (daily, weekly, monthly)
+ * - Time-based queries and filtering
+ * - Scheduling validation and error handling
+ *
+ * Uses chrono-node for natural language time parsing and date-fns for date calculations.
+ */
+
 import { createTool } from "@iqai/adk";
 import * as chrono from "chrono-node";
 import {
@@ -226,6 +239,10 @@ export const deleteReminder = createTool({
 	},
 });
 
+/**
+ * Tool: Schedule Reminder
+ * Schedules a reminder for a specific time with optional recurring settings
+ */
 export const scheduleReminder = createTool({
 	name: "schedule_reminder",
 	description: "Schedule a reminder to be triggered at a specific time",
@@ -297,6 +314,11 @@ export const scheduleReminder = createTool({
 	},
 });
 
+/**
+ * Tool: Schedule Reminder With Time
+ * Most flexible scheduling tool - accepts natural language time inputs
+ * Handles: "tomorrow at 3pm", "in 2 hours", "next Monday", etc.
+ */
 export const scheduleReminderWithTime = createTool({
 	name: "schedule_reminder_with_time",
 	description:
@@ -410,6 +432,10 @@ function parseTimeInput(timeInput: string): Date {
 	return parsedDate;
 }
 
+/**
+ * Tool: Get Current Time
+ * Returns current date/time information with timezone details
+ */
 export const getCurrentTime = createTool({
 	name: "get_current_time",
 	description: "Get the current date and time information",

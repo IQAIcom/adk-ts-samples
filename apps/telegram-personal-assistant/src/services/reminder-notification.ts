@@ -10,13 +10,36 @@ import { env } from "../env";
 import type { PersonalAgentState, Reminder } from "../types";
 
 /**
- * Service for handling reminder notifications
+ * Reminder Notification Service
+ *
+ * Background service that monitors the database for due reminders and sends
+ * automatic notifications via Telegram. Runs on a polling interval and handles:
+ * - Checking for reminders that are due
+ * - Sending Telegram notifications
+ * - Managing recurring reminders (scheduling next occurrence)
+ * - Updating database state after notifications are sent
+ *
+ * The service runs independently of user interactions and ensures users
+ * are notified promptly when their reminders are due.
  */
 export class ReminderNotificationService {
+	/** Timer ID for the polling interval */
 	private intervalId: NodeJS.Timeout | null = null;
+
+	/** Whether the service is currently running */
 	private isRunning = false;
+
+	/** How often to check for due reminders (in milliseconds) */
 	private readonly checkIntervalMs: number;
 
+	/**
+	 * Creates a new reminder notification service
+	 *
+	 * @param session - Current user session for accessing state
+	 * @param sessionService - Service for reading/updating database state
+	 * @param telegramRunner - Agent runner for sending Telegram messages
+	 * @param checkIntervalMs - Polling interval in milliseconds (default from env)
+	 */
 	constructor(
 		private readonly session: Session,
 		private readonly sessionService: BaseSessionService,

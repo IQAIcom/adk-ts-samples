@@ -1,3 +1,19 @@
+/**
+ * Reminder Agent - Sub-agent for Reminder Management
+ *
+ * Specialized agent focused exclusively on managing user reminders and tasks.
+ * Handles scheduling, recurring reminders, and natural language time parsing.
+ *
+ * Capabilities:
+ * - Add, view, update, and delete reminders
+ * - Schedule reminders with flexible time parsing
+ * - Manage recurring reminders (daily, weekly, monthly)
+ * - Track upcoming reminders
+ * - Handle time zone and scheduling logic
+ *
+ * @returns Configured LlmAgent instance with reminder tools
+ */
+
 import { LlmAgent } from "@iqai/adk";
 import dedent from "dedent";
 import {
