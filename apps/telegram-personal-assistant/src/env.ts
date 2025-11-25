@@ -40,10 +40,9 @@ export const envSchema = z.object({
 
 	// How often to check for due reminders (in milliseconds)
 	REMINDER_POLLING_MS: z
-		.number()
+		.coerce.number()
 		.default(30_000)
 		.describe("Polling interval for checking reminders in MS"),
-});
 
 /**
  * Validated and type-safe environment variables
