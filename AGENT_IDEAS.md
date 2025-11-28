@@ -23,7 +23,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 | Research & Summary Tool     | Beginner     | Tool-based  | General               | Available            |
 | Smart Schedule Optimizer    | Beginner     | Multi-tool  | Lifestyle             | Available            |
 | Trend Monitor & Alerts      | Beginner     | Tool-based  | Finance / Web3        | Available            |
-| Writing Assistant           | Intermediate | Multi-agent | General               | WIP - @Timonwa       |
+| Writing Assistant           | Intermediate | Multi-agent | General               | Available            |
 | Travel Itinerary Planner    | Intermediate | Multi-agent | Travel                | WIP - @Adebesin-Cell |
 | Mental Health Companion     | Intermediate | Multi-agent | Healthcare            | Available            |
 | Business Operations Manager | Intermediate | Multi-agent | Business              | Available            |
@@ -151,7 +151,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 **Vertical:** General
 
-**Status:** WIP - @Timonwa
+**Status:** Available
 
 **Scope:**
 
