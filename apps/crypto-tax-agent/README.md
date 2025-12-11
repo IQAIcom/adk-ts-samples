@@ -56,24 +56,18 @@ cp .env.example .env
 Edit `.env` and add your API keys:
 
 ```bash
-# Required: At least one LLM API key
 GOOGLE_API_KEY=your_google_api_key_here
-# OR
-OPENAI_API_KEY=your_openai_api_key_here
-# OR
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
 
 # Optional: LLM model selection
 LLM_MODEL=gemini-2.5-flash
 
-# Optional: Blockchain explorer API key (for production use)
-# Uses Etherscan API V2 - works for all supported chains
+# Blockchain explorer API key
 ETHERSCAN_API_KEY=your_etherscan_api_key
 
-# Optional: Price data API
+# Price data API
 COINGECKO_API_KEY=your_coingecko_api_key
 
-# Optional: Debug mode
+# Debug mode
 ADK_DEBUG=false
 ```
 
@@ -198,7 +192,7 @@ This is a **minimal implementation** designed for expansion:
 Edit `src/types.ts`:
 
 ```typescript
-export type Chain = "ethereum" | "base" | "fraxtal" | "polygon" | "arbitrum";
+export type Chain = "ethereum" | "base" | "fraxtal";
 ```
 
 Add chain config in `src/services/explorerService.ts`:
@@ -212,9 +206,6 @@ const EXPLORER_CONFIGS: Record<Chain, ExplorerConfig> = {
 	},
 };
 ```
-
-Note: All chains now use the unified Etherscan API V2 endpoint with a single `ETHERSCAN_API_KEY`.
-See the [Etherscan API V2 migration guide](https://docs.etherscan.io/v/etherscan-v2/) for supported chain IDs.
 
 ### Add New Tools
 
@@ -270,16 +261,6 @@ pnpm start
 ```bash
 pnpm clean
 ```
-
-## Disclaimer
-
-⚠️ **IMPORTANT**: This tool is for educational and informational purposes only. It does NOT constitute tax, legal, or financial advice.
-
-- Tax laws are complex and vary by jurisdiction
-- Always consult with a qualified tax professional or CPA
-- The developers assume no liability for tax calculations
-- Users are responsible for the accuracy of their tax filings
-
 ## Contributing
 
 Contributions are welcome! Areas for improvement:
@@ -293,9 +274,3 @@ Contributions are welcome! Areas for improvement:
 ## License
 
 MIT License - see LICENSE file for details
-
-## Resources
-
-- [IRS Virtual Currency Guidance](https://www.irs.gov/businesses/small-businesses-self-employed/virtual-currencies)
-- [IRS Form 8949 Instructions](https://www.irs.gov/forms-pubs/about-form-8949)
-- [IQAI ADK Documentation](https://github.com/IQAIcom/adk-ts)
