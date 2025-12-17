@@ -18,24 +18,6 @@ function isShortTerm(acquisitionDate: number, disposalDate: number): boolean {
 }
 
 /**
- * Sort tax lots based on the specified method
- */
-function _sortTaxLots(lots: TaxLot[], method: TaxMethod): TaxLot[] {
-	switch (method) {
-		case "FIFO": // First In, First Out - oldest first
-			return [...lots].sort((a, b) => a.acquisitionDate - b.acquisitionDate);
-		case "LIFO": // Last In, First Out - newest first
-			return [...lots].sort((a, b) => b.acquisitionDate - a.acquisitionDate);
-		case "HIFO": // Highest In, First Out - highest cost basis first
-			return [...lots].sort(
-				(a, b) => b.costBasis / b.quantity - a.costBasis / a.quantity,
-			);
-		default:
-			return lots;
-	}
-}
-
-/**
  * Match disposals with acquisition lots and calculate gains/losses
  */
 function calculateGains(
@@ -46,6 +28,34 @@ function calculateGains(
 	const gains: CapitalGain[] = [];
 	const updatedLots = JSON.parse(JSON.stringify(taxLots)) as TaxLot[];
 
+	// Pre-sort and group lots by token symbol for efficient lookup
+	const lotsByToken = new Map<string, TaxLot[]>();
+	for (const lot of updatedLots) {
+		if (!lotsByToken.has(lot.tokenSymbol)) {
+			lotsByToken.set(lot.tokenSymbol, []);
+		}
+		const tokenLots = lotsByToken.get(lot.tokenSymbol);
+		if (tokenLots) {
+			tokenLots.push(lot);
+		}
+	}
+
+	// Sort each token's lots once by the specified method
+	for (const [_symbol, lots] of lotsByToken) {
+		lots.sort((a, b) => {
+			switch (method) {
+				case "FIFO":
+					return a.acquisitionDate - b.acquisitionDate;
+				case "LIFO":
+					return b.acquisitionDate - a.acquisitionDate;
+				case "HIFO":
+					return b.costBasis / b.quantity - a.costBasis / a.quantity;
+				default:
+					return 0;
+			}
+		});
+	}
+
 	for (const disposal of disposals) {
 		let remainingQuantity = disposal.quantity;
 		const matchedLots: Array<{
@@ -54,24 +64,11 @@ function calculateGains(
 			costBasis: number;
 		}> = [];
 
-		// Get available lots for this token and sort by method
-		const availableLots = updatedLots
-			.filter(
-				(lot) =>
-					lot.tokenSymbol === disposal.tokenSymbol && lot.remainingQuantity > 0,
-			)
-			.sort((a, b) => {
-				switch (method) {
-					case "FIFO":
-						return a.acquisitionDate - b.acquisitionDate;
-					case "LIFO":
-						return b.acquisitionDate - a.acquisitionDate;
-					case "HIFO":
-						return b.costBasis / b.quantity - a.costBasis / a.quantity;
-					default:
-						return 0;
-				}
-			});
+		// Get pre-sorted available lots for this token
+		const tokenSymbol = disposal.tokenSymbol || "UNKNOWN";
+		const availableLots = (lotsByToken.get(tokenSymbol) || []).filter(
+			(lot) => lot.remainingQuantity > 0,
+		);
 
 		// Match disposal with lots
 		for (const lot of availableLots) {

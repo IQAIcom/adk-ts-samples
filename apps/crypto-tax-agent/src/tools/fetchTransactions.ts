@@ -77,7 +77,7 @@ export const fetchTransactionsTool = createTool({
 			state.set(STATE_KEYS.RAW_TRANSACTIONS, updated);
 
 			// Calculate date range from actual transactions
-			let actualDateRange: any;
+			let actualDateRange: { start: string; end: string } | undefined;
 			if (transactions.length > 0) {
 				const timestamps = transactions.map((tx) => tx.timestamp);
 				const minTimestamp = Math.min(...timestamps);

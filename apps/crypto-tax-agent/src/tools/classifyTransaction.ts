@@ -121,15 +121,16 @@ export const classifyTransactionTool = createTool({
 					tx.chain,
 				);
 
-				let priceUSD = 0;
+				let priceUSD: number;
 				if (priceResult !== null) {
 					priceUSD = priceResult.price;
 					pricesFetched++;
 				} else {
 					pricesFailed++;
 					console.warn(
-						`Unable to fetch price for ${tx.tokenSymbol} in transaction ${tx.hash}`,
+						`Unable to fetch price for ${tx.tokenSymbol} in transaction ${tx.hash}. This transaction will be skipped.`,
 					);
+					continue; // Skip transactions with failed price fetches
 				}
 
 				const fairMarketValueUSD = quantity * priceUSD;

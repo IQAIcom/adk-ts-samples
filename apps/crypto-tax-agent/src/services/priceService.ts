@@ -40,6 +40,28 @@ interface PriceCache {
 
 const priceCache: PriceCache = {};
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const MAX_CACHE_SIZE = 1000; // Maximum number of entries before cleanup
+
+//Clean up old cache entries to prevent memory leaks
+function cleanupCache(): void {
+	const now = Date.now();
+	const entries = Object.entries(priceCache);
+
+	for (const [key, value] of entries) {
+		if (now - value.timestamp > CACHE_DURATION) {
+			delete priceCache[key];
+		}
+	}
+
+	const remaining = Object.entries(priceCache);
+	if (remaining.length > MAX_CACHE_SIZE) {
+		const sorted = remaining.sort((a, b) => a[1].timestamp - b[1].timestamp);
+		const toRemove = sorted.slice(0, remaining.length - MAX_CACHE_SIZE);
+		for (const [key] of toRemove) {
+			delete priceCache[key];
+		}
+	}
+}
 
 function getHeaders(): Record<string, string> {
 	const headers: Record<string, string> = {
@@ -114,6 +136,11 @@ export async function fetchHistoricalPrice(
 		if (Date.now() - cached.timestamp < CACHE_DURATION) {
 			return cached.price;
 		}
+	}
+
+	// Periodically clean up cache
+	if (Object.keys(priceCache).length > MAX_CACHE_SIZE) {
+		cleanupCache();
 	}
 
 	try {

@@ -265,11 +265,25 @@ export async function fetchAllTransactions(
 				: Promise.resolve([]),
 		]);
 
-		// Combine and deduplicate by hash
+		// Combine and merge transactions with the same hash
 		const allTxs = [...normalTxs, ...tokenTxs];
-		const uniqueTxs = Array.from(
-			new Map(allTxs.map((tx) => [tx.hash, tx])).values(),
-		);
+		const txMap = new Map<string, RawTransaction>();
+
+		for (const tx of allTxs) {
+			const existing = txMap.get(tx.hash);
+			if (existing) {
+				txMap.set(tx.hash, {
+					...existing,
+					tokenSymbol: tx.tokenSymbol || existing.tokenSymbol,
+					tokenAddress: tx.tokenAddress || existing.tokenAddress,
+					value: tx.value || existing.value,
+				});
+			} else {
+				txMap.set(tx.hash, tx);
+			}
+		}
+
+		const uniqueTxs = Array.from(txMap.values());
 		uniqueTxs.sort((a, b) => a.timestamp - b.timestamp);
 
 		return uniqueTxs;

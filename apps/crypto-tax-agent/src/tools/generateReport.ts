@@ -39,10 +39,8 @@ function generateForm8949(gains: CapitalGain[], year: number): string {
 		report += `${"-".repeat(100)}\n`;
 
 		for (const gain of shortTerm) {
-			const oldestLot = gain.matchedLots[0];
 			const description = `${gain.quantity.toFixed(6)} ${gain.tokenSymbol}`;
-			const dateAcquired =
-				oldestLot && gain.matchedLots.length > 0 ? "VARIOUS" : "UNKNOWN";
+			const dateAcquired = gain.matchedLots.length > 0 ? "VARIOUS" : "UNKNOWN";
 			const dateSold = formatDate(gain.disposalDate);
 
 			report += `${description.padEnd(30)} | ${dateAcquired.padEnd(12)} | ${dateSold.padEnd(12)} | ${formatUSD(gain.proceeds).padStart(15)} | ${formatUSD(gain.costBasis).padStart(15)} | ${formatUSD(gain.gainLoss).padStart(15)}\n`;
@@ -62,7 +60,7 @@ function generateForm8949(gains: CapitalGain[], year: number): string {
 
 		for (const gain of longTerm) {
 			const description = `${gain.quantity.toFixed(6)} ${gain.tokenSymbol}`;
-			const dateAcquired = "VARIOUS";
+			const dateAcquired = gain.matchedLots.length > 0 ? "VARIOUS" : "UNKNOWN";
 			const dateSold = formatDate(gain.disposalDate);
 
 			report += `${description.padEnd(30)} | ${dateAcquired.padEnd(12)} | ${dateSold.padEnd(12)} | ${formatUSD(gain.proceeds).padStart(15)} | ${formatUSD(gain.costBasis).padStart(15)} | ${formatUSD(gain.gainLoss).padStart(15)}\n`;
