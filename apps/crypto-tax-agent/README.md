@@ -246,12 +246,12 @@ The agent handles complete crypto tax workflows through natural language queries
 
 ## Agent Tools and Capabilities
 
-| Tool                 | Purpose                                                        |
-| -------------------- | -------------------------------------------------------------- |
-| `fetch_transactions` | Retrieve on-chain transactions from blockchain explorers       |
+| Tool                    | Purpose                                                               |
+| ----------------------- | --------------------------------------------------------------------- |
+| `fetch_transactions`    | Retrieve on-chain transactions from blockchain explorers              |
 | `classify_transactions` | Categorize transactions into tax event types and determine taxability |
-| `calculate_cost_basis` | Calculate capital gains/losses using FIFO, LIFO, or HIFO methods |
-| `generate_report` | Create tax reports in Form 8949, CSV, or summary format |
+| `calculate_cost_basis`  | Calculate capital gains/losses using FIFO, LIFO, or HIFO methods      |
+| `generate_report`       | Create tax reports in Form 8949, CSV, or summary format               |
 
 ## Known Limitations
 
