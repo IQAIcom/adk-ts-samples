@@ -113,6 +113,34 @@ importers:
         specifier: ^5.9.2
         version: 5.9.3
 
+  apps/dao-proposal-analyzer:
+    dependencies:
+      '@iqai/adk':
+        specifier: workspace:*
+        version: link:../../packages/adk
+      dotenv:
+        specifier: ^17.2.2
+        version: 17.2.3
+      viem:
+        specifier: ^2.21.0
+        version: 2.39.0(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12)
+      zod:
+        specifier: ^4.1.5
+        version: 4.1.12
+    devDependencies:
+      '@types/node':
+        specifier: ^24.3.1
+        version: 24.10.1
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.1.0
+      tsx:
+        specifier: ^4.20.5
+        version: 4.20.6
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.3
+
   apps/research-assistant:
     dependencies:
       '@iqai/adk':
