@@ -13,8 +13,8 @@ export const envSchema = z.object({
 
 export const env = envSchema.parse(process.env);
 
-if (!env.GOOGLE_API_KEY) {
+if (env.LLM_MODEL.startsWith("gemini") && !env.GOOGLE_API_KEY) {
 	throw new Error(
-		"GOOGLE_API_KEY must be provided for the default Gemini model. If using another provider, ensure its API key is set.",
+		"GOOGLE_API_KEY must be provided when using a Gemini model. If using another provider, ensure its API key is set and the LLM_MODEL environment variable is updated.",
 	);
 }
