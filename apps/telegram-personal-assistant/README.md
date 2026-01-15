@@ -281,7 +281,6 @@ The assistant intelligently routes your requests to the appropriate specialized 
 ### Community
 
 - [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
-- [Discord Community](https://discord.gg/w2Uk6ACK4D)
 
 ## Contributing
 
