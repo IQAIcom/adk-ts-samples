@@ -93,6 +93,7 @@ async function getProposalDescription(
 	calldatas: string[];
 	voteStart: number;
 	voteEnd: number;
+	createdAt: string;
 }> {
 	try {
 		const currentBlock = await client.getBlockNumber();
@@ -109,6 +110,19 @@ async function getProposalDescription(
 
 		for (const log of logs) {
 			if (log.args.id === proposalId) {
+				// Get the block timestamp for the creation date
+				let createdAt = new Date().toISOString();
+				if (log.blockNumber) {
+					try {
+						const block = await client.getBlock({
+							blockNumber: log.blockNumber,
+						});
+						createdAt = new Date(Number(block.timestamp) * 1000).toISOString();
+					} catch {
+						// Fall back to current time if block fetch fails
+					}
+				}
+
 				return {
 					description: log.args.description || `Proposal #${proposalId}`,
 					targets: [...(log.args.targets || [])].map((t) => t.toString()),
@@ -117,6 +131,7 @@ async function getProposalDescription(
 					calldatas: [...(log.args.calldatas || [])].map((c) => c.toString()),
 					voteStart: Number(log.args.startBlock || 0),
 					voteEnd: Number(log.args.endBlock || 0),
+					createdAt,
 				};
 			}
 		}
@@ -132,6 +147,7 @@ async function getProposalDescription(
 		calldatas: [],
 		voteStart: 0,
 		voteEnd: 0,
+		createdAt: new Date().toISOString(),
 	};
 }
 
@@ -227,7 +243,7 @@ export async function getProposal(
 		values: proposalDetails.values,
 		signatures: proposalDetails.signatures,
 		calldatas: proposalDetails.calldatas,
-		createdAt: new Date().toISOString(),
+		createdAt: proposalDetails.createdAt,
 	};
 }
 

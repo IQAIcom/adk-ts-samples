@@ -33,9 +33,10 @@ export const fetchProposalTool = createTool({
 		try {
 			const proposal = await getProposal(dao, proposalId);
 			const votingStats = calculateVotingStats(proposal);
+			const proposalUrl = daoConfig.proposalUrl(proposal.id);
 
-			// Store in state for other agents to access
-			state.set(STATE_KEYS.PROPOSAL_DATA, proposal);
+			// Store in state for other agents to access (include URL)
+			state.set(STATE_KEYS.PROPOSAL_DATA, { ...proposal, url: proposalUrl });
 			state.set(STATE_KEYS.ANALYSIS_PROGRESS, {
 				status: "proposal_fetched",
 				dao,
@@ -49,13 +50,14 @@ export const fetchProposalTool = createTool({
 				proposal: {
 					...proposal,
 					chain: daoConfig.chain,
+					url: proposalUrl,
 					votingStats,
 					formattedForVotes: formatVotes(proposal.forVotes),
 					formattedAgainstVotes: formatVotes(proposal.againstVotes),
 					formattedAbstainVotes: formatVotes(proposal.abstainVotes),
 					formattedQuorum: formatVotes(proposal.quorum),
 				},
-				message: `Successfully fetched proposal #${proposalId} from ${daoConfig.name} on ${daoConfig.chain}`,
+				message: `Successfully fetched proposal #${proposalId} from ${daoConfig.name} on ${daoConfig.chain}. View at: ${proposalUrl}`,
 			};
 		} catch (error) {
 			const errorMessage =
@@ -103,10 +105,13 @@ export const listProposalsTool = createTool({
 
 			const proposalSummaries = proposals.map((p) => {
 				const stats = calculateVotingStats(p);
+				const shortTitle = p.title.slice(0, 80);
 				return {
 					id: p.id,
-					title: p.title.slice(0, 100),
+					displayName: `Proposal #${p.id}: ${shortTitle}`,
+					title: shortTitle,
 					status: p.status,
+					createdAt: p.createdAt,
 					forVotes: formatVotes(p.forVotes),
 					againstVotes: formatVotes(p.againstVotes),
 					quorumReached: stats.quorumReached,
