@@ -27,6 +27,7 @@ RULES:
 - Be CONCISE - max 200 words total
 - No fluff or repetition
 - Analyze the data above, don't request more
+- Include the proposal URL if available in the data
 
 OUTPUT FORMAT (use exactly this structure):
 
@@ -44,6 +45,10 @@ OUTPUT FORMAT (use exactly this structure):
 
 **Opportunities**: 1-2 bullet points max.
 
-CRITICAL: Be brief. Complete analysis and STOP.`,
+**View Full Proposal**: [Include the proposal URL from the data if available]
+
+---
+
+CRITICAL: Be brief. Complete analysis and STOP. Always end with the separator line (---) after the URL.`,
 	});
 };

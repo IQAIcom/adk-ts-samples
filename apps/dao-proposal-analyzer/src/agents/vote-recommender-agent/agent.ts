@@ -28,9 +28,8 @@ PROPOSAL DATA: {${STATE_KEYS.PROPOSAL_DATA}?}
 PROPOSAL ANALYSIS: {${STATE_KEYS.PROPOSAL_ANALYSIS}?}
 
 RULES:
-- Be CONCISE - max 150 words total
-- Present balanced pros/cons
-- Include disclaimers
+- Be CONCISE - max 100 words total
+- Focus on clear reasoning
 
 OUTPUT FORMAT:
 
@@ -38,16 +37,6 @@ OUTPUT FORMAT:
 **Confidence**: [High / Medium / Low]
 
 **Reasoning**: 2-3 sentences max.
-
-**Pros**:
-- Pro 1
-- Pro 2
-
-**Cons**:
-- Con 1
-- Con 2
-
-**Disclaimer**: This is not financial advice.
 
 CRITICAL: Be brief. Complete and STOP.`,
 	});
