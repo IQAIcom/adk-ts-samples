@@ -28,8 +28,8 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 | Mental Health Companion     | Intermediate | Multi-agent | Healthcare            | Available            |
 | Business Operations Manager | Intermediate | Multi-agent | Business              | Available            |
 | DeFi Risk Analyzer          | Advanced     | Tool-based  | Finance / Web3        | Available            |
-| Crypto Tax Calculator       | Advanced     | Multi-tool  | Finance / Web3        | Available            |
-| DAO Proposal Analyzer       | Advanced     | Multi-agent | Web3 / Governance     | Available            |
+| Crypto Tax Calculator       | Advanced     | Multi-tool  | Finance / Web3        | Built                |
+| DAO Proposal Analyzer       | Advanced     | Multi-agent | Web3 / Governance     | Built                |
 | Cross-Chain Bridge Monitor  | Advanced     | Multi-agent | Web3 / Infrastructure | Available            |
 
 ---
@@ -282,7 +282,7 @@ Make sure your project fills a gap and showcases a unique way to use ADK-TS
 
 **Vertical:** Web3 / Governance
 
-**Status:** Available
+**Status:** Built
 
 **Scope:**
 
