@@ -74,7 +74,7 @@ const proposalCreatedEvent = parseAbiItem(
 function getClient(): PublicClient {
 	return createPublicClient({
 		chain: mainnet,
-		transport: http(env.ETHEREUM_RPC_URL || "https://eth.drpc.org"),
+		transport: http(env.ETHEREUM_RPC_URL),
 	});
 }
 
@@ -118,8 +118,11 @@ async function getProposalDescription(
 							blockNumber: log.blockNumber,
 						});
 						createdAt = new Date(Number(block.timestamp) * 1000).toISOString();
-					} catch {
-						// Fall back to current time if block fetch fails
+					} catch (error) {
+						console.error(
+							`[governanceService] Failed to fetch description for proposal ${proposalId}:`,
+							error,
+						);
 					}
 				}
 
