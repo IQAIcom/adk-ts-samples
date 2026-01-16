@@ -13,7 +13,7 @@
 		"tavily-test": "tsx src/scripts/tavily-test.ts"
 	},
 	"dependencies": {
-		"@iqai/adk": "workspace:*",
+		"@iqai/adk": "^0.5.6",
 		"@tavily/core": "^0.5.12",
 		"cheerio": "^1.1.2",
 		"dotenv": "^17.2.2",

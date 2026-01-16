@@ -12,7 +12,7 @@
 		"prebuild": "pnpm clean"
 	},
 	"dependencies": {
-		"@iqai/adk": "workspace:*",
+		"@iqai/adk": "^0.5.6",
 		"chrono-node": "^2.9.0",
 		"date-fns": "^4.1.0",
 		"dedent": "^1.7.0",
