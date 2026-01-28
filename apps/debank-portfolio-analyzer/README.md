@@ -1,167 +1,209 @@
 <div align="center">
   <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
   <br/>
-  <h1>ADK-TS Simple Agent Template</h1>
-  <b>Starter template for creating AI Agents with ADK-TS</b>
+  <h1>DeBank Portfolio Analyzer</h1>
+  <b>Sample agent that showcases <strong>debank-mcp</strong> — integrate DeBank wallet, portfolio, and DeFi data into your AI agents with <code>@iqai/adk</code>.</b>
   <br/>
-  <i>Minimal • Extensible • TypeScript</i>
+  <i>DeBank MCP • Portfolio Analysis • Multi-Chain • DeFi Data</i>
 </div>
 
 ---
 
-# Simple Agent Template - Getting Started with AI Agents
+This sample exists to **raise awareness and drive adoption of [debank-mcp](https://www.npmjs.com/package/@iqai/mcp-debank)**. It demonstrates a complete, production-style integration of the DeBank MCP server with ADK-TS: an AI-powered portfolio analyzer that uses DeBank’s APIs for wallet balances, token holdings, protocol positions, NFTs, and activity history.
 
-A minimal starter template that shows you how to build AI agents with multi-agent coordination and custom tool integration using ADK-TS.
+**Built with [ADK-TS](https://adk.iqai.com/) and [@iqai/mcp-debank](https://www.npmjs.com/package/@iqai/mcp-debank)**
 
-**Built with [ADK-TS](https://adk.iqai.com/) - Agent Development Kit (ADK) for TypeScript**
+---
 
-## 🎯 What This Template Shows
+## Why debank-mcp?
 
-This template demonstrates how to build **AI-powered applications** with:
+**[debank-mcp](https://www.npmjs.com/package/@iqai/mcp-debank)** is an MCP (Model Context Protocol) server that exposes [DeBank Cloud](https://docs.cloud.debank.com/) APIs as tools. Use it to:
 
-1. **🤖 Multi-Agent Architecture**:
+- **Add DeBank data to any MCP-compatible agent** — no custom API glue code.
+- **Query multi-chain portfolios** — total balance, token list, protocol positions, NFTs, and activity.
+- **Keep integrations simple** — run via `npx @iqai/mcp-debank` with a DeBank API key; ADK-TS `McpToolset` wires tools automatically.
 
-   - **Root Agent**: Orchestrates and delegates to specialist agents
-   - **Weather Agent**: Provides weather information with custom tools
-   - **Joke Agent**: Tells jokes with dynamic tool integration
+This sample is the **reference implementation** for using debank-mcp inside an ADK-TS agent. Fork it, adapt it, or use it as a template to bring DeBank-powered portfolio analysis into your own agents.
 
-2. **🛠️ Custom Tool Integration**:
+---
 
-   - Weather API integration
-   - Joke API integration
-   - Dynamic function tools
-   - Tool-based agent capabilities
+## What this sample shows
 
-3. **⚡ Fast Development Workflow**:
-   - Interactive CLI testing
-   - Web-based agent interface
-   - Hot reload development
+- **debank-mcp integration**: Configuring and using `McpToolset` with the DeBank MCP server (`stdio` transport, `npx`).
+- **Portfolio analyzer agent**: A single agent that fetches and explains portfolio data via DeBank tools.
+- **End-to-end flow**: From user questions → tool calls → DeBank API → clear, summarized answers.
 
-## 🏗️ How It Works
+---
+
+## Features
+
+- **Multi-chain portfolio data**: Balances, tokens, and protocol positions across supported chains.
+- **DeFi & NFT visibility**: Protocol positions and NFT holdings via DeBank.
+- **Natural-language interface**: Ask for balances, distributions, exposures, and activity in plain language.
+- **MCP-first design**: All DeBank access goes through debank-mcp; no direct REST integration in the agent.
+
+---
+
+## Architecture
 
 ```
-┌─────────────────┐    ┌───────────────────┐    ┌─────────────────────┐
-│   Root Agent    │    │   Weather Agent   │    │    Joke Agent       │
-│                 │───▶│                   │    │                     │
-│ • Orchestrates  │    │ • Weather Tools   │    │ • Joke Tools        │
-│ • Delegates     │    │ • API Integration │    │ • Dynamic Content   │
-└─────────────────┘    └───────────────────┘    └─────────────────────┘
+┌─────────────────────────┐     ┌──────────────────────────┐     ┌─────────────────┐
+│  Portfolio Analyzer     │     │  debank-mcp              │     │  DeBank Cloud   │
+│  Agent (ADK-TS)         │────▶│  @iqai/mcp-debank        │────▶│  Open API       │
+│                         │     │  (MCP Server, stdio)     │     │                 │
+│  • Natural language     │     │  • Exposes DeBank        │     │  • Wallet       │
+│  • Tool orchestration   │     │    endpoints as tools    │     │  • Portfolio    │
+│  • Summaries & insights │     │  • DEBANK_API_KEY        │     │  • Protocols    │
+└─────────────────────────┘     └──────────────────────────┘     └─────────────────┘
 ```
 
-## 🚀 Quick Start
+### Project structure
+
+```text
+src/
+├── agents/
+│   └── portfolio-analyzer-agent/
+│       ├── agent.ts          # Agent definition, system prompt, tool wiring
+│       └── tools.ts          # debank-mcp config & McpToolset setup
+├── env.ts                    # Environment validation (GOOGLE_API_KEY, DEBANK_API_KEY)
+└── index.ts                  # Demo runner: greet, balance, protocols, NFTs, summary
+```
+
+---
+
+## Getting started
 
 ### Prerequisites
 
-- Node.js 18+ and pnpm
-- A Google account (for free AI API access)
+- Node.js 18+
+- pnpm (or npm/yarn)
+- [Google AI API key](https://aistudio.google.com/api-keys) (for the LLM)
+- [DeBank Cloud API key](https://docs.cloud.debank.com/en/readme/open-api) (for debank-mcp)
 
-## Step 1: Create Project Using ADK CLI
+### Installation
 
-```bash
-# Create a new project with the Simple Agent template (replace "my-agent" with your desired project name)
-npx @iqai/adk-cli new --template simple-agent my-agent
+1. **Clone and enter the app**
 
-# Navigate to your project and install dependencies
-cd my-agent
-pnpm install
-```
+   ```bash
+   git clone https://github.com/IQAIcom/adk-ts-samples.git
+   cd adk-ts-samples/apps/debank-portfolio-analyzer
+   ```
 
-### Step 2: Get Your API Key
+2. **Install dependencies**
 
-#### 🔑 Google AI API Key (Required)
+   ```bash
+   pnpm install
+   ```
 
-1. Visit [Google AI Studio](https://aistudio.google.com/api-keys)
-2. Sign in with your Google account
-3. Click "Create API Key"
-4. Copy the generated key
+3. **Get API keys**
 
-### Step 3: Configure Environment
+   - **Google AI**: [Google AI Studio](https://aistudio.google.com/api-keys) → Create API key.
+   - **DeBank**: Register at [DeBank](https://debank.com/) and use [DeBank Cloud Open API](https://docs.cloud.debank.com/en/readme/open-api) to obtain your access key.
 
-```bash
-# Copy the example environment file
-cp .env.example .env
-```
+4. **Configure environment**
 
-Edit `.env` with your Google AI API key:
+   ```bash
+   cp .env.example .env
+   ```
 
-```env
-GOOGLE_API_KEY=your_google_api_key_here
-```
+   Edit `.env`:
 
-### Step 4: Run Your Agent
+   ```env
+   ADK_DEBUG=false
+   GOOGLE_API_KEY=your_google_api_key_here
+   DEBANK_API_KEY=your_debank_api_key_here
+   LLM_MODEL=gemini-2.5-flash
+   ```
 
-#### Production/Development Mode
+   `DEBANK_API_KEY` is required for debank-mcp. The MCP server is started with this env var when the agent runs.
 
-To run your agent with the full application flow:
+### Run the agent
+
+**Demo script (default)**
 
 ```bash
 pnpm dev
 ```
 
-#### Interactive Testing (Recommended for Development)
+Runs the built-in demo: greeting, total balance, protocol positions, NFTs, and a portfolio summary for a sample wallet.
 
-For rapid prototyping and testing, use the ADK CLI:
+**Interactive testing**
 
 ```bash
-# Interactive CLI chat interface
-npx @iqai/adk-cli run
-
-# Web-based interface for testing
-npx @iqai/adk-cli web
+adk run   # CLI chat
+adk web   # Web UI
 ```
 
-- **`run`**: Test agents directly in your terminal with interactive chat
-- **`web`**: Opens a browser interface for visual agent testing
-
-## 📁 Template Structure
-
-```text
-src/
-├── agents/
-│   ├── agent.ts              # Root agent orchestrator
-│   ├── joke-agent/           # Joke-telling specialist
-│   │   ├── agent.ts          # Agent configuration
-│   │   └── tools.ts          # Custom joke tools
-│   └── weather-agent/        # Weather information specialist
-│       ├── agent.ts          # Agent configuration
-│       └── tools.ts          # Weather API tools
-├── env.ts                    # Environment validation
-└── index.ts                  # Main execution entry
-```
-
-## 🔧 Customizing the Template
-
-### Adding New Agents
-
-1. Create a new agent directory in `src/agents/`
-2. Follow the pattern from existing agents (weather-agent or joke-agent)
-3. Add the agent to the root agent's `subAgents` array in `src/agents/agent.ts`
-
-Example structure:
-
-```text
-src/agents/my-new-agent/
-├── agent.ts    # Agent configuration
-└── tools.ts    # Custom tools (optional)
-```
-
-## 📚 Learn More
-
-### ADK-TS Resources
-
-- [ADK-TS Documentation](https://adk.iqai.com/)
-- [ADK-TS CLI Documentation](https://adk.iqai.com/docs/cli)
-- [GitHub Repository](https://github.com/IQAICOM/adk-ts)
-
-## 🤝 Contributing
-
-This [template](https://github.com/IQAIcom/adk-ts/tree/main/apps/starter-templates/simple-agent) is open source and contributions are welcome! Feel free to:
-
-- Report bugs or suggest improvements
-- Add new agent examples
-- Improve documentation
-- Share your customizations
+Use your own wallet address and questions when testing.
 
 ---
 
-**🎉 Ready to build?** This template gives you everything you need to start building AI agents with ADK-TS!
+## Usage examples
+
+The agent uses debank-mcp tools to answer portfolio questions. Example flow:
+
+```text
+👤 User: Hi! Can you help me analyze my crypto portfolio?
+🤖 Agent: [Greeting, explains capabilities, asks for wallet address or other inputs]
+
+👤 User: My wallet address is 0x1dfC530A9B3955d62D16359110E3cf385d47b1a9. What's my total balance across all chains?
+🤖 Agent: [Calls DeBank tools via debank-mcp, returns total balance summary]
+
+👤 User: Can you show me my DeFi protocol positions?
+🤖 Agent: [Lists protocol positions from DeBank]
+
+👤 User: What NFTs do I have in this wallet?
+🤖 Agent: [Returns NFT holdings]
+
+👤 User: Give me a summary of my portfolio distribution and any high-risk exposures you see.
+🤖 Agent: [Summarizes distribution and highlights risks based on retrieved data]
+```
+
+---
+
+## debank-mcp in this project
+
+Integration lives in `src/agents/portfolio-analyzer-agent/tools.ts`:
+
+- **MCP server**: `@iqai/mcp-debank`, run via `npx -y @iqai/mcp-debank` with `stdio` transport.
+- **Config**: `McpConfig` plus `McpToolset`; `DEBANK_API_KEY` passed in `env` to the MCP process.
+- **Tools**: All DeBank-backed tools come from `debankMcpToolset.getTools()` and are passed into the agent.
+
+To **reuse debank-mcp in your own agent**: copy the `tools.ts` pattern, ensure `DEBANK_API_KEY` is set, and attach the fetched tools to your ADK-TS agent.
+
+---
+
+## Useful resources
+
+### debank-mcp & DeBank
+
+- [@iqai/mcp-debank on npm](https://www.npmjs.com/package/@iqai/mcp-debank)
+- [DeBank Cloud Open API](https://docs.cloud.debank.com/en/readme/open-api)
+- [DeBank API Reference](https://docs.cloud.debank.com/en/readme/api-pro-reference)
+
+### ADK-TS
+
+- [ADK-TS Documentation](https://adk.iqai.com/)
+- [ADK-TS CLI](https://adk.iqai.com/docs/cli)
+- [ADK-TS Samples](https://github.com/IQAIcom/adk-ts-samples)
+- [ADK-TS GitHub](https://github.com/IQAIcom/adk-ts)
+
+### Community
+
+- [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
+
+---
+
+## Contributing
+
+This sample is part of [ADK-TS Samples](https://github.com/IQAIcom/adk-ts-samples). Contributions that improve debank-mcp adoption or this reference integration are welcome. See the [Contributing Guide](../../CONTRIBUTION.md) for guidelines.
+
+---
+
+## Disclaimer
+
+This tool is for **education and reference** only. It does not provide financial, investment, or tax advice. Use DeBank data and any portfolio insights at your own risk. Always do your own research and consult qualified professionals for financial decisions.
+
+---
+
+**Ready to build agents with DeBank data?** Use **debank-mcp** and this sample to add portfolio-aware, multi-chain DeFi capabilities to your AI agents.
