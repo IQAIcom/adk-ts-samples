@@ -4,15 +4,17 @@ import { z } from "zod";
 config();
 
 /**
- * Environment variable schema definition for the simple agent.
+ * Environment variable schema for the DeBank Portfolio Analyzer agent.
  *
- * Defines and validates required environment variables including:
- * - DEBUG: Optional debug mode flag (defaults to "false")
- * - GOOGLE_API_KEY: Required API key for Google/Gemini model access
+ * Defines and validates environment variables:
+ * - ADK_DEBUG: Optional debug mode flag (defaults to false)
+ * - GOOGLE_API_KEY: Required API key for Google/Gemini LLM access
+ * - LLM_MODEL: Optional model identifier (defaults to "gemini-2.5-flash")
+ * - DEBANK_API_KEY: Required API key for DeBank Cloud / debank-mcp
  */
 export const envSchema = z.object({
 	ADK_DEBUG: z.coerce.boolean().default(false),
-	GOOGLE_API_KEY: z.string().optional(),
+	GOOGLE_API_KEY: z.string(),
 	LLM_MODEL: z.string().default("gemini-2.5-flash"),
 	DEBANK_API_KEY: z.string()
 });
