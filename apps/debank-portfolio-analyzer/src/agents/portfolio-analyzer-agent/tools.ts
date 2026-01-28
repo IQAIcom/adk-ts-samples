@@ -11,7 +11,6 @@ export const getDebankTools = async () => {
             args: ["-y", "@iqai/mcp-debank"],
             env: {
                 DEBANK_API_KEY: env.DEBANK_API_KEY,
-                PATH: process.env.PATH as string
             },
         }
     }
