@@ -1,0 +1,48 @@
+{
+	"name": "debank-portfolio-analyzer",
+	"version": "1.0.0",
+	"description": "AI-powered portfolio analyzer using DeBank data via debank-mcp; showcases debank-mcp adoption with ADK-TS",
+	"main": "dist/index.js",
+	"private": true,
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsx watch src/index.ts",
+		"start": "node dist/index.js",
+		"clean": "rimraf dist",
+		"prebuild": "pnpm clean"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/IQAIcom/adk-ts-samples.git"
+	},
+	"keywords": [
+		"ai",
+		"agent",
+		"adk-ts",
+		"debank",
+		"debank-mcp",
+		"mcp",
+		"portfolio",
+		"defi",
+		"IQAI"
+	],
+	"author": "IQAI",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/IQAIcom/adk-ts-samples/issues"
+	},
+	"homepage": "https://github.com/IQAIcom/adk-ts-samples/tree/main/apps/debank-portfolio-analyzer#readme",
+	"dependencies": {
+		"@iqai/adk": "0.6.2",
+		"dedent": "^1.7.0",
+		"dotenv": "^17.2.2",
+		"langfuse": "^3.38.6",
+		"zod": "^4.1.5"
+	},
+	"devDependencies": {
+		"@types/node": "^24.3.1",
+		"rimraf": "^6.0.1",
+		"tsx": "^4.20.5",
+		"typescript": "^5.9.2"
+	}
+}
