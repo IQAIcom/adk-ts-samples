@@ -1,7 +1,7 @@
 {
-	"name": "adk-simple-agent",
-	"version": "0.6.0",
-	"description": "adk-simple-agent is a starter project for creating simple adk agent",
+	"name": "debank-portfolio-analyzer",
+	"version": "1.0.0",
+	"description": "AI-powered portfolio analyzer using DeBank data via debank-mcp; showcases debank-mcp adoption with ADK-TS",
 	"main": "dist/index.js",
 	"private": true,
 	"scripts": {
@@ -13,21 +13,25 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/IQAICOM/adk-agent-starter.git"
+		"url": "git+https://github.com/IQAIcom/adk-ts-samples.git"
 	},
 	"keywords": [
 		"ai",
 		"agent",
-		"mcp",
 		"adk-ts",
+		"debank",
+		"debank-mcp",
+		"mcp",
+		"portfolio",
+		"defi",
 		"IQAI"
 	],
 	"author": "IQAI",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/IQAICOM/adk-agent-starter/issues"
+		"url": "https://github.com/IQAIcom/adk-ts-samples/issues"
 	},
-	"homepage": "https://github.com/IQAICOM/adk-agent-starter#readme",
+	"homepage": "https://github.com/IQAIcom/adk-ts-samples/tree/main/apps/debank-portfolio-analyzer#readme",
 	"dependencies": {
 		"@iqai/adk": "0.6.2",
 		"dedent": "^1.7.0",
