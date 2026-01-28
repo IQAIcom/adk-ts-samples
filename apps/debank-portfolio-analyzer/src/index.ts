@@ -1,7 +1,4 @@
 import { getPortfolioAnalyzerAgent } from "./agents/portfolio-analyzer-agent/agent.js";
-import * as dotenv from "dotenv";
-
-dotenv.config();
 
 /**
  * Main function demonstrating DeBank Portfolio Analyzer agent usage.
