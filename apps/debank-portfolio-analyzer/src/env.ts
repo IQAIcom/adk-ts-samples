@@ -16,7 +16,7 @@ export const envSchema = z.object({
 	ADK_DEBUG: z.coerce.boolean().default(false),
 	GOOGLE_API_KEY: z.string().min(1),
 	LLM_MODEL: z.string().default("gemini-2.5-flash"),
-	DEBANK_API_KEY: z.string().min(1)
+	DEBANK_API_KEY: z.string().min(1),
 });
 
 /**

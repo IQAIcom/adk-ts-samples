@@ -1,8 +1,9 @@
-import { AgentBuilder } from "@iqai/adk";
+import { AgentBuilder, InMemoryMemoryService } from "@iqai/adk";
 import { getResearcherAgent } from "./researcher-agent/agent";
 import { getAnalysisAgent } from "./analysis-report-agent/agent";
 import { getRecommenderAgent } from "./recommender-agent/agent";
 import { getWriterAgent } from "./writer-agent/agent";
+import { MAX_SEARCHES_PER_SESSION } from "../constants";
 
 /**
  * Creates and configures the root Research Assistant agent.
@@ -14,10 +15,13 @@ import { getWriterAgent } from "./writer-agent/agent";
  *   Step 3: Recommender → Produces actionable, prioritized recommendations
  *   Step 4: Writer      → Synthesizes everything into a final comprehensive report
  *
- * Each step reads from state populated by prior steps, creating a clear
- * data pipeline where each agent builds on the work of previous agents.
+ * Framework features demonstrated:
+ * - SequentialAgent for pipeline orchestration
+ * - Session state initialization with `app:` prefix for app-level config
+ * - Before/after agent callbacks for pipeline progress tracking (on sub-agents)
+ * - Memory service for storing and recalling past research sessions
  *
- * @returns A SequentialAgent instance that runs the full research pipeline
+ * @returns A BuiltAgent with runner, session, and memory service
  */
 
 export const getRootAgent = async () => {
@@ -26,15 +30,38 @@ export const getRootAgent = async () => {
 	const recommenderAgent = getRecommenderAgent();
 	const writerAgent = getWriterAgent();
 
-	return AgentBuilder.create("research_assistant")
-		.withDescription(
-			"Sequential research pipeline: research → analyze → recommend → write",
-		)
-		.asSequential([
-			researcherAgent,
-			analysisAgent,
-			recommenderAgent,
-			writerAgent,
-		])
-		.build();
+	// Memory service allows recalling past research sessions.
+	// Uses InMemoryMemoryService for this sample — swap with a
+	// persistent implementation (e.g. database-backed) for production.
+	const memoryService = new InMemoryMemoryService();
+
+	return (
+		AgentBuilder.create("research_assistant")
+			.withDescription(
+				"Sequential research pipeline: research → analyze → recommend → write",
+			)
+			.asSequential([
+				researcherAgent,
+				analysisAgent,
+				recommenderAgent,
+				writerAgent,
+			])
+			// Initialize session state with app-level configuration.
+			// The `app:` prefix makes these values shared across all sessions.
+			.withQuickSession({
+				appName: "research_assistant",
+				userId: "user",
+				state: {
+					"app:max_searches": MAX_SEARCHES_PER_SESSION,
+					"app:pipeline_steps": [
+						"researcher",
+						"analyst",
+						"recommender",
+						"writer",
+					],
+				},
+			})
+			.withMemory(memoryService)
+			.build()
+	);
 };

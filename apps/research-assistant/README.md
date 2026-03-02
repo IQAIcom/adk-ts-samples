@@ -16,6 +16,9 @@ An AI-powered research assistant built as a **SequentialAgent** pipeline. Give i
 - **Sequential Pipeline**: Uses ADK-TS `SequentialAgent` to enforce a strict 4-step execution order
 - **State-Driven Data Flow**: Each agent reads from and writes to shared state — no prompt engineering for workflow control
 - **Single Responsibility**: Each agent has one clear job (research, analyze, recommend, write)
+- **Before/After Callbacks**: Pipeline progress logging with execution timing on each agent step
+- **Session State Initialization**: Pre-configured `app:` prefixed state for app-level settings
+- **Memory Service**: Stores completed research sessions for cross-session recall and search
 - **Web Research**: Tavily API integration for high-quality web search with content extraction
 - **Composable Architecture**: Easy to add, remove, or swap pipeline steps
 - **Topic Agnostic**: Works with any research topic across all domains
@@ -26,12 +29,12 @@ This project demonstrates the **SequentialAgent** pattern in ADK-TS — a pipeli
 
 ### Pipeline Steps
 
-| Step | Agent | Input (from state) | Output (to state) | Job |
-|------|-------|--------------------|--------------------|-----|
-| 1 | **Researcher** | User's topic | `search_results` | Web search via Tavily (3 searches) |
-| 2 | **Analyst** | `search_results` | `analysis_report` | Extract insights, patterns, statistics |
-| 3 | **Recommender** | `search_results` + `analysis_report` | `recommendations` | Prioritized, actionable recommendations |
-| 4 | **Writer** | All 3 prior outputs | `final_report` | Synthesized comprehensive report |
+| Step | Agent           | Input (from state)                   | Output (to state) | Job                                     |
+| ---- | --------------- | ------------------------------------ | ----------------- | --------------------------------------- |
+| 1    | **Researcher**  | User's topic                         | `search_results`  | Web search via Tavily (3 searches)      |
+| 2    | **Analyst**     | `search_results`                     | `analysis_report` | Extract insights, patterns, statistics  |
+| 3    | **Recommender** | `search_results` + `analysis_report` | `recommendations` | Prioritized, actionable recommendations |
+| 4    | **Writer**      | All 3 prior outputs                  | `final_report`    | Synthesized comprehensive report        |
 
 ### Data Flow
 
@@ -65,15 +68,90 @@ src/
 │   │   └── agent.ts                    # Step 4: Final report synthesis
 │   └── tools/
 │       └── TavilySearchTool.ts         # Web search with state management
+├── callbacks.ts                        # Before/after agent callbacks
 ├── constants.ts                        # State key definitions
 ├── env.ts                              # Environment configuration
 └── index.ts                            # Entry point
 ```
 
+## Framework Features Demonstrated
+
+Beyond the sequential pipeline, this project showcases several ADK-TS framework features that are useful in production applications.
+
+### Before/After Agent Callbacks
+
+Each sub-agent is configured with `beforeAgentCallback` and `afterAgentCallback` to log pipeline progress with execution timing. Callbacks receive a `CallbackContext` providing access to the agent name, session state, and invocation metadata.
+
+```typescript
+// callbacks.ts
+import type { CallbackContext } from "@iqai/adk";
+
+export const beforeAgentCallback = async (ctx: CallbackContext) => {
+	console.log(`>> ${ctx.agentName} - Starting...`);
+	ctx.state[`temp:${ctx.agentName}_start`] = Date.now(); // temp: prefix = not persisted
+	return undefined; // Continue normal execution
+};
+
+// Applied to each sub-agent:
+new LlmAgent({
+	name: "analyst_agent",
+	beforeAgentCallback,
+	afterAgentCallback,
+	// ...
+});
+```
+
+### Session State Initialization
+
+The session is initialized with `app:` prefixed state values for app-level configuration. ADK-TS supports three state prefixes:
+
+- `app:` — Shared across all users and sessions (app-wide config)
+- `user:` — Shared across sessions for a specific user (user preferences)
+- `temp:` — Not persisted (temporary data like callback timestamps)
+- No prefix — Session-scoped (the default, used by pipeline state keys)
+
+```typescript
+AgentBuilder.create("research_assistant")
+	.asSequential([...agents])
+	.withQuickSession({
+		appName: "research_assistant",
+		userId: "user",
+		state: {
+			"app:max_searches": 3,
+			"app:pipeline_steps": ["researcher", "analyst", "recommender", "writer"],
+		},
+	})
+	.build();
+```
+
+### Memory Service
+
+After the pipeline completes, the research session is saved to memory using `InMemoryMemoryService`. This enables searching and recalling past research across sessions — useful for building knowledge bases or avoiding duplicate research.
+
+```typescript
+import { InMemoryMemoryService } from "@iqai/adk";
+
+const memoryService = new InMemoryMemoryService();
+
+// After pipeline completes:
+await memoryService.addSessionToMemory(session);
+
+// Later, search past research:
+const results = await memoryService.searchMemory({
+	appName: "research_assistant",
+	userId: "user",
+	query: "artificial intelligence healthcare",
+});
+```
+
+For production, swap `InMemoryMemoryService` with a persistent implementation backed by a database or vector store.
+
 ### How State Flows Through the Pipeline
 
 ```text
-Initial State: {}
+Initial State (pre-configured):
+  app:max_searches: 3
+  app:pipeline_steps: ["researcher", "analyst", "recommender", "writer"]
 
 After Step 1 (Researcher):
   search_results: [{ query, results, timestamp }, { ... }, { ... }]  // 3 search rounds
@@ -147,33 +225,39 @@ adk web   # Web interface
 Give the agent any research topic and it will run the full pipeline automatically:
 
 ```text
+Session state (app-level config):
+  app:max_searches   = 3
+  app:pipeline_steps = ["researcher","analyst","recommender","writer"]
+
 Research topic: "Impact of artificial intelligence on healthcare in 2025"
 
 Starting sequential pipeline...
+(Before/after callbacks will log each step)
 
-  Step 1: Researcher  - Gathering web data
-  Step 2: Analyst     - Extracting insights
-  Step 3: Recommender - Producing recommendations
-  Step 4: Writer      - Synthesizing final report
+>> Step 1/4: Researcher - Starting...
+<< Step 1/4: Researcher - Complete (12.3s)
 
-==================================================
+>> Step 2/4: Analyst - Starting...
+<< Step 2/4: Analyst - Complete (8.1s)
 
-[researcher_agent]: Research complete. Gathered data from 6 sources across 3 searches.
+>> Step 3/4: Recommender - Starting...
+<< Step 3/4: Recommender - Complete (6.7s)
 
-[analyst_agent]: === RESEARCH ANALYSIS === ...
-
-[recommender_agent]: === RECOMMENDATIONS === ...
-
-[writer_agent]: === FINAL RESEARCH REPORT === ...
+>> Step 4/4: Writer - Starting...
+<< Step 4/4: Writer - Complete (15.2s)
 
 ==================================================
-  Pipeline Complete - State Summary
+  Final Report
 ==================================================
 
-  search_results:  3 search rounds collected
-  analysis_report: 4231 chars
-  recommendations: 3187 chars
-  final_report:    9542 chars
+=== FINAL RESEARCH REPORT === ...
+
+==================================================
+  Memory Service Demo
+==================================================
+
+Research session saved to memory.
+Search for "Impact of artificial intelligence..." found 1 stored session(s).
 ```
 
 ## Real-World Use Cases
@@ -216,12 +300,12 @@ The researcher gathers market data and competitor pricing, the analyst evaluates
 
 The core pattern generalizes to any domain:
 
-| Pipeline Step | What to Customize | Example |
-|---------------|-------------------|---------|
-| **Researcher** | Swap or add tools (APIs, databases, document loaders) | Replace Tavily with Crunchbase API for company research |
-| **Analyst** | Adjust instructions for domain-specific analysis | Add financial ratio analysis for due diligence |
-| **Recommender** | Change recommendation framework and priorities | Use risk matrices for compliance checking |
-| **Writer** | Modify output format and tone | Generate legal briefs instead of research reports |
+| Pipeline Step   | What to Customize                                     | Example                                                 |
+| --------------- | ----------------------------------------------------- | ------------------------------------------------------- |
+| **Researcher**  | Swap or add tools (APIs, databases, document loaders) | Replace Tavily with Crunchbase API for company research |
+| **Analyst**     | Adjust instructions for domain-specific analysis      | Add financial ratio analysis for due diligence          |
+| **Recommender** | Change recommendation framework and priorities        | Use risk matrices for compliance checking               |
+| **Writer**      | Modify output format and tone                         | Generate legal briefs instead of research reports       |
 
 You can also **add or remove steps**. Need a fact-checker? Insert it between analyst and recommender. Want to skip recommendations? Remove the recommender agent from the `subAgents` array.
 

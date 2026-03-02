@@ -1,5 +1,6 @@
 import { LlmAgent } from "@iqai/adk";
 import { env } from "../../env";
+import { beforeAgentCallback, afterAgentCallback } from "../../callbacks";
 import {
 	tavilySearchTool,
 	clearSearchStateTool,
@@ -23,6 +24,8 @@ export const getResearcherAgent = () => {
 			"Performs web research using Tavily to gather comprehensive data on any topic",
 		model: env.LLM_MODEL,
 		tools: [tavilySearchTool, clearSearchStateTool],
+		beforeAgentCallback,
+		afterAgentCallback,
 		disallowTransferToParent: true,
 		disallowTransferToPeers: true,
 		instruction: `You are a RESEARCH SPECIALIST. Your ONLY job is to gather comprehensive data on a given topic through web searches.

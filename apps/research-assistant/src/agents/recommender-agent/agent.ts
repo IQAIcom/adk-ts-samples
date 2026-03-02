@@ -1,6 +1,7 @@
 import { LlmAgent } from "@iqai/adk";
 import { env } from "../../env";
 import { STATE_KEYS } from "../../constants";
+import { beforeAgentCallback, afterAgentCallback } from "../../callbacks";
 
 /**
  * Step 3: Recommender Agent
@@ -20,6 +21,8 @@ export const getRecommenderAgent = () => {
 			"Produces actionable, prioritized recommendations based on research data and analysis",
 		model: env.LLM_MODEL,
 		outputKey: STATE_KEYS.RECOMMENDATIONS,
+		beforeAgentCallback,
+		afterAgentCallback,
 		disallowTransferToParent: true,
 		disallowTransferToPeers: true,
 		instruction: `You are a RECOMMENDATIONS SPECIALIST. Your ONLY job is to produce actionable recommendations based on research and analysis.

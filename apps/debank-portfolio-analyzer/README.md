@@ -96,7 +96,6 @@ src/
    ```
 
 3. **Get API keys**
-
    - **Google AI**: [Google AI Studio](https://aistudio.google.com/api-keys) → Create API key.
    - **DeBank**: Register at [DeBank](https://debank.com/) and use [DeBank Cloud Open API](https://docs.cloud.debank.com/en/readme/open-api) to obtain your access key.
 
