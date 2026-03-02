@@ -1,0 +1,838 @@
+---
+title: "Building a Research Assistant Agent with ADK-TS — Part 1: The Sequential Pipeline"
+description:
+  "Learn how to build a multi-step AI research assistant using ADK-TS's SequentialAgent pattern.
+  This hands-on guide walks you through creating a 4-agent pipeline that researches, analyzes,
+  recommends, and writes comprehensive reports."
+tags: ["adk-ts", "typescript", "ai-agents", "sequential-agent", "tutorial"]
+---
+
+# Building a Research Assistant Agent with ADK-TS — Part 1: The Sequential Pipeline
+
+If you've ever asked an LLM to "research a topic and write a report," you know the result is...
+fine. It hallucinates sources, skips analysis, and gives you a wall of text that reads like a
+Wikipedia summary. The problem isn't the model — it's the approach. You're asking one prompt to do
+four different jobs.
+
+What if, instead, you broke that workflow into specialized steps? One agent that _only_ searches the
+web. Another that _only_ analyzes data. A third that _only_ produces recommendations. And a final
+one that _only_ writes the report. Each agent is great at its single job, and together they produce
+something far better than any one prompt could.
+
+That's exactly what we're going to build in this guide. Using the
+[ADK-TS](https://github.com/IQAICOM/adk-ts) framework, we'll create a **SequentialAgent** — a
+pipeline that runs 4 agents in strict order, with each agent building on the previous one's output
+through shared state.
+
+By the end, you'll have a working research assistant that takes any topic and produces a
+comprehensive report backed by real web sources. More importantly, you'll understand a pattern you
+can adapt for dozens of real-world use cases.
+
+## TL;DR
+
+- **SequentialAgent** runs sub-agents in a strict, defined order — no prompt engineering needed for
+  workflow control
+- Each agent has a **single responsibility**: research, analyze, recommend, or write
+- Agents communicate through **shared session state**, not by passing messages to each other
+- The `outputKey` property automatically saves an agent's response to state under a specific key
+- Agents read from state using `{state_key}` template syntax in their instructions
+- ADK-TS provides a built-in **WebSearchTool** (Tavily-powered) — no custom tool code needed
+- This **gather → analyze → recommend → synthesize** pattern generalizes to competitive
+  intelligence, due diligence, content marketing, legal research, and more
+
+## Prerequisites
+
+Before we start, make sure you have:
+
+- **Node.js 18+** installed
+- **TypeScript** familiarity (you don't need to be an expert, but you should know interfaces and
+  async/await)
+- **pnpm** package manager (or npm/yarn — adjust commands accordingly)
+- An **OpenAI API key** (or another LLM provider supported by ADK-TS)
+- A **Tavily API key** for web search ([sign up here](https://app.tavily.com/) — they have a
+  generous free tier)
+- Basic understanding of what AI agents are (if you've used ChatGPT, you're good)
+
+## Understanding Sequential Agents
+
+Before we write any code, let's understand why the SequentialAgent pattern exists and when you'd
+reach for it.
+
+### The Problem with Single-Agent Workflows
+
+Most LLM applications follow this pattern: stuff everything into one big prompt, hope for the best.
+For simple tasks, this works. But for multi-step workflows — where each step requires different
+expertise, different data, or different output formats — a single agent struggles.
+
+Think about how a real research team works. You don't have one person doing the literature search,
+the statistical analysis, the strategy recommendations, _and_ the final report writing. Each role
+requires different skills and a different mindset. The same principle applies to AI agents.
+
+### What is a SequentialAgent?
+
+A SequentialAgent in ADK-TS is an orchestrator that runs a list of sub-agents one after another, in
+a fixed order. It's not an LLM itself — it's a coordination mechanism. Each sub-agent runs to
+completion before the next one starts.
+
+Here's what makes it powerful:
+
+1. **Strict ordering** — Step 2 _always_ runs after Step 1. No ambiguity, no prompt-engineering to
+   enforce execution order.
+2. **Shared state** — All agents read from and write to the same session state. Agent 1 writes
+   `search_results`, Agent 2 reads `search_results` and writes `analysis_report`, and so on.
+3. **Single responsibility** — Each agent has one job and one instruction set. This makes agents
+   easier to test, debug, and improve independently.
+4. **Composability** — You can add, remove, or swap steps without rewriting the whole system. Need a
+   fact-checker? Insert it between the analyst and the writer.
+
+### Our Research Pipeline
+
+Here's the pipeline we're building:
+
+```text
+Topic → [Researcher] → [Analyst] → [Recommender] → [Writer] → Final Report
+```
+
+| Step | Agent           | Reads from State                     | Writes to State   | Job                                       |
+| ---- | --------------- | ------------------------------------ | ----------------- | ----------------------------------------- |
+| 1    | **Researcher**  | User's topic                         | `search_results`  | Web search via WebSearchTool (3 searches) |
+| 2    | **Analyst**     | `search_results`                     | `analysis_report` | Extract insights, patterns, statistics    |
+| 3    | **Recommender** | `search_results` + `analysis_report` | `recommendations` | Prioritized, actionable recommendations   |
+| 4    | **Writer**      | All 3 prior outputs                  | `final_report`    | Synthesized comprehensive report          |
+
+Each agent reads what it needs from state, does its work, and writes its output back to state. The
+next agent picks up from there. No agent needs to know about the others — they only know about the
+state keys they depend on.
+
+## How to Build the Research Assistant
+
+Let's build this step by step. I'll show you every file and explain the decisions behind the code.
+
+### Step 1: Project Setup
+
+Start by creating a new project and installing dependencies:
+
+```bash
+mkdir research-assistant && cd research-assistant
+pnpm init
+pnpm add @iqai/adk dotenv zod
+pnpm add -D typescript @types/node tsx rimraf
+```
+
+Create a `tsconfig.json`:
+
+```json
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"outDir": "dist",
+		"strict": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true
+	},
+	"include": ["src"]
+}
+```
+
+And set up your project structure:
+
+```text
+src/
+├── agents/
+│   ├── agent.ts                        # Root SequentialAgent
+│   ├── researcher-agent/
+│   │   └── agent.ts                    # Step 1: Web research
+│   ├── analysis-report-agent/
+│   │   └── agent.ts                    # Step 2: Analysis
+│   ├── recommender-agent/
+│   │   └── agent.ts                    # Step 3: Recommendations
+│   └── writer-agent/
+│       └── agent.ts                    # Step 4: Final report
+├── constants.ts                        # State key definitions
+├── env.ts                              # Environment config
+└── index.ts                            # Entry point
+```
+
+### Step 2: Define Your State Keys
+
+This is a small file, but it's one of the most important decisions in the project. State keys are
+how your agents communicate — get them right and the whole pipeline flows naturally.
+
+```typescript
+// src/constants.ts
+
+/**
+ * State key constants for consistent state management across agents.
+ * Data flows through the sequential pipeline via these state keys:
+ * researcher → analyst → recommender → writer
+ */
+export const STATE_KEYS = {
+	SEARCH_RESULTS: "search_results",
+	ANALYSIS_REPORT: "analysis_report",
+	RECOMMENDATIONS: "recommendations",
+	FINAL_REPORT: "final_report",
+} as const;
+
+/** Maximum number of web searches the researcher agent can perform. */
+export const MAX_SEARCHES = 3;
+```
+
+Why define these as constants? Two reasons. First, typos in state key strings are a silent killer —
+if your analyst reads `search_result` (singular) but your researcher writes `search_results`
+(plural), you'll get an empty state with no error. Constants catch this at compile time. Second,
+they serve as documentation. Glancing at this file tells you the entire data flow of your pipeline.
+
+### Step 3: Configure Environment Variables
+
+We use [Zod](https://zod.dev/) to validate environment variables at startup. This means you get a
+clear error message immediately if something's missing, rather than a cryptic failure deep in the
+pipeline.
+
+```typescript
+// src/env.ts
+
+import { config } from "dotenv";
+import { z } from "zod";
+
+config();
+
+export const envSchema = z.object({
+	ADK_DEBUG: z.coerce.boolean().default(false),
+	OPENAI_API_KEY: z.string(),
+	LLM_MODEL: z.string().default("gpt-4o-mini"),
+	TAVILY_API_KEY: z.string(),
+});
+
+export const env = envSchema.parse(process.env);
+```
+
+Create a `.env` file in your project root:
+
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+LLM_MODEL=gpt-4o-mini
+TAVILY_API_KEY=your_tavily_api_key_here
+```
+
+The `TAVILY_API_KEY` is required because the built-in `WebSearchTool` uses Tavily under the hood.
+Sign up at [app.tavily.com](https://app.tavily.com/) for a free API key.
+
+### Step 4: Understand the Built-in WebSearchTool
+
+Here's where ADK-TS saves you a lot of work. Instead of writing a custom Tavily integration from
+scratch, the framework provides a built-in `WebSearchTool` that handles everything — API calls,
+response parsing, error handling, and configurable search parameters.
+
+All you need is a `TAVILY_API_KEY` environment variable, and you get a fully-featured web search
+tool with support for search depth, result limits, topic categories, time ranges, raw content
+extraction, and more. Zero custom tool code required.
+
+```typescript
+import { WebSearchTool } from "@iqai/adk";
+
+// That's it. One import, one instantiation.
+const searchTool = new WebSearchTool();
+```
+
+The tool accepts a `query` parameter (required) plus optional parameters like `maxResults`,
+`searchDepth`, `topic`, `includeRawContent`, and others. The agent decides which parameters to use
+based on its instruction — you just hand it the tool.
+
+This is a key ADK-TS philosophy: **common capabilities should be built-in**, not reimplemented in
+every project. Web search, file operations, and other standard tools are provided out of the box so
+you can focus on your agent's unique logic.
+
+<NewsletterCTATwo
+	title="Enjoying this guide?"
+	description="Get more hands-on AI agent tutorials and ADK-TS tips delivered to your inbox."
+/>
+
+### Step 5: Create the Researcher Agent (Step 1)
+
+Now we build the first agent in the pipeline. The researcher's only job is to execute 3 targeted web
+searches using the built-in `WebSearchTool` and compile the results.
+
+```typescript
+// src/agents/researcher-agent/agent.ts
+
+import { LlmAgent, WebSearchTool } from "@iqai/adk";
+import { env } from "../../env";
+import { STATE_KEYS } from "../../constants";
+
+export const getResearcherAgent = () => {
+	return new LlmAgent({
+		name: "researcher_agent",
+		description:
+			"Performs web research using the built-in WebSearchTool to gather comprehensive data on any topic",
+		model: env.LLM_MODEL,
+		tools: [new WebSearchTool()],
+		outputKey: STATE_KEYS.SEARCH_RESULTS,
+		disallowTransferToParent: true,
+		disallowTransferToPeers: true,
+		instruction: `You are a RESEARCH SPECIALIST. Your ONLY job is to gather comprehensive data on a given topic through web searches.
+
+RESEARCH PROCESS:
+Execute EXACTLY 3 targeted searches using web_search:
+
+   SEARCH 1 - Foundation: Broad overview of the topic
+   Example query: "[topic] overview fundamentals"
+
+   SEARCH 2 - Depth: Specific details, methods, evidence, or practices
+   Example query: "[topic] best practices implementation methods"
+
+   SEARCH 3 - Currency: Latest trends, statistics, and recent developments
+   Example query: "[topic] latest trends statistics ${new Date().getFullYear()}"
+
+For each search, use these parameters:
+- maxResults: 3
+- includeRawContent: "markdown"
+
+After all 3 searches complete, compile ALL results into a structured summary:
+
+=== RESEARCH DATA ===
+
+## Search 1: [query used]
+For each result:
+- **Title**: [title]
+- **URL**: [url]
+- **Content**: [key content/findings]
+
+## Search 2: [query used]
+[Same format]
+
+## Search 3: [query used]
+[Same format]
+
+## Research Summary
+- Total sources found: [count]
+- Search queries used: [list all 3]
+- Date of research: [today's date]
+
+RULES:
+- Execute exactly 3 searches - no more, no less
+- Do NOT analyze or interpret the data - just gather and compile it
+- Do NOT generate recommendations or reports
+- Include ALL source URLs and titles for proper attribution
+- After compiling your research summary, STOP
+- Do NOT transfer to any other agent`,
+	});
+};
+```
+
+A few design decisions to notice:
+
+- **`new WebSearchTool()`**: One line. No custom tool code, no Tavily client setup, no state
+  management logic. The framework handles it all.
+- **`outputKey: STATE_KEYS.SEARCH_RESULTS`**: The researcher's compiled text output is automatically
+  saved to state under the `search_results` key. Downstream agents read it via the
+  `{search_results}` template. This gives the researcher a chance to organize and structure the raw
+  search data before passing it along.
+- **`disallowTransferToParent` and `disallowTransferToPeers`**: These prevent the agent from trying
+  to delegate work. In a SequentialAgent, each agent should do its own job and finish — not hand off
+  to siblings.
+- **Explicit search strategy**: The instruction tells the agent to search with three different
+  angles (broad, deep, current). This produces better research coverage than three variations of the
+  same query.
+
+### Step 6: Create the Analyst Agent (Step 2)
+
+The analyst reads the raw search data and extracts meaningful insights. This is where the
+`outputKey` and state template syntax come into play.
+
+```typescript
+// src/agents/analysis-report-agent/agent.ts
+
+import { LlmAgent } from "@iqai/adk";
+import { env } from "../../env";
+import { STATE_KEYS } from "../../constants";
+
+export const getAnalysisAgent = () => {
+	return new LlmAgent({
+		name: "analyst_agent",
+		description:
+			"Analyzes raw research data to extract key insights, patterns, and structured findings",
+		model: env.LLM_MODEL,
+		outputKey: STATE_KEYS.ANALYSIS_REPORT,
+		disallowTransferToParent: true,
+		disallowTransferToPeers: true,
+		instruction: `You are an ANALYSIS SPECIALIST. Your ONLY job is to analyze research data and extract meaningful insights.
+
+RESEARCH DATA:
+{${STATE_KEYS.SEARCH_RESULTS}}
+
+ANALYSIS PROCESS:
+Using the research data above, produce a structured analysis that:
+- Synthesizes information across all sources into coherent insights
+- Identifies key patterns, trends, and emerging themes
+- Extracts important statistics and data points with proper context
+- Evaluates source credibility and information quality
+- Highlights areas of expert consensus and disagreement
+- Notes knowledge gaps or areas needing further investigation
+
+OUTPUT FORMAT (800-1200 words):
+
+=== RESEARCH ANALYSIS ===
+
+# [Topic] - Analysis
+
+## Critical Insights
+- [Key insight with supporting evidence]
+
+## Key Statistics and Data Points
+- [Quantitative findings with source context]
+
+## Emerging Patterns and Themes
+- [Recurring themes across multiple sources]
+
+## Expert Consensus and Disagreements
+- [Where sources align and diverge]
+
+## Information Quality Assessment
+[Brief evaluation of source reliability and coverage gaps]
+
+## Sources
+[Numbered list of all sources used]
+
+RULES:
+- Use ONLY the research data provided - do not fabricate information
+- Focus on analysis, not recommendations (that comes in the next step)
+- Be specific - cite sources when stating facts or statistics
+- Complete your analysis and STOP`,
+	});
+};
+```
+
+Two critical features to understand:
+
+**`outputKey: STATE_KEYS.ANALYSIS_REPORT`** — This tells ADK-TS: "Whatever this agent outputs as its
+final response, save it to session state under the key `analysis_report`." This is how the analyst's
+output becomes available to the recommender and writer agents. You don't have to manually handle
+state — the framework does it for you.
+
+**`{${STATE_KEYS.SEARCH_RESULTS}}`** — This is a state template. At runtime, ADK-TS replaces
+`{search_results}` with the actual value stored in session state under that key. Since the
+researcher agent (Step 1) already wrote search data to `search_results`, the analyst automatically
+receives it in its instruction. The `${STATE_KEYS.SEARCH_RESULTS}` part is just TypeScript's
+template literal resolving the constant to the string `"search_results"` — the curly braces `{}` are
+the ADK-TS state template syntax.
+
+### Step 7: Create the Recommender Agent (Step 3)
+
+The recommender bridges analysis and action. It reads both the raw research data and the analyst's
+insights to produce prioritized recommendations.
+
+```typescript
+// src/agents/recommender-agent/agent.ts
+
+import { LlmAgent } from "@iqai/adk";
+import { env } from "../../env";
+import { STATE_KEYS } from "../../constants";
+
+export const getRecommenderAgent = () => {
+	return new LlmAgent({
+		name: "recommender_agent",
+		description: "Produces actionable, prioritized recommendations based on research and analysis",
+		model: env.LLM_MODEL,
+		outputKey: STATE_KEYS.RECOMMENDATIONS,
+		disallowTransferToParent: true,
+		disallowTransferToPeers: true,
+		instruction: `You are a RECOMMENDATIONS SPECIALIST. Your ONLY job is to produce actionable recommendations based on research and analysis.
+
+RESEARCH DATA:
+{${STATE_KEYS.SEARCH_RESULTS}}
+
+ANALYSIS REPORT:
+{${STATE_KEYS.ANALYSIS_REPORT}}
+
+RECOMMENDATION PROCESS:
+Using the research data and analysis above, produce prioritized recommendations that:
+- Translate analytical insights into practical, actionable guidance
+- Prioritize by impact and feasibility
+- Provide specific implementation steps where possible
+- Address risks identified in the analysis
+- Consider different stakeholder perspectives
+- Include both immediate actions and long-term strategies
+
+OUTPUT FORMAT (600-1000 words):
+
+=== RECOMMENDATIONS ===
+
+# [Topic] - Recommendations
+
+## High Priority (Immediate Action)
+1. **[Recommendation title]**
+   - What: [Specific action to take]
+   - Why: [Evidence from research/analysis]
+   - How: [Brief implementation guidance]
+
+## Medium Priority (Short-term)
+1. **[Recommendation title]**
+   - What: [Specific action]
+   - Why: [Supporting evidence]
+   - How: [Implementation guidance]
+
+## Long-term Strategic Considerations
+- [Forward-looking recommendation based on trends]
+
+## Key Risks to Monitor
+- [Risk with mitigation suggestion]
+
+RULES:
+- Base ALL recommendations on the provided research data and analysis
+- Be specific and actionable - avoid vague advice
+- Prioritize by impact: what will make the biggest difference first?
+- Do NOT repeat the analysis - focus purely on "what to do about it"
+- Complete your recommendations and STOP`,
+	});
+};
+```
+
+Notice the recommender reads from _two_ state keys: `search_results` and `analysis_report`. This is
+a strength of the state-driven approach — each agent can pull from any combination of prior outputs.
+The recommender doesn't just work from the analysis; it also references the raw research data to
+ensure its recommendations are grounded in primary sources.
+
+### Step 8: Create the Writer Agent (Step 4)
+
+The final agent synthesizes everything into a polished report:
+
+```typescript
+// src/agents/writer-agent/agent.ts
+
+import { LlmAgent } from "@iqai/adk";
+import { env } from "../../env";
+import { STATE_KEYS } from "../../constants";
+
+export const getWriterAgent = () => {
+	return new LlmAgent({
+		name: "writer_agent",
+		description: "Synthesizes research, analysis, and recommendations into a polished final report",
+		model: env.LLM_MODEL,
+		outputKey: STATE_KEYS.FINAL_REPORT,
+		disallowTransferToParent: true,
+		disallowTransferToPeers: true,
+		instruction: `You are a PROFESSIONAL REPORT WRITER. Your ONLY job is to synthesize all prior research outputs into one comprehensive final report.
+
+RESEARCH DATA:
+{${STATE_KEYS.SEARCH_RESULTS}}
+
+ANALYSIS REPORT:
+{${STATE_KEYS.ANALYSIS_REPORT}}
+
+RECOMMENDATIONS:
+{${STATE_KEYS.RECOMMENDATIONS}}
+
+WRITING PROCESS:
+Synthesize ALL three inputs above into a single, polished research report that:
+- Weaves together raw findings, analytical insights, and recommendations into a coherent narrative
+- Maintains professional tone appropriate for decision-makers
+- Presents information in a logical flow from context to findings to action
+- Includes all key statistics and evidence from the research
+- Incorporates the prioritized recommendations naturally
+- Provides proper source attribution throughout
+
+OUTPUT FORMAT (2000-3000 words):
+
+=== FINAL RESEARCH REPORT ===
+
+# [Topic] - Comprehensive Research Report
+
+## Executive Summary
+## Introduction
+## Current Landscape
+## Key Findings
+## Analysis and Implications
+## Statistics and Data
+## Recommendations
+## Future Outlook
+## Conclusion
+## References
+
+RULES:
+- This is a SYNTHESIS - do not simply copy-paste from prior outputs
+- Weave all three inputs into a unified, professional narrative
+- Every claim should be traceable to the research data
+- Include ALL references from the research
+- Complete your report and STOP`,
+	});
+};
+```
+
+The writer reads from all three prior state keys, giving it the full picture. Its `outputKey` of
+`final_report` means the synthesized report is available in state after the pipeline completes.
+
+### Step 9: Wire It All Together with SequentialAgent
+
+Now the fun part — connecting all four agents into a sequential pipeline using `AgentBuilder`:
+
+```typescript
+// src/agents/agent.ts
+
+import { AgentBuilder } from "@iqai/adk";
+import { getResearcherAgent } from "./researcher-agent/agent";
+import { getAnalysisAgent } from "./analysis-report-agent/agent";
+import { getRecommenderAgent } from "./recommender-agent/agent";
+import { getWriterAgent } from "./writer-agent/agent";
+
+export const getRootAgent = async () => {
+	const researcherAgent = getResearcherAgent();
+	const analysisAgent = getAnalysisAgent();
+	const recommenderAgent = getRecommenderAgent();
+	const writerAgent = getWriterAgent();
+
+	return AgentBuilder.create("research_assistant")
+		.withDescription("Sequential research pipeline: research → analyze → recommend → write")
+		.asSequential([researcherAgent, analysisAgent, recommenderAgent, writerAgent])
+		.build();
+};
+```
+
+That's it. `AgentBuilder.create()` starts the builder, `.asSequential()` tells it this is a
+SequentialAgent with these sub-agents in this order, and `.build()` produces a ready-to-run agent
+with a runner and session.
+
+The order of the array passed to `.asSequential()` _is_ the execution order. The researcher runs
+first, the analyst second, the recommender third, and the writer last. This is enforced by the
+framework — no amount of prompt engineering can change the order.
+
+### Step 10: Create the Entry Point
+
+Finally, wire everything into a runnable script:
+
+```typescript
+// src/index.ts
+
+import * as dotenv from "dotenv";
+import { getRootAgent } from "./agents/agent";
+
+dotenv.config();
+
+async function main() {
+	const { runner } = await getRootAgent();
+
+	console.log("==============================");
+	console.log("  Research Assistant Pipeline");
+	console.log("==============================\n");
+
+	const topic = "Impact of artificial intelligence on healthcare in 2025";
+
+	console.log(`Research topic: "${topic}"\n`);
+	console.log("Starting sequential pipeline...\n");
+
+	try {
+		const result = await runner.ask(topic);
+
+		console.log("\n" + "=".repeat(50));
+		console.log("  Final Report");
+		console.log("=".repeat(50) + "\n");
+		console.log(result);
+	} catch (error) {
+		console.error("Error running research pipeline:", error);
+	}
+}
+
+main().catch(console.error);
+```
+
+The `runner.ask(topic)` call kicks off the entire pipeline. It passes the topic to the first agent
+(researcher), which searches the web. When the researcher finishes, the framework automatically
+moves to the analyst, then the recommender, then the writer. The final result is the writer's
+output.
+
+### Step 11: Run It
+
+Add a dev script to your `package.json`:
+
+```json
+{
+	"scripts": {
+		"dev": "tsx watch src/index.ts"
+	}
+}
+```
+
+Then run:
+
+```bash
+pnpm dev
+```
+
+You should see the pipeline execute each step and produce a comprehensive research report. The first
+run takes 30-60 seconds depending on your LLM and the topic complexity.
+
+## Common Challenges and Solutions
+
+### "My agent isn't reading state from the previous agent"
+
+This is almost always a state key mismatch. Check that:
+
+- The `outputKey` in the writing agent matches the `{state_key}` template in the reading agent
+- You're using the constants from `STATE_KEYS`, not raw strings
+- The writing agent actually produces output (check for instruction issues that cause empty
+  responses)
+
+### "The researcher agent makes too many or too few searches"
+
+LLMs don't always follow counting instructions perfectly. If the agent consistently makes fewer than
+3 searches, make the instruction more explicit — the current wording "Execute EXACTLY 3 targeted
+searches" works well. If it makes more, prompt-level fixes are unreliable. The proper solution is a
+`beforeToolCallback` that enforces the limit at the framework level — we cover this in
+[Part 2](/building-research-assistant-agent-adk-ts-part-2) under "Before Tool Callback (Search
+Limit)."
+
+### "The final report is just a copy-paste of prior outputs"
+
+This happens when the writer agent's instruction isn't strong enough. The key is the word
+"synthesize" — explicitly tell the agent this is a _synthesis_, not a compilation. The instruction
+should emphasize weaving inputs into a unified narrative. Also, make sure the output format gives
+the writer structure to work with (sections like Executive Summary, Key Findings, Recommendations).
+
+### "State is empty or undefined"
+
+If you're reading state too early (before the writing agent has run), you'll get `undefined`. In a
+SequentialAgent, this shouldn't happen because execution order is guaranteed. If it does, check that
+your agents are correctly listed in the `.asSequential()` array in the right order.
+
+## Advanced Tips
+
+### Swap the LLM per Agent
+
+Not every agent needs the same model. The researcher and recommender can use a cheaper, faster model
+(like `gpt-4o-mini`), while the analyst and writer might benefit from a more capable model (like
+`gpt-4o`). ADK-TS lets you set the `model` property independently on each agent:
+
+```typescript
+new LlmAgent({
+	name: "writer_agent",
+	model: "gpt-4o", // More capable model for the final synthesis
+	// ...
+});
+```
+
+### Add or Remove Pipeline Steps
+
+Want to add a fact-checker between the analyst and writer? Create a new `LlmAgent`, and insert it in
+the `.asSequential()` array:
+
+```typescript
+.asSequential([
+  researcherAgent,
+  analysisAgent,
+  factCheckerAgent, // New step
+  recommenderAgent,
+  writerAgent,
+])
+```
+
+Want to skip recommendations and go straight from analysis to writing? Remove the recommender from
+the array and update the writer's instruction to not reference `{recommendations}`.
+
+### Use Different Search Tools
+
+The built-in `WebSearchTool` is just one option. You could replace or supplement it with:
+
+- A custom tool built with `createTool` that searches internal databases
+- A document loader tool that reads uploaded PDFs
+- A web scraping tool for specific websites
+- Multiple tools that the researcher chooses between
+
+The tool architecture is modular — swap the tools array on the researcher agent and update its
+instructions accordingly. ADK-TS also provides other built-in tools like `WebFetchTool` for fetching
+specific URLs.
+
+## Conclusion
+
+You've built a fully functional research assistant using ADK-TS's SequentialAgent pattern. The key
+insight isn't about this specific project — it's about the **pattern**. The gather → analyze →
+recommend → synthesize pipeline applies to dozens of real-world workflows:
+
+- **Competitive intelligence**: Swap WebSearchTool for company data APIs
+- **Due diligence**: Point the researcher at financial databases
+- **Content marketing**: Feed in niche topics, get publish-ready articles
+- **Legal research**: Connect to case law databases
+- **Academic literature reviews**: Use Semantic Scholar or arXiv APIs
+
+The SequentialAgent handles the orchestration. State handles the data flow. Each agent focuses on
+its single job. That's the power of the pattern.
+
+In **Part 2**, we'll take this further by adding framework features that make the pipeline
+production-ready: before/after agent callbacks for progress tracking, a before tool callback for
+enforcing search limits, session state initialization for app-level configuration, and a memory
+service for storing and recalling past research across sessions.
+
+## Useful Resources
+
+- [ADK-TS Documentation](https://adk.iqai.com/) — Official framework docs with API reference
+- [ADK-TS GitHub Repository](https://github.com/IQAICOM/adk-ts) — Source code and issues
+- [Tavily API Documentation](https://docs.tavily.com/welcome) — Web search API reference
+- [ADK-TS Samples Repository](https://github.com/IQAIcom/adk-ts-samples) — More example projects
+  using ADK-TS
+
+## Frequently Asked Questions
+
+### What is a SequentialAgent in ADK-TS?
+
+A SequentialAgent is an orchestrator that runs a list of sub-agents in a strict, fixed order. It
+doesn't use an LLM itself — it's a coordination mechanism that ensures Step 1 completes before Step
+2 starts, Step 2 before Step 3, and so on. Agents communicate through shared session state rather
+than direct messages.
+
+### How do agents share data in a sequential pipeline?
+
+Through session state. Each agent writes its output to a specific state key using the `outputKey`
+property. Downstream agents read that data using `{state_key}` template syntax in their
+instructions. For example, the researcher writes to `search_results`, and the analyst reads from
+`{search_results}` in its instruction.
+
+### Can I use a different LLM provider instead of OpenAI?
+
+Yes. ADK-TS supports multiple LLM providers. Change the `model` property on each `LlmAgent` to use a
+different provider's model identifier. The framework handles the provider abstraction.
+
+### Do I need a Tavily API key to run this project?
+
+Yes. The built-in `WebSearchTool` uses Tavily under the hood and requires a `TAVILY_API_KEY`
+environment variable. Tavily offers a generous free tier — sign up at
+[app.tavily.com](https://app.tavily.com/).
+
+### How is this different from just using a long prompt with multiple instructions?
+
+A single prompt doing multiple jobs tends to lose focus, skip steps, and produce inconsistent
+output. With a SequentialAgent, each step is a separate agent with its own instruction, model, and
+tools. The framework guarantees execution order. Each agent can be tested, debugged, and improved
+independently. The result quality is significantly higher because each agent is optimized for one
+specific task.
+
+### Can I run agents in parallel instead of sequentially?
+
+ADK-TS supports parallel execution patterns as well, but for a research pipeline where each step
+depends on the previous one's output, sequential execution is the right choice. You'd use parallel
+agents for independent tasks that don't share dependencies.
+
+### How do I add a new step to the pipeline?
+
+Create a new `LlmAgent` with its own instruction and `outputKey`, then add it to the
+`.asSequential()` array at the position you want it to run. Update downstream agents' instructions
+if they need to read the new state key.
+
+### What happens if one agent in the pipeline fails?
+
+If an agent throws an error, the pipeline stops and the error propagates up to the `runner.ask()`
+call. The try/catch in the entry point handles this. In production, you'd want to add retry logic or
+fallback handling.
+
+### Is there a limit to how many agents I can chain?
+
+There's no hard limit from the framework. Practically, each agent adds latency (one LLM call per
+agent), so consider the trade-off between granularity and speed. Four to six agents is a sweet spot
+for most pipelines.
+
+### Can I use this pattern for non-research tasks?
+
+Absolutely. The sequential pipeline pattern works for any multi-step workflow: document processing
+pipelines, data transformation chains, content creation workflows, code review systems, and more.
+The research assistant is just one application of the pattern.
+
+<ConnectWithMe />

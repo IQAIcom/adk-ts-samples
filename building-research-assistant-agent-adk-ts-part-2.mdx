@@ -1,0 +1,856 @@
+---
+title:
+  "Building a Research Assistant Agent with ADK-TS — Part 2: Callbacks, Session State, and Memory"
+description:
+  "Take your ADK-TS research assistant from demo to production-ready. Learn how to add pipeline
+  progress tracking with callbacks, configure app-level settings with session state, and store past
+  research with the memory service."
+tags: ["adk-ts", "typescript", "ai-agents", "callbacks", "session-state", "memory", "tutorial"]
+---
+
+# Building a Research Assistant Agent with ADK-TS — Part 2: Callbacks, Session State, and Memory
+
+In [Part 1](/building-research-assistant-agent-adk-ts-part-1), we built a research assistant using
+ADK-TS's SequentialAgent pattern — four agents running in a strict pipeline, communicating through
+shared state. The result was a working system that takes any topic and produces a comprehensive
+research report.
+
+But "working" and "production-ready" are two different things.
+
+Right now, our pipeline runs silently — you kick it off and wait 30-60 seconds with no idea what's
+happening. There's no way to configure behavior without editing code. And every research session
+vanishes the moment it completes. These are the gaps that separate a demo from something you'd
+actually ship.
+
+In this guide, we'll add four ADK-TS framework features that close those gaps:
+
+1. **Before/after agent callbacks** — so you can see exactly which step is running and how long each
+   takes
+2. **Before tool callback** — so the researcher agent can't exceed the search limit, enforced at the
+   framework level
+3. **Session state initialization** — so app-level configuration lives in state, not hardcoded in
+   agent instructions
+4. **Memory service** — so completed research sessions persist and can be searched across sessions
+
+Each feature is independent — you can adopt any one of them without the others. Together, they make
+your agent pipeline observable, configurable, and stateful. Let's get into it.
+
+## TL;DR
+
+- **Agent callbacks** let you hook into the lifecycle of each agent — run code before an agent
+  starts and after it finishes, without modifying the agent itself
+- Callbacks receive a `CallbackContext` with access to the agent name, session state, and invocation
+  ID
+- Returning `undefined` from a callback lets the agent run normally; returning a `Content` object
+  short-circuits the agent's execution
+- **Tool callbacks** (`beforeToolCallback`) intercept individual tool calls — return a value to
+  override the tool's result without executing it. Use this for enforcing limits, rate controls, or
+  tool-level guardrails
+- **Session state prefixes** control scope: `app:` (all users/sessions), `user:` (per user), `temp:`
+  (not persisted), no prefix (session-scoped)
+- `AgentBuilder.withQuickSession()` lets you pre-initialize state with configuration values before
+  the pipeline starts
+- **MemoryService** with **InMemoryStorageProvider** stores completed sessions and enables keyword
+  search across past research
+- For production, swap `InMemoryStorageProvider` with a persistent storage provider backed by a
+  database or vector store
+
+## Prerequisites
+
+This guide picks up where Part 1 left off. You should have:
+
+- The **research assistant project** from Part 1 — with the 4-agent sequential pipeline working
+- Everything from Part 1's prerequisites (Node.js 18+, API keys, TypeScript familiarity)
+- A basic understanding of how `outputKey` and `{state_key}` templates work (covered in Part 1)
+
+If you haven't built the project yet, start with
+[Part 1](/building-research-assistant-agent-adk-ts-part-1) first. The code in this guide builds
+directly on that foundation.
+
+## Understanding ADK-TS Framework Features
+
+Before we add code, let's understand what each feature does and why you'd use it.
+
+### Agent Callbacks: Lifecycle Hooks
+
+Every `LlmAgent` in ADK-TS supports two optional callbacks:
+
+- **`beforeAgentCallback`** — runs _before_ the agent processes its turn. Use it for logging,
+  validation, state setup, or to conditionally skip the agent entirely.
+- **`afterAgentCallback`** — runs _after_ the agent finishes. Use it for logging, cleanup, metrics,
+  or post-processing.
+
+Both receive a `CallbackContext` object with:
+
+- `agentName` — the name of the agent being executed
+- `state` — the current session state (read/write access)
+- `invocationId` — a unique ID for this invocation
+
+The return value matters:
+
+- Return `undefined` → the agent runs normally (or continues after running)
+- Return a `Content` object → **short-circuits** the agent's execution. The returned content
+  replaces whatever the agent would have produced. This is powerful for conditional logic — imagine
+  skipping the researcher agent if fresh data already exists in state.
+
+### Tool Callbacks: Intercepting Tool Calls
+
+While agent callbacks hook into the _agent's_ lifecycle, **tool callbacks** hook into individual
+_tool calls_. Every `LlmAgent` supports a `beforeToolCallback` that fires before each tool call
+the LLM requests.
+
+The callback receives three arguments:
+
+- `tool` — the tool instance being called (e.g., `WebSearchTool`)
+- `args` — the arguments the LLM wants to pass to the tool
+- `toolContext` — a `ToolContext` (extends `CallbackContext`) with access to state and session
+
+The return value determines what happens:
+
+- Return `undefined` → the tool executes normally
+- Return a `Record<string, any>` → the tool call is **skipped**, and the returned object is sent
+  back to the LLM as if it were the tool's actual response
+
+This is a powerful pattern for enforcing hard limits. In Part 1, we relied on the instruction
+telling the researcher to "execute EXACTLY 3 searches." But LLMs don't always follow counting
+instructions — especially with faster models like `gpt-4o-mini`. A `beforeToolCallback` enforces
+the limit at the framework level: after 3 searches, the callback returns a "limit reached" message
+instead of executing the tool. The LLM sees this message and knows to stop searching.
+
+### Session State Prefixes: Scoped Configuration
+
+In Part 1, our agents wrote to state keys like `search_results` and `analysis_report`. These are
+session-scoped by default — they exist for the duration of one session and belong to one user.
+
+ADK-TS supports four state scopes through key prefixes:
+
+| Prefix   | Scope                              | Example                       | Persisted? |
+| -------- | ---------------------------------- | ----------------------------- | ---------- |
+| `app:`   | All users, all sessions (app-wide) | `app:pipeline_steps`          | Yes        |
+| `user:`  | All sessions for one user          | `user:preferred_model`        | Yes        |
+| `temp:`  | Current session only               | `temp:researcher_agent_start` | No         |
+| _(none)_ | Current session only               | `search_results`              | Yes        |
+
+This is useful for separating concerns. App-wide config (like search limits) shouldn't be set
+per-session. Temporary data (like callback timestamps) shouldn't be persisted. The prefix system
+handles this automatically.
+
+### Memory Service: Cross-Session Recall
+
+A memory service stores completed sessions and lets you search them later. Think of it as a
+knowledge base that grows with each research session.
+
+In ADK-TS, the flow is:
+
+1. Run the pipeline → session state accumulates all outputs
+2. Save the session to memory → `memoryService.addSessionToMemory(session)`
+3. Later, search past research → `memoryService.search({ query: "...", userId: "..." })`
+
+`MemoryService` with `InMemoryStorageProvider` is the built-in combination for development — great
+for testing, but it resets when the process restarts. For production, swap in a persistent storage
+provider backed by a database or vector store.
+
+## How to Add Callbacks, Session State, and Memory
+
+Let's add each feature step by step. We'll create one new file and modify a few existing ones.
+
+### Step 1: Create the Callbacks File
+
+Create a new file `src/callbacks.ts` that defines shared before/after callbacks for all pipeline
+agents:
+
+```typescript
+// src/callbacks.ts
+
+import type { CallbackContext } from "@iqai/adk";
+
+/**
+ * Pipeline progress tracking using before/after agent callbacks.
+ *
+ * Callbacks receive a CallbackContext which provides access to:
+ * - agentName: The name of the agent being executed
+ * - state: The current session state (read/write)
+ * - invocationId: Unique ID for this invocation
+ *
+ * Returning `undefined` allows normal execution to continue.
+ * Returning a `Content` object would short-circuit the agent's execution.
+ */
+
+const STEP_LABELS: Record<string, string> = {
+	researcher_agent: "Step 1/4: Researcher",
+	analyst_agent: "Step 2/4: Analyst",
+	recommender_agent: "Step 3/4: Recommender",
+	writer_agent: "Step 4/4: Writer",
+};
+```
+
+The `STEP_LABELS` map translates internal agent names into human-friendly labels. This keeps the
+display logic separate from the callback logic — if you rename an agent or add a step, you only
+update this map.
+
+Now the before callback:
+
+```typescript
+/**
+ * Called before each agent in the pipeline starts executing.
+ * Logs the step name and records the start time in session state.
+ */
+export const beforeAgentCallback = async (ctx: CallbackContext) => {
+	const label = STEP_LABELS[ctx.agentName] ?? ctx.agentName;
+	const startTime = Date.now();
+
+	// Store start time in temp state for duration calculation
+	ctx.state[`temp:${ctx.agentName}_start`] = startTime;
+
+	console.log(`\n>> ${label} - Starting...`);
+
+	return undefined; // Continue normal execution
+};
+```
+
+Two things to notice:
+
+1. **`temp:` prefix** — We store the start timestamp with a `temp:` prefix. This means it won't be
+   persisted to storage. It's ephemeral data that only matters during this execution — exactly what
+   `temp:` is for.
+
+2. **`return undefined`** — This tells ADK-TS to continue with normal execution. The agent runs as
+   usual. If we returned a `Content` object instead, it would skip the agent entirely and use our
+   returned content as the agent's "output."
+
+Now the after callback:
+
+```typescript
+/**
+ * Called after each agent in the pipeline finishes executing.
+ * Logs completion with execution duration.
+ */
+export const afterAgentCallback = async (ctx: CallbackContext) => {
+	const label = STEP_LABELS[ctx.agentName] ?? ctx.agentName;
+	const startTime = ctx.state[`temp:${ctx.agentName}_start`] as number | undefined;
+	const duration = startTime ? ((Date.now() - startTime) / 1000).toFixed(1) : "?";
+
+	console.log(`<< ${label} - Complete (${duration}s)`);
+
+	return undefined; // Continue normal execution
+};
+```
+
+The after callback reads the start time we stored in the before callback, calculates the duration,
+and logs it. Clean and simple. Notice how state acts as the communication channel between the two
+callbacks — the same pattern our agents use.
+
+### Step 2: Attach Callbacks to Each Agent
+
+Now import and attach the callbacks to each of the four sub-agents. Here's what the change looks
+like for the analyst agent — the pattern is identical for all four:
+
+```typescript
+// src/agents/analysis-report-agent/agent.ts
+
+import { LlmAgent } from "@iqai/adk";
+import { env } from "../../env";
+import { STATE_KEYS } from "../../constants";
+import { beforeAgentCallback, afterAgentCallback } from "../../callbacks";
+
+export const getAnalysisAgent = () => {
+	return new LlmAgent({
+		name: "analyst_agent",
+		description: "Analyzes raw research data to extract key insights and patterns",
+		model: env.LLM_MODEL,
+		outputKey: STATE_KEYS.ANALYSIS_REPORT,
+		beforeAgentCallback, // ← Add this
+		afterAgentCallback, // ← Add this
+		disallowTransferToParent: true,
+		disallowTransferToPeers: true,
+		instruction: `...`, // (unchanged from Part 1)
+	});
+};
+```
+
+Do the same for `researcher-agent/agent.ts`, `recommender-agent/agent.ts`, and
+`writer-agent/agent.ts`. Two lines added to each agent — that's it.
+
+The callbacks are defined once and shared across all agents. If you want different behavior for a
+specific agent (say, the researcher needs extra validation), you can create a separate callback just
+for that agent. But for progress tracking, one shared pair works well.
+
+<NewsletterCTATwo
+	title="Want more ADK-TS guides?"
+	description="Subscribe for hands-on tutorials on building production-ready AI agents with TypeScript."
+/>
+
+### Step 3: Add a Before Tool Callback to Enforce Search Limits
+
+In Part 1, the researcher agent's instruction says "Execute EXACTLY 3 searches." But LLMs —
+especially faster models like `gpt-4o-mini` — don't reliably follow counting instructions. In
+practice, the researcher can get stuck in a search loop, making dozens of searches instead of 3.
+
+The fix is a `beforeToolCallback` that enforces the limit at the framework level. First, add the
+`MAX_SEARCHES` constant:
+
+```typescript
+// src/constants.ts (add to existing file)
+
+/** Maximum number of web searches the researcher agent can perform. */
+export const MAX_SEARCHES = 3;
+```
+
+Then add the callback to the researcher agent:
+
+```typescript
+// src/agents/researcher-agent/agent.ts
+
+import { LlmAgent, WebSearchTool } from "@iqai/adk";
+import type { BaseTool, ToolContext } from "@iqai/adk";
+import { env } from "../../env";
+import { STATE_KEYS, MAX_SEARCHES } from "../../constants";
+import { beforeAgentCallback, afterAgentCallback } from "../../callbacks";
+
+/**
+ * Before-tool callback that enforces the search limit.
+ * Tracks the number of web_search calls in temp state. Once the limit is
+ * reached, returns an override response instead of executing the tool.
+ */
+const enforceSearchLimit = async (
+	_tool: BaseTool,
+	_args: Record<string, any>,
+	toolContext: ToolContext,
+) => {
+	const count = (toolContext.state["temp:search_count"] as number) || 0;
+
+	if (count >= MAX_SEARCHES) {
+		return {
+			result: `Search limit reached (${MAX_SEARCHES}/${MAX_SEARCHES}). Do NOT search again. Compile all the research data you have gathered into the structured summary format now.`,
+		};
+	}
+
+	toolContext.state["temp:search_count"] = count + 1;
+	return undefined; // Allow normal execution
+};
+
+export const getResearcherAgent = () => {
+	return new LlmAgent({
+		name: "researcher_agent",
+		// ...
+		tools: [new WebSearchTool()],
+		beforeAgentCallback,
+		afterAgentCallback,
+		beforeToolCallback: enforceSearchLimit, // ← Enforce search limit
+		// ...
+	});
+};
+```
+
+Here's what happens at runtime:
+
+1. The LLM requests a `web_search` call → `enforceSearchLimit` fires
+2. It reads `temp:search_count` from state (starts at `0`)
+3. If count < 3: increments the counter in state, returns `undefined` → tool executes normally
+4. If count >= 3: returns an override message → **tool does NOT execute**, the LLM sees the "limit
+   reached" message instead
+
+The override message tells the LLM to stop searching and compile results. Because this happens at
+the framework level (not the prompt level), it's 100% reliable regardless of which model you use.
+
+Notice the `temp:` prefix on the counter — this ensures the search count isn't persisted to storage.
+It's only relevant during this execution, which is exactly what `temp:` is for.
+
+This pattern generalizes to any tool limit: API rate controls, cost budgets, or preventing runaway
+tool loops. Anywhere you need a hard stop that can't be prompt-engineered around, a
+`beforeToolCallback` is the answer.
+
+### Step 4: Initialize Session State with App-Level Config
+
+What if you want to make pipeline configuration accessible from state — so agents, callbacks, or
+your entry point can read it without importing constants? Session state initialization is the
+answer.
+
+Update the root agent to use `AgentBuilder.withQuickSession()`:
+
+```typescript
+// src/agents/agent.ts
+
+import { AgentBuilder, MemoryService, InMemoryStorageProvider } from "@iqai/adk";
+import { getResearcherAgent } from "./researcher-agent/agent";
+import { getAnalysisAgent } from "./analysis-report-agent/agent";
+import { getRecommenderAgent } from "./recommender-agent/agent";
+import { getWriterAgent } from "./writer-agent/agent";
+
+export const getRootAgent = async () => {
+	const researcherAgent = getResearcherAgent();
+	const analysisAgent = getAnalysisAgent();
+	const recommenderAgent = getRecommenderAgent();
+	const writerAgent = getWriterAgent();
+
+	const memoryService = new MemoryService({
+		storage: new InMemoryStorageProvider(),
+	});
+
+	return AgentBuilder.create("research_assistant")
+		.withDescription("Sequential research pipeline: research → analyze → recommend → write")
+		.asSequential([researcherAgent, analysisAgent, recommenderAgent, writerAgent])
+		.withQuickSession({
+			appName: "research_assistant",
+			userId: "user",
+			state: {
+				"app:pipeline_steps": ["researcher", "analyst", "recommender", "writer"],
+			},
+		})
+		.withMemory(memoryService)
+		.build();
+};
+```
+
+Let's break down what's new:
+
+**`.withQuickSession()`** creates a session pre-loaded with state values. The `appName` and `userId`
+are identifiers for the session. The `state` object contains the initial values.
+
+**`app:` prefix** on the state keys means these values are app-wide — shared across all users and
+sessions. This is the right scope for configuration that applies to the entire application, not just
+one user or one session.
+
+**`app:pipeline_steps`** stores the pipeline structure as data. This might seem redundant (the code
+already defines the order), but it's useful for logging, UI display, or letting agents reference the
+pipeline structure in their responses. You could add more app-level config here — like
+`"app:report_format": "detailed"` or `"app:target_audience": "executives"` — and agents could adapt
+their behavior by reading those values from state.
+
+**`.withMemory(memoryService)`** connects the memory service to the agent builder. We'll use this in
+the next step.
+
+### Step 5: Add Memory Service to the Entry Point
+
+Update `src/index.ts` to demonstrate session state, memory storage, and memory search:
+
+```typescript
+// src/index.ts
+
+import * as dotenv from "dotenv";
+import { MemoryService, InMemoryStorageProvider } from "@iqai/adk";
+import { getRootAgent } from "./agents/agent";
+
+dotenv.config();
+
+async function main() {
+	const { runner, session } = await getRootAgent();
+
+	// Create a memory service instance for storing/recalling research sessions.
+	const memoryService = new MemoryService({
+		storage: new InMemoryStorageProvider(),
+	});
+
+	console.log("==============================");
+	console.log("  Research Assistant Pipeline");
+	console.log("==============================\n");
+
+	// Display pre-initialized session state (app-level config)
+	console.log("Session state (app-level config):");
+	console.log(`  app:pipeline_steps = ${JSON.stringify(session.state["app:pipeline_steps"])}`);
+	console.log();
+
+	const topic = "Impact of artificial intelligence on healthcare in 2025";
+
+	console.log(`Research topic: "${topic}"\n`);
+	console.log("Starting sequential pipeline...");
+	console.log("(Before/after callbacks will log each step)\n");
+
+	try {
+		// Run the full pipeline — callbacks log progress automatically
+		const result = await runner.ask(topic);
+
+		console.log("\n" + "=".repeat(50));
+		console.log("  Final Report");
+		console.log("=".repeat(50) + "\n");
+		console.log(result);
+
+		// Save completed research session to memory for future recall
+		await memoryService.addSessionToMemory(session);
+
+		console.log("\n" + "=".repeat(50));
+		console.log("  Memory Service Demo");
+		console.log("=".repeat(50) + "\n");
+		console.log("Research session saved to memory.\n");
+
+		// Demonstrate searching past research from memory
+		const memories = await memoryService.search({
+			appName: "research_assistant",
+			userId: "user",
+			query: topic,
+		});
+		console.log(`Search for "${topic}" found ${memories.length} stored session(s).`);
+	} catch (error) {
+		console.error("Error running research pipeline:", error);
+	}
+}
+
+main().catch(console.error);
+```
+
+Here's what happens when you run this:
+
+1. **Session state display** — Before the pipeline starts, we print the `app:` prefixed values to
+   show they were pre-initialized. This confirms the session was configured correctly.
+
+2. **Pipeline with callbacks** — As the pipeline runs, the before/after callbacks log each step with
+   timing:
+
+   ```text
+   >> Step 1/4: Researcher - Starting...
+   << Step 1/4: Researcher - Complete (12.3s)
+
+   >> Step 2/4: Analyst - Starting...
+   << Step 2/4: Analyst - Complete (8.1s)
+   ```
+
+3. **Memory save** — After the pipeline completes, we save the entire session (with all state data)
+   to memory using `addSessionToMemory()`.
+
+4. **Memory search** — We search memory for the topic and confirm the session was stored. In a real
+   application, this search would happen in a different session — a user asking "what did we
+   research last time about healthcare AI?"
+
+### The Complete Picture
+
+After these changes, your project structure looks like this:
+
+```text
+src/
+├── agents/
+│   ├── agent.ts                        # Root SequentialAgent + session + memory
+│   ├── researcher-agent/
+│   │   └── agent.ts                    # Step 1 (+ callbacks + tool limit)
+│   ├── analysis-report-agent/
+│   │   └── agent.ts                    # Step 2 (+ callbacks)
+│   ├── recommender-agent/
+│   │   └── agent.ts                    # Step 3 (+ callbacks)
+│   └── writer-agent/
+│       └── agent.ts                    # Step 4 (+ callbacks)
+├── callbacks.ts                        # NEW: Before/after agent callbacks
+├── constants.ts                        # State key definitions
+├── env.ts                              # Environment config
+└── index.ts                            # Entry point (+ state display + memory demo)
+```
+
+And the data flow through state now looks like this:
+
+```text
+Initial State (pre-configured via withQuickSession):
+  app:pipeline_steps: ["researcher", "analyst", "recommender", "writer"]
+
+Before Step 1 (callback writes):
+  temp:researcher_agent_start: 1706000000000
+
+After Step 1 (Researcher + callback):
+  search_results: "=== RESEARCH DATA === ..."  // compiled from 3 web searches
+  temp:researcher_agent_start: 1706000000000  ← temp, not persisted
+
+After Step 2 (Analyst + callback):
+  search_results: "..."
+  analysis_report: "=== RESEARCH ANALYSIS === ..."
+  temp:analyst_agent_start: 1706000012300
+
+After Step 3 (Recommender + callback):
+  search_results: "..."
+  analysis_report: "..."
+  recommendations: "=== RECOMMENDATIONS === ..."
+
+After Step 4 (Writer + callback):
+  search_results: "..."
+  analysis_report: "..."
+  recommendations: "..."
+  final_report: "=== FINAL RESEARCH REPORT === ..."
+
+After Pipeline (memory):
+  → Session saved to MemoryService (InMemoryStorageProvider)
+  → Searchable by topic, app name, or user
+```
+
+## Common Challenges and Solutions
+
+### "Callbacks aren't firing"
+
+Make sure the callback properties are named exactly `beforeAgentCallback` and `afterAgentCallback`
+(not `onBefore`, not `beforeCallback`). Also verify you're passing the function reference, not
+calling it:
+
+```typescript
+// ✅ Correct — passing the function reference
+beforeAgentCallback,
+
+// ❌ Wrong — calling the function immediately
+beforeAgentCallback: beforeAgentCallback(),
+```
+
+### "State values with app: prefix aren't available"
+
+Check that you're using `.withQuickSession()` on the `AgentBuilder` and that the state keys include
+the `app:` prefix in both the initialization and the reading code. The prefix is part of the key
+name — `session.state["app:pipeline_steps"]`, not `session.state["pipeline_steps"]`.
+
+### "Memory search returns empty results"
+
+The `InMemoryStorageProvider` only persists in the current process. If you restart your app, the
+memory is gone. Also check that `addSessionToMemory()` is called _after_ the pipeline completes
+(when state has data), not before. The search parameters (`appName`, `userId`) must match what was
+used when creating the session.
+
+### "Duration shows '?' in after callback"
+
+This means the before callback's start time wasn't found in state. The most likely cause: the
+`temp:` key name doesn't match between the two callbacks. The before callback writes
+`temp:${ctx.agentName}_start` and the after callback reads `temp:${ctx.agentName}_start` — make sure
+the pattern is identical.
+
+### "TypeScript errors with CallbackContext"
+
+Import the type from `@iqai/adk`:
+
+```typescript
+import type { CallbackContext } from "@iqai/adk";
+```
+
+Note the `type` keyword — `CallbackContext` is a type import, not a runtime value. Some TypeScript
+configurations require explicit type imports.
+
+## Advanced Tips
+
+### Use Callbacks for Conditional Execution
+
+Callbacks can do more than log. Return a `Content` object from a `beforeAgentCallback` to skip an
+agent entirely:
+
+```typescript
+export const skipIfDataExists = async (ctx: CallbackContext) => {
+	const existingReport = ctx.state["analysis_report"];
+	if (existingReport) {
+		console.log(`Skipping ${ctx.agentName} — data already exists`);
+		return { parts: [{ text: existingReport }] }; // Short-circuit
+	}
+	return undefined; // Run normally
+};
+```
+
+This is useful for caching — if a previous session already analyzed this topic, skip the analysis
+and reuse the cached result.
+
+### Layer State Prefixes for Multi-Tenant Apps
+
+In a production app serving multiple users, use all four prefix levels:
+
+```typescript
+.withQuickSession({
+  appName: "research_assistant",
+  userId: "user_123",
+  state: {
+    // App-wide config (all users see this)
+    "app:pipeline_steps": ["researcher", "analyst", "recommender", "writer"],
+    "app:supported_models": ["gpt-4o", "gpt-4o-mini"],
+
+    // User-specific preferences (persists across sessions for this user)
+    "user:preferred_model": "gpt-4o",
+    "user:report_format": "executive",
+
+    // Session-specific (default, no prefix)
+    "research_topic": "AI in healthcare",
+  },
+})
+```
+
+Agents can then adapt their behavior based on user preferences:
+
+```typescript
+instruction: `Write the report in {user:report_format} format...`;
+```
+
+### Build a Persistent Storage Provider
+
+The `InMemoryStorageProvider` is a starting point. For production, implement the
+`MemoryStorageProvider` interface with a persistent backend:
+
+```typescript
+import type {
+	MemoryStorageProvider,
+	MemoryRecord,
+	MemorySearchQuery,
+	MemorySearchResult,
+} from "@iqai/adk";
+
+class PostgresStorageProvider implements MemoryStorageProvider {
+	async store(record: MemoryRecord) {
+		await db.query(
+			"INSERT INTO memories (id, app_name, user_id, content, created_at) VALUES ($1, $2, $3, $4, NOW())",
+			[record.id, record.appName, record.userId, JSON.stringify(record)],
+		);
+	}
+
+	async search(query: MemorySearchQuery): Promise<MemorySearchResult[]> {
+		const results = await db.query(
+			"SELECT * FROM memories WHERE app_name = $1 AND user_id = $2 AND content::text ILIKE $3 LIMIT $4",
+			[query.appName, query.userId, `%${query.query}%`, query.limit ?? 10],
+		);
+		return results.rows.map((row) => ({ memory: JSON.parse(row.content), score: 1.0 }));
+	}
+
+	async delete(filter) {
+		/* ... */
+	}
+}
+
+// Use it:
+const memoryService = new MemoryService({
+	storage: new PostgresStorageProvider(),
+});
+```
+
+You could also use a vector database (like Pinecone or pgvector) for semantic search, which would
+find relevant past research even when the query wording differs from the stored content.
+
+### Combine Callbacks with External Observability
+
+The callback pattern integrates well with observability platforms. Instead of `console.log`, send
+metrics to your monitoring stack:
+
+```typescript
+export const beforeAgentCallback = async (ctx: CallbackContext) => {
+	// Send to your observability platform
+	metrics.startSpan(`agent.${ctx.agentName}`, {
+		invocationId: ctx.invocationId,
+		pipeline: "research_assistant",
+	});
+
+	ctx.state[`temp:${ctx.agentName}_start`] = Date.now();
+	return undefined;
+};
+```
+
+This gives you per-agent latency dashboards, error tracking, and execution traces — essential for
+debugging production pipelines.
+
+## Conclusion
+
+With these three additions, your research assistant has gone from a working demo to something that's
+closer to production-ready:
+
+- **Callbacks** give you visibility into what's happening while the pipeline runs. You know which
+  step is active and how long each takes. The same pattern supports conditional execution, caching,
+  metrics, and error handling.
+
+- **Session state prefixes** separate configuration from data. App-wide settings use `app:`,
+  temporary data uses `temp:`, and pipeline data uses session-scoped keys. This structure scales
+  cleanly as your application grows.
+
+- **Memory service** makes your research persistent. Past sessions are saved and searchable, turning
+  your assistant from a stateless tool into a growing knowledge base.
+
+The beauty of ADK-TS's approach is that each feature is modular. Callbacks don't require memory.
+Memory doesn't require state prefixes. You can adopt them incrementally based on what your
+application needs.
+
+The sequential pipeline pattern from Part 1, combined with these framework features, gives you a
+solid foundation for building production AI agent systems. Whether you're building competitive
+intelligence tools, compliance checkers, or content pipelines, the same architecture applies:
+specialized agents, shared state, lifecycle hooks, and persistent memory.
+
+## Useful Resources
+
+- [ADK-TS Documentation](https://adk.iqai.com/) — Official framework docs covering agents, state,
+  callbacks, and memory
+- [ADK-TS GitHub Repository](https://github.com/IQAICOM/adk-ts) — Source code, issues, and
+  discussions
+- [ADK-TS Samples Repository](https://github.com/IQAIcom/adk-ts-samples) — More example projects
+  demonstrating different framework features
+- [Zod Documentation](https://zod.dev/) — Schema validation library used for tool definitions and
+  environment config
+
+## Frequently Asked Questions
+
+### What is a CallbackContext in ADK-TS?
+
+A `CallbackContext` is the object passed to before/after agent callbacks. It provides access to the
+agent's name (`agentName`), the current session state (`state`), and a unique invocation ID
+(`invocationId`). You can read and write state from callbacks, making them useful for cross-cutting
+concerns like logging, metrics, and conditional execution.
+
+### Can I have different callbacks for different agents?
+
+Yes. Each `LlmAgent` accepts its own `beforeAgentCallback` and `afterAgentCallback`. You can create
+different callback functions for different agents, or share the same ones across all agents as we
+did in this guide. For example, you might want a special validation callback on the researcher agent
+that checks API key availability before attempting web searches.
+
+### What happens if I return a Content object from a before callback?
+
+The agent's normal execution is skipped entirely. The returned `Content` object is used as the
+agent's output. If the agent has an `outputKey`, the returned content is saved to state under that
+key — just as if the agent had produced it. This is the mechanism for short-circuiting agents, which
+is useful for caching or conditional skipping.
+
+### What's the difference between beforeAgentCallback and beforeToolCallback?
+
+`beforeAgentCallback` fires once before the agent starts processing — it hooks into the agent's
+lifecycle. `beforeToolCallback` fires before _each_ tool call the LLM requests — it hooks into
+individual tool executions. An agent might make multiple tool calls in one turn, so
+`beforeToolCallback` can fire many times per agent invocation. Use `beforeAgentCallback` for
+agent-level concerns (logging, validation, conditional skipping) and `beforeToolCallback` for
+tool-level concerns (rate limits, argument validation, result overrides).
+
+### What's the difference between `temp:` and no prefix for state keys?
+
+Both are session-scoped, but `temp:` prefixed keys are not persisted to storage. When the session is
+saved (e.g., to memory), `temp:` keys are excluded. Use `temp:` for data that's only relevant during
+execution — like callback timestamps or intermediate computation results. Use unprefixed keys for
+data you want to persist — like pipeline outputs.
+
+### Can I use session state to pass configuration to agents at runtime?
+
+Yes. Agents can read state values using the `{state_key}` template syntax in their instructions. For
+example, if you set `app:report_length` to `"brief"` in the session state, an agent instruction
+could include `Write a {app:report_length} report` and it would resolve to `Write a brief report` at
+runtime.
+
+### How does InMemoryStorageProvider differ from a production storage provider?
+
+`InMemoryStorageProvider` stores everything in process memory — when your application restarts, all
+stored sessions are lost. It's great for development and testing. For production, implement the
+`MemoryStorageProvider` interface with a persistent backend like PostgreSQL, MongoDB, a vector store
+(Pinecone, pgvector), or a search engine (Elasticsearch). The `MemoryService` stays the same — only
+the storage provider changes.
+
+### Can memory search find sessions from different users or apps?
+
+The `search()` method takes `appName` and `userId` as parameters, which filter the search scope. You
+can search across all of a user's sessions, or narrow to a specific app. The exact filtering
+behavior depends on the storage provider implementation.
+
+### Is there a performance impact from adding callbacks to every agent?
+
+The callbacks themselves add negligible overhead — they're just function calls before and after each
+agent step. The timing code (using `Date.now()`) is practically free. In production, be mindful of
+what you do _inside_ callbacks — if you're making network calls to an observability platform, make
+those async and non-blocking so they don't slow the pipeline.
+
+### Can I add callbacks to the root SequentialAgent itself?
+
+The callbacks we used (`beforeAgentCallback`, `afterAgentCallback`) are properties of `LlmAgent`.
+The root SequentialAgent orchestrates execution but doesn't process turns with an LLM, so it doesn't
+use the same callback mechanism. If you need to hook into the overall pipeline start/end, handle
+that in your entry point code (before calling `runner.ask()` and after it returns).
+
+### How do I debug state issues in a sequential pipeline?
+
+Add a diagnostic callback that logs the full state at each step:
+
+```typescript
+export const debugCallback = async (ctx: CallbackContext) => {
+	console.log(`[DEBUG] State after ${ctx.agentName}:`, JSON.stringify(ctx.state, null, 2));
+	return undefined;
+};
+```
+
+Attach this as `afterAgentCallback` on the agent you want to inspect. You'll see exactly what's in
+state after each step runs, making it easy to spot missing keys, unexpected values, or state
+pollution between agents.
+
+<ConnectWithMe />

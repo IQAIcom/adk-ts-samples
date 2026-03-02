@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { InMemoryMemoryService } from "@iqai/adk";
+import { MemoryService, InMemoryStorageProvider } from "@iqai/adk";
 import { getRootAgent } from "./agents/agent";
 
 dotenv.config();
@@ -17,10 +17,10 @@ dotenv.config();
  *   - State-driven data flow: Each agent reads/writes to shared session state
  *
  * Pipeline steps:
- *   1. Researcher  → Web search via Tavily API  → search_results
- *   2. Analyst     → Extracts insights           → analysis_report
- *   3. Recommender → Produces recommendations    → recommendations
- *   4. Writer      → Synthesizes final report    → final_report
+ *   1. Researcher  → Web search via WebSearchTool → search_results
+ *   2. Analyst     → Extracts insights            → analysis_report
+ *   3. Recommender → Produces recommendations     → recommendations
+ *   4. Writer      → Synthesizes final report     → final_report
  */
 
 async function main() {
@@ -28,7 +28,9 @@ async function main() {
 
 	// Create a memory service instance for storing/recalling research sessions.
 	// In a real app, this would be injected or shared across the application.
-	const memoryService = new InMemoryMemoryService();
+	const memoryService = new MemoryService({
+		storage: new InMemoryStorageProvider(),
+	});
 
 	console.log("==============================");
 	console.log("  Research Assistant Pipeline");
@@ -36,7 +38,6 @@ async function main() {
 
 	// Show pre-initialized session state (app-level config)
 	console.log("Session state (app-level config):");
-	console.log(`  app:max_searches   = ${session.state["app:max_searches"]}`);
 	console.log(
 		`  app:pipeline_steps = ${JSON.stringify(session.state["app:pipeline_steps"])}`,
 	);
@@ -65,13 +66,13 @@ async function main() {
 		console.log("Research session saved to memory.\n");
 
 		// Demonstrate searching past research from memory
-		const memories = await memoryService.searchMemory({
+		const memories = await memoryService.search({
 			appName: "research_assistant",
 			userId: "user",
 			query: topic,
 		});
 		console.log(
-			`Search for "${topic}" found ${memories.memories.length} stored session(s).`,
+			`Search for "${topic}" found ${memories.length} stored session(s).`,
 		);
 	} catch (error) {
 		console.error("Error running research pipeline:", error);
