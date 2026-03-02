@@ -4,44 +4,40 @@ import { getRootAgent } from "./agents/agent";
 dotenv.config();
 
 /**
- * This demo shows how the AI Research Assistant works:
- * 1. Root Agent - Handles user interaction and performs web research using Tavily
- * 2. Writer Agent - Produces both analysis and comprehensive reports simultaneously
+ * Research Assistant - Sequential Agent Pipeline Demo
  *
- * The root agent performs exactly 3 targeted web searches and saves results to state.
- * The writer agent (ParallelAgent) then generates two reports in parallel from this data.
+ * Demonstrates a 4-step sequential agent pipeline using ADK-TS:
+ *   1. Researcher  → Web search via Tavily API
+ *   2. Analyst     → Extracts insights and patterns
+ *   3. Recommender → Produces actionable recommendations
+ *   4. Writer      → Synthesizes a final comprehensive report
+ *
+ * Each agent reads from state populated by prior agents, showcasing
+ * how SequentialAgent enables clean data pipelines.
  */
 
 async function main() {
 	const { runner } = await getRootAgent();
 
-	console.log("==============================\n");
-	console.log("🔬 AI Research Assistant");
+	console.log("==============================");
+	console.log("  Research Assistant Pipeline");
 	console.log("==============================\n");
 
-	// Run the research query through the agent workflow
+	const topic = "Impact of artificial intelligence on healthcare in 2025";
+
+	console.log(`Research topic: "${topic}"\n`);
+	console.log("Starting sequential pipeline...\n");
+	console.log("  Step 1: Researcher  - Gathering web data");
+	console.log("  Step 2: Analyst     - Extracting insights");
+	console.log("  Step 3: Recommender - Producing recommendations");
+	console.log("  Step 4: Writer      - Synthesizing final report");
+	console.log("\n" + "=".repeat(50) + "\n");
+
 	try {
-		// Initial greeting
-		const userInput1 = "Hi there!";
-		console.log(`👤 User: ${userInput1}`);
-		const greeting = await runner.ask(userInput1);
-		console.log(`🤖 Agent: ${greeting}\n`);
-
-		// User provides research topic
-		const userInput2 =
-			"Can you help me research about cybersecurity for small businesses?";
-		console.log(`👤 User: ${userInput2}`);
-		const topicResponse = await runner.ask(userInput2);
-		console.log(`🤖 Agent: ${topicResponse}\n`);
-
-		// User confirms to proceed
-		const userInput3 = "Yes, please proceed!";
-		console.log(`👤 User: ${userInput3}`);
-		const result = await runner.ask(userInput3);
-		console.log(`🤖 Agent: ${result}\n`);
+		const result = await runner.ask(topic);
+		console.log(result);
 	} catch (error) {
-		console.error(`❌ Error processing research request:`, error);
-		console.log("\n" + "=".repeat(80) + "\n");
+		console.error("Error running research pipeline:", error);
 	}
 }
 
