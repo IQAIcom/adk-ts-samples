@@ -1,47 +1,81 @@
 import * as dotenv from "dotenv";
+import { MemoryService, InMemoryStorageProvider } from "@iqai/adk";
 import { getRootAgent } from "./agents/agent";
 
 dotenv.config();
 
 /**
- * This demo shows how the AI Research Assistant works:
- * 1. Root Agent - Handles user interaction and performs web research using Tavily
- * 2. Writer Agent - Produces both analysis and comprehensive reports simultaneously
+ * Research Assistant - Sequential Agent Pipeline Demo
  *
- * The root agent performs exactly 3 targeted web searches and saves results to state.
- * The writer agent (ParallelAgent) then generates two reports in parallel from this data.
+ * Demonstrates ADK-TS framework features through a 4-step sequential pipeline:
+ *
+ * Framework features showcased:
+ *   - SequentialAgent: Enforces strict pipeline execution order
+ *   - Session State: Pre-initialized with `app:` prefixed config values
+ *   - Before/After Callbacks: Logs pipeline progress with timing on each step
+ *   - Memory Service: Stores completed research for cross-session recall
+ *   - State-driven data flow: Each agent reads/writes to shared session state
+ *
+ * Pipeline steps:
+ *   1. Researcher  → Web search via WebSearchTool → search_results
+ *   2. Analyst     → Extracts insights            → analysis_report
+ *   3. Recommender → Produces recommendations     → recommendations
+ *   4. Writer      → Synthesizes final report     → final_report
  */
 
 async function main() {
-	const { runner } = await getRootAgent();
+	const { runner, session } = await getRootAgent();
 
-	console.log("==============================\n");
-	console.log("🔬 AI Research Assistant");
+	// Create a memory service instance for storing/recalling research sessions.
+	// In a real app, this would be injected or shared across the application.
+	const memoryService = new MemoryService({
+		storage: new InMemoryStorageProvider(),
+	});
+
+	console.log("==============================");
+	console.log("  Research Assistant Pipeline");
 	console.log("==============================\n");
 
-	// Run the research query through the agent workflow
+	// Show pre-initialized session state (app-level config)
+	console.log("Session state (app-level config):");
+	console.log(
+		`  app:pipeline_steps = ${JSON.stringify(session.state["app:pipeline_steps"])}`,
+	);
+	console.log();
+
+	const topic = "Impact of artificial intelligence on healthcare in 2025";
+
+	console.log(`Research topic: "${topic}"\n`);
+	console.log("Starting sequential pipeline...");
+	console.log("(Before/after callbacks will log each step)\n");
+
 	try {
-		// Initial greeting
-		const userInput1 = "Hi there!";
-		console.log(`👤 User: ${userInput1}`);
-		const greeting = await runner.ask(userInput1);
-		console.log(`🤖 Agent: ${greeting}\n`);
+		// Run the full pipeline — callbacks log progress automatically
+		const result = await runner.ask(topic);
+		console.log("\n" + "=".repeat(50));
+		console.log("  Final Report");
+		console.log("=".repeat(50) + "\n");
+		console.log(result);
 
-		// User provides research topic
-		const userInput2 =
-			"Can you help me research about cybersecurity for small businesses?";
-		console.log(`👤 User: ${userInput2}`);
-		const topicResponse = await runner.ask(userInput2);
-		console.log(`🤖 Agent: ${topicResponse}\n`);
+		// Save completed research session to memory for future recall
+		await memoryService.addSessionToMemory(session);
 
-		// User confirms to proceed
-		const userInput3 = "Yes, please proceed!";
-		console.log(`👤 User: ${userInput3}`);
-		const result = await runner.ask(userInput3);
-		console.log(`🤖 Agent: ${result}\n`);
+		console.log("\n" + "=".repeat(50));
+		console.log("  Memory Service Demo");
+		console.log("=".repeat(50) + "\n");
+		console.log("Research session saved to memory.\n");
+
+		// Demonstrate searching past research from memory
+		const memories = await memoryService.search({
+			appName: "research_assistant",
+			userId: "user",
+			query: topic,
+		});
+		console.log(
+			`Search for "${topic}" found ${memories.length} stored session(s).`,
+		);
 	} catch (error) {
-		console.error(`❌ Error processing research request:`, error);
-		console.log("\n" + "=".repeat(80) + "\n");
+		console.error("Error running research pipeline:", error);
 	}
 }
 

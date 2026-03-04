@@ -1,18 +1,17 @@
-import { AgentBuilder } from "@iqai/adk"
-import { getDebankTools } from "./tools"
-import { env } from "../../env"
-import dedent from "dedent"
-
+import { AgentBuilder } from "@iqai/adk";
+import { getDebankTools } from "./tools";
+import { env } from "../../env";
+import dedent from "dedent";
 
 export async function getPortfolioAnalyzerAgent() {
-    const debankTools = await getDebankTools();
-    return AgentBuilder.create("portfolio_analyzer_agent")
-        .withModel(env.LLM_MODEL)
-        .withDescription(
-            "AI-powered portfolio analyzer that helps users analyze their crypto portfolios using Debank Platform",
-        )
-        .withInstruction(
-            dedent`
+	const debankTools = await getDebankTools();
+	return AgentBuilder.create("portfolio_analyzer_agent")
+		.withModel(env.LLM_MODEL)
+		.withDescription(
+			"AI-powered portfolio analyzer that helps users analyze their crypto portfolios using Debank Platform",
+		)
+		.withInstruction(
+			dedent`
     You are a portfolio analyzer AI assistant that helps users understand and analyze their crypto portfolios.
     You retrieve on-chain and DeFi data such as wallet balances, token holdings, protocol positions,
     NFTs, and activity history using DeBank data sources.
@@ -27,8 +26,8 @@ export async function getPortfolioAnalyzerAgent() {
 
     Prefer efficient and relevant queries, and focus on providing reliable insights
     based strictly on retrieved data.
-  `
-        )
-        .withTools(...debankTools)
-        .build()
+  `,
+		)
+		.withTools(...debankTools)
+		.build();
 }
