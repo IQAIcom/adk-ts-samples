@@ -9,24 +9,31 @@
 
 ---
 
-An AI-powered research assistant built as a **SequentialAgent** pipeline. Give it any topic and it runs 4 agents in sequence — researcher, analyst, recommender, and writer — each building on the previous agent's output through shared state. The final result is a comprehensive research report with analysis, recommendations, and full source citations.
+An AI-powered research assistant built as a **SequentialAgent** pipeline. Give it any topic and it
+runs 4 agents in sequence — researcher, analyst, recommender, and writer — each building on the
+previous agent's output through shared state. The final result is a comprehensive research report
+with analysis, recommendations, and full source citations.
 
 ## Features
 
 - **Sequential Pipeline**: Uses ADK-TS `SequentialAgent` to enforce a strict 4-step execution order
-- **State-Driven Data Flow**: Each agent reads from and writes to shared state — no prompt engineering for workflow control
+- **State-Driven Data Flow**: Each agent reads from and writes to shared state — no prompt
+  engineering for workflow control
 - **Single Responsibility**: Each agent has one clear job (research, analyze, recommend, write)
-- **Before/After Agent Callbacks**: Pipeline progress logging with execution timing on each agent step
+- **Before/After Agent Callbacks**: Pipeline progress logging with execution timing on each agent
+  step
 - **Before Tool Callback**: Framework-level enforcement of search limits via `beforeToolCallback`
 - **Session State Initialization**: Pre-configured `app:` prefixed state for app-level settings
 - **Memory Service**: Stores completed research sessions for cross-session recall and search
-- **Built-in WebSearchTool**: Uses ADK-TS's built-in Tavily-powered web search — no custom tool code needed
+- **Built-in WebSearchTool**: Uses ADK-TS's built-in Tavily-powered web search — no custom tool code
+  needed
 - **Composable Architecture**: Easy to add, remove, or swap pipeline steps
 - **Topic Agnostic**: Works with any research topic across all domains
 
 ## Architecture
 
-This project demonstrates the **SequentialAgent** pattern in ADK-TS — a pipeline where agents execute one after another, each building on the previous agent's output through shared state.
+This project demonstrates the **SequentialAgent** pattern in ADK-TS — a pipeline where agents
+execute one after another, each building on the previous agent's output through shared state.
 
 ### Pipeline Steps
 
@@ -73,145 +80,15 @@ src/
 └── index.ts                            # Entry point
 ```
 
-## Framework Features Demonstrated
-
-Beyond the sequential pipeline, this project showcases several ADK-TS framework features that are useful in production applications.
-
-### Before/After Agent Callbacks
-
-Each sub-agent is configured with `beforeAgentCallback` and `afterAgentCallback` to log pipeline progress with execution timing. Callbacks receive a `CallbackContext` providing access to the agent name, session state, and invocation metadata.
-
-```typescript
-// callbacks.ts
-import type { CallbackContext } from "@iqai/adk";
-
-export const beforeAgentCallback = async (ctx: CallbackContext) => {
-	console.log(`>> ${ctx.agentName} - Starting...`);
-	ctx.state[`temp:${ctx.agentName}_start`] = Date.now(); // temp: prefix = not persisted
-	return undefined; // Continue normal execution
-};
-
-// Applied to each sub-agent:
-new LlmAgent({
-	name: "analyst_agent",
-	beforeAgentCallback,
-	afterAgentCallback,
-	// ...
-});
-```
-
-### Before Tool Callback (Search Limit)
-
-The researcher agent uses a `beforeToolCallback` to enforce a hard limit on the number of web searches. This is more reliable than relying on the LLM to follow counting instructions — the callback tracks search count in `temp:` state and returns an override response when the limit is reached, preventing the tool from executing.
-
-```typescript
-import type { BaseTool, ToolContext } from "@iqai/adk";
-
-const enforceSearchLimit = async (
-	_tool: BaseTool,
-	_args: Record<string, any>,
-	toolContext: ToolContext,
-) => {
-	const count = (toolContext.state["temp:search_count"] as number) || 0;
-
-	if (count >= MAX_SEARCHES) {
-		// Return override — tool is NOT executed, LLM sees this message instead
-		return {
-			result: `Search limit reached (${MAX_SEARCHES}/${MAX_SEARCHES}). Compile your results now.`,
-		};
-	}
-
-	toolContext.state["temp:search_count"] = count + 1;
-	return undefined; // Allow normal execution
-};
-
-new LlmAgent({
-	name: "researcher_agent",
-	beforeToolCallback: enforceSearchLimit,
-	// ...
-});
-```
-
-This pattern is useful whenever you need to enforce hard limits on tool usage — API rate limits, cost controls, or preventing runaway tool loops.
-
-### Session State Initialization
-
-The session is initialized with `app:` prefixed state values for app-level configuration. ADK-TS supports three state prefixes:
-
-- `app:` — Shared across all users and sessions (app-wide config)
-- `user:` — Shared across sessions for a specific user (user preferences)
-- `temp:` — Not persisted (temporary data like callback timestamps)
-- No prefix — Session-scoped (the default, used by pipeline state keys)
-
-```typescript
-AgentBuilder.create("research_assistant")
-	.asSequential([...agents])
-	.withQuickSession({
-		appName: "research_assistant",
-		userId: "user",
-		state: {
-			"app:pipeline_steps": ["researcher", "analyst", "recommender", "writer"],
-		},
-	})
-	.build();
-```
-
-### Memory Service
-
-After the pipeline completes, the research session is saved to memory using `MemoryService` with `InMemoryStorageProvider`. This enables searching and recalling past research across sessions — useful for building knowledge bases or avoiding duplicate research.
-
-```typescript
-import { MemoryService, InMemoryStorageProvider } from "@iqai/adk";
-
-const memoryService = new MemoryService({
-	storage: new InMemoryStorageProvider(),
-});
-
-// After pipeline completes:
-await memoryService.addSessionToMemory(session);
-
-// Later, search past research:
-const results = await memoryService.search({
-	appName: "research_assistant",
-	userId: "user",
-	query: "artificial intelligence healthcare",
-});
-```
-
-For production, swap `InMemoryStorageProvider` with a persistent storage provider backed by a database or vector store.
-
-### How State Flows Through the Pipeline
-
-```text
-Initial State (pre-configured):
-  app:pipeline_steps: ["researcher", "analyst", "recommender", "writer"]
-
-After Step 1 (Researcher):
-  search_results: "=== RESEARCH DATA === ..."  // compiled from 3 web searches
-
-After Step 2 (Analyst):
-  search_results: "..."          // unchanged
-  analysis_report: "=== RESEARCH ANALYSIS === ..."                   // ~1000 words
-
-After Step 3 (Recommender):
-  search_results: "..."          // unchanged
-  analysis_report: "..."         // unchanged
-  recommendations: "=== RECOMMENDATIONS === ..."                     // ~800 words
-
-After Step 4 (Writer):
-  search_results: "..."          // unchanged
-  analysis_report: "..."         // unchanged
-  recommendations: "..."         // unchanged
-  final_report: "=== FINAL RESEARCH REPORT === ..."                  // ~2500 words
-```
-
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
-- LLM API key (OpenAI, Google, or other supported providers)
-- Tavily API key for web search
+- **Node.js 18+** — [Download Node.js](https://nodejs.org/en/download/)
+- **LLM API key** (OpenAI, Google, or other supported providers)
+  - [Get Google AI Studio Key](https://https://aistudio.google.com/app/api-keys)
+  - [Get OpenAI API Key](https://platform.openai.com/api-keys)
+- **Tavily API key for web search** — [Get Tavily API Key](https://app.tavily.com/)
 
 ### Installation
 
@@ -222,13 +99,13 @@ git clone https://github.com/IQAIcom/adk-ts-samples.git
 cd adk-ts-samples/apps/research-assistant
 ```
 
-1. Install dependencies
+2. Install dependencies
 
 ```bash
 pnpm install
 ```
 
-1. Set up environment variables
+3. Set up environment variables
 
 ```bash
 cp .env.example .env
@@ -237,7 +114,7 @@ cp .env.example .env
 Edit `.env` and add your API keys:
 
 ```env
-OPENAI_API_KEY=your_openai_api_key_here
+GOOGLE_API_KEY=your_google_api_key_here
 LLM_MODEL=your_preferred_model_here
 TAVILY_API_KEY=your_tavily_api_key_here
 ```
@@ -294,39 +171,56 @@ Search for "Impact of artificial intelligence..." found 1 stored session(s).
 
 ## Real-World Use Cases
 
-The **gather → analyze → recommend → synthesize** pattern in this project maps directly to real-world knowledge work. Here are examples of what you can build by extending this pipeline:
+The **gather → analyze → recommend → synthesize** pattern in this project maps directly to
+real-world knowledge work. Here are examples of what you can build by extending this pipeline:
 
 ### Competitive Intelligence Agent
 
-Swap the WebSearchTool for company-specific data sources (Crunchbase, LinkedIn, SEC filings) to build an agent that researches competitors, analyzes their strengths and weaknesses, recommends strategic moves, and produces an executive brief.
+Swap the WebSearchTool for company-specific data sources (Crunchbase, LinkedIn, SEC filings) to
+build an agent that researches competitors, analyzes their strengths and weaknesses, recommends
+strategic moves, and produces an executive brief.
 
 ### Due Diligence Agent
 
-Point the researcher at financial databases and news APIs. The analyst evaluates risks and red flags, the recommender produces a go/no-go assessment, and the writer generates an investment memo — all from a single company name.
+Point the researcher at financial databases and news APIs. The analyst evaluates risks and red
+flags, the recommender produces a go/no-go assessment, and the writer generates an investment memo —
+all from a single company name.
 
 ### Content Marketing Pipeline
 
-Feed in a niche topic. The researcher finds trending content, the analyst identifies audience fit and gaps, the recommender suggests content angles and keywords, and the writer produces a publish-ready blog post or newsletter.
+Feed in a niche topic. The researcher finds trending content, the analyst identifies audience fit
+and gaps, the recommender suggests content angles and keywords, and the writer produces a
+publish-ready blog post or newsletter.
 
 ### Regulatory Compliance Checker
 
-Add a document ingestion tool to the researcher so it can read company policies alongside current regulations. The analyst identifies compliance gaps, the recommender prioritizes fixes by risk level, and the writer generates a compliance report.
+Add a document ingestion tool to the researcher so it can read company policies alongside current
+regulations. The analyst identifies compliance gaps, the recommender prioritizes fixes by risk
+level, and the writer generates a compliance report.
 
 ### Academic Literature Review
 
-Replace WebSearchTool with Semantic Scholar or arXiv APIs. The researcher gathers papers, the analyst summarizes methods and findings, the recommender identifies research gaps and future directions, and the writer produces a structured literature review.
+Replace WebSearchTool with Semantic Scholar or arXiv APIs. The researcher gathers papers, the
+analyst summarizes methods and findings, the recommender identifies research gaps and future
+directions, and the writer produces a structured literature review.
 
 ### Medical Research Summarizer
 
-Connect to PubMed or clinical trial databases. The pipeline analyzes evidence quality, evaluates clinical relevance, and produces patient-friendly or clinician-focused summaries — a critical real-world need.
+Connect to PubMed or clinical trial databases. The pipeline analyzes evidence quality, evaluates
+clinical relevance, and produces patient-friendly or clinician-focused summaries — a critical
+real-world need.
 
 ### Legal Case Research
 
-Swap in legal databases (CourtListener, Westlaw APIs). The researcher finds relevant case law, the analyst identifies precedents, the recommender suggests legal strategy, and the writer produces a case brief.
+Swap in legal databases (CourtListener, Westlaw APIs). The researcher finds relevant case law, the
+analyst identifies precedents, the recommender suggests legal strategy, and the writer produces a
+case brief.
 
 ### Product Launch Readiness
 
-The researcher gathers market data and competitor pricing, the analyst evaluates product-market fit, the recommender suggests pricing and positioning strategy, and the writer produces a go-to-market plan.
+The researcher gathers market data and competitor pricing, the analyst evaluates product-market fit,
+the recommender suggests pricing and positioning strategy, and the writer produces a go-to-market
+plan.
 
 ### How to Adapt This Pipeline
 
@@ -339,7 +233,8 @@ The core pattern generalizes to any domain:
 | **Recommender** | Change recommendation framework and priorities        | Use risk matrices for compliance checking                      |
 | **Writer**      | Modify output format and tone                         | Generate legal briefs instead of research reports              |
 
-You can also **add or remove steps**. Need a fact-checker? Insert it between analyst and recommender. Want to skip recommendations? Remove the recommender agent from the `subAgents` array.
+You can also **add or remove steps**. Need a fact-checker? Insert it between analyst and
+recommender. Want to skip recommendations? Remove the recommender agent from the `subAgents` array.
 
 ## Useful Resources
 
@@ -352,17 +247,19 @@ You can also **add or remove steps**. Need a fact-checker? Insert it between ana
 
 ### APIs & Services
 
-- [OpenAI API Keys](https://platform.openai.com/api-keys)
+- [Google API Keys](https://https://aistudio.google.com/app/api-keys)
 - [Tavily API Keys](https://app.tavily.com/)
 - [Tavily Documentation](https://docs.tavily.com/welcome)
 
 ### Community
 
 - [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
+- [ADK-TS Telegram](https://t.me/+Z37x8uf6DLE3ZTQ8)
 
 ## Contributing
 
-This Research Assistant is part of the [ADK-TS Samples](https://github.com/IQAIcom/adk-ts-samples) repository, a collection of example projects demonstrating ADK-TS capabilities.
+This Research Assistant is part of the [ADK-TS Samples](https://github.com/IQAIcom/adk-ts-samples)
+repository, a collection of example projects demonstrating ADK-TS capabilities.
 
 We welcome contributions to the ADK-TS Samples repository! You can:
 
@@ -379,4 +276,5 @@ This project is licensed under the MIT License - see the [LICENSE](../../LICENSE
 
 ---
 
-**🎉 Ready to research?** This project showcases the SequentialAgent pattern in ADK-TS — a clean, composable pipeline that developers can extend for any domain-specific research workflow.
+**🎉 Ready to research?** This project showcases the SequentialAgent pattern in ADK-TS — a clean,
+composable pipeline that developers can extend for any domain-specific research workflow.
