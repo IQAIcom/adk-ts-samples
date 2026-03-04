@@ -172,8 +172,8 @@ importers:
   apps/research-assistant:
     dependencies:
       '@iqai/adk':
-        specifier: ^0.8.0
-        version: 0.8.0(@opentelemetry/instrumentation-nestjs-core@0.55.0(@opentelemetry/api@1.9.0))(@types/node@24.11.0)(@types/pg@8.15.6)(bufferutil@4.1.0)(hono@4.12.3)(langfuse@3.38.6)(pg@8.19.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))
+        specifier: ^0.8.1
+        version: 0.8.1(@opentelemetry/instrumentation-nestjs-core@0.55.0(@opentelemetry/api@1.9.0))(@types/node@24.11.0)(@types/pg@8.15.6)(bufferutil@4.1.0)(hono@4.12.3)(langfuse@3.38.6)(pg@8.19.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))
       dotenv:
         specifier: ^17.2.2
         version: 17.3.1
@@ -623,8 +623,8 @@ packages:
       pg:
         optional: true
 
-  '@iqai/adk@0.8.0':
-    resolution: {integrity: sha512-7XX67X2ZKY/FQIBNi7FI5VAxc95CYhX0SWFTLTuXBIB6xZO9Iw4doBo5Cx6L9yEQqz2Ab3+qcWtt+OSZz8hzxQ==}
+  '@iqai/adk@0.8.1':
+    resolution: {integrity: sha512-7qKTG7arz60mi6JrsJSKKH34tt3P0POxOPdywQi8EjwGuQQluXcLbrQ5urm8EAw/rReFKn2WiDUJteHgj7vCZw==}
     engines: {node: '>=22.0'}
     hasBin: true
     peerDependencies:
@@ -5959,7 +5959,7 @@ snapshots:
       - utf-8-validate
       - ws
 
-  '@iqai/adk@0.8.0(@opentelemetry/instrumentation-nestjs-core@0.55.0(@opentelemetry/api@1.9.0))(@types/node@24.11.0)(@types/pg@8.15.6)(bufferutil@4.1.0)(hono@4.12.3)(langfuse@3.38.6)(pg@8.19.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))':
+  '@iqai/adk@0.8.1(@opentelemetry/instrumentation-nestjs-core@0.55.0(@opentelemetry/api@1.9.0))(@types/node@24.11.0)(@types/pg@8.15.6)(bufferutil@4.1.0)(hono@4.12.3)(langfuse@3.38.6)(pg@8.19.0)(typescript@5.9.3)(utf-8-validate@6.0.6)(ws@8.19.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))':
     dependencies:
       '@anthropic-ai/sdk': 0.61.0
       '@clack/prompts': 0.11.0
