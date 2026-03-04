@@ -1,8 +1,8 @@
 <div align="center">
-  <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
+  <img src="https://files.catbox.moe/vumztw.png" alt="ADK-TS Logo" width="80" />
   <br/>
   <h1>DAO Proposal Analyzer</h1>
-  <b>Multi-agent governance system that analyzes on-chain DAO proposals and provides voting recommendations using <code>@iqai/adk</code>.</b>
+  <b>Multi-agent governance system that analyzes on-chain DAO proposals and provides voting recommendations using the <code>ADK-TS</code> framework.</b>
   <br/>
   <i>On-Chain Data • Multi-Agent Analysis • Voting Recommendations</i>
 </div>
@@ -139,6 +139,35 @@ Agent: [Fetches on-chain data, then provides:]
   - Voting Recommendation with pros/cons
 ```
 
+## Real-World Use Cases
+
+The **fetch on-chain data → analyze → recommend** pattern in this project applies to any governance or decision-support workflow. Here are examples of what you can build by extending this analyzer:
+
+### Multi-Chain Governance Dashboard
+
+Extend the governor contract integrations beyond Ethereum to L2s like Arbitrum, Optimism, and Base. The agent monitors proposals across all chains, flags high-impact votes, and produces a daily governance digest.
+
+### Treasury Management Advisor
+
+Swap proposal analysis for treasury-focused analysis. The agent fetches DAO treasury data (token balances, spending proposals, fund allocations), assesses financial risk, and recommends budget priorities.
+
+### Delegation Strategy Agent
+
+Focus the pipeline on voter delegation. The agent analyzes delegate voting histories, participation rates, and alignment with user preferences, then recommends which delegates to support or switch to.
+
+### How to Adapt This Pipeline
+
+The core pattern generalizes to any on-chain governance domain:
+
+| Pipeline Step    | What to Customize                                   | Example                                                   |
+| ---------------- | --------------------------------------------------- | --------------------------------------------------------- |
+| **Data Fetcher** | Add new governor contracts or data sources          | Integrate Snapshot off-chain proposals alongside on-chain |
+| **Analyzer**     | Adjust analysis criteria for your governance focus  | Add treasury impact scoring for spending proposals        |
+| **Recommender**  | Change recommendation framework and voting criteria | Weight recommendations by token holder alignment          |
+| **DAO Registry** | Expand supported DAOs and chains                    | Add Arbitrum, Optimism, and Polygon governor contracts    |
+
+You can also **add agents** — insert a historical comparison agent that benchmarks proposals against past outcomes, or add a risk scorer between analysis and recommendation.
+
 ## Useful Resources
 
 ### ADK-TS Framework
@@ -164,16 +193,8 @@ Agent: [Fetches on-chain data, then provides:]
 ### Community
 
 - [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
-- [Discord Community](https://discord.gg/w2Uk6ACK4D)
-
-## Disclaimer
-
-This tool provides AI-generated analysis for informational purposes only. It does NOT constitute financial or investment advice. Always:
-
-- Do your own research (DYOR)
-- Read the full proposal text and discussions
-- Consider your individual circumstances
-- Consult financial advisors for significant decisions
+- [ADK-TS Builders Community](https://t.me/+Z37x8uf6DLE3ZTQ8)
+- [IQ AI Community](https://t.me/IQAICOM)
 
 ## Contributing
 
@@ -191,6 +212,15 @@ Please see our [Contributing Guide](../../CONTRIBUTION.md) for detailed guidelin
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
+
+## Disclaimer
+
+This tool provides AI-generated analysis for informational purposes only. It does NOT constitute financial or investment advice. Always:
+
+- Do your own research (DYOR)
+- Read the full proposal text and discussions
+- Consider your individual circumstances
+- Consult financial advisors for significant decisions
 
 ---
 

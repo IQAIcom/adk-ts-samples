@@ -1,8 +1,8 @@
 <div align="center">
-  <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
+  <img src="https://files.catbox.moe/vumztw.png" alt="ADK-TS Logo" width="80" />
   <br/>
   <h1>Telegram Personal Assistant</h1>
-  <b>Sample agent demonstrating intelligent task management and Telegram bot integration with <code>@iqai/adk</code> library</b>
+  <b>Sample agent demonstrating intelligent task management and Telegram bot integration with the <code>ADK-TS</code> framework</b>
   <br/>
   <i>Multi-agent • Telegram Bot • PostgreSQL • TypeScript</i>
 </div>
@@ -217,6 +217,35 @@ The assistant intelligently routes your requests to the appropriate specialized 
 - **Automatic Routing**: Intelligently routes to reminder or shopping list agent
 - **Real-time Notifications**: Telegram alerts when reminders are due
 
+## Real-World Use Cases
+
+The **multi-agent task routing with Telegram integration** pattern in this project applies to any personal productivity or notification-driven workflow. Here are examples of what you can build by extending this assistant:
+
+### Team Standup Bot
+
+Replace reminders with standup prompts. The agent asks each team member for their daily update at a scheduled time, collects responses, and posts a formatted standup summary to a shared Telegram channel.
+
+### Habit Tracker & Accountability Partner
+
+Extend the recurring reminder system into a habit tracker. The agent logs daily completions, tracks streaks, sends motivational nudges when habits are missed, and produces weekly progress reports via Telegram.
+
+### Expense Tracker Assistant
+
+Swap shopping lists for expense tracking. Users send receipts or expense descriptions via Telegram, the agent categorizes spending, maintains running totals by category, and generates monthly budget summaries.
+
+### How to Adapt This Pattern
+
+The core architecture generalizes to any Telegram-powered productivity agent:
+
+| Component                | What to Customize                                  | Example                                                     |
+| ------------------------ | -------------------------------------------------- | ----------------------------------------------------------- |
+| **Sub-Agents**           | Add or replace specialized agents for new domains  | Add a fitness tracking agent alongside reminders            |
+| **Tools**                | Create new tools for your domain's CRUD operations | Add expense tools: `add_expense`, `view_expenses`, `budget` |
+| **Notification Service** | Adjust monitoring logic and alert triggers         | Send weekly digest instead of per-reminder notifications    |
+| **Database Schema**      | Extend PostgreSQL tables for new data types        | Add expense categories and budget thresholds tables         |
+
+You can also **add integrations** — connect Google Calendar for syncing reminders, or add a Notion MCP server for cross-platform task management.
+
 ## Agent Tools and Capabilities
 
 ### 🤖 Telegram Agent Tools
@@ -262,6 +291,16 @@ The assistant intelligently routes your requests to the appropriate specialized 
 | Handle Recurring Reminders  | Automatically schedule next occurrences       |
 | State Synchronization       | Update database with reminder status changes  |
 
+## Troubleshooting
+
+### Common Issues
+
+- **Database connection errors**: Ensure PostgreSQL is running and DATABASE_URL is correct
+- **Telegram bot not responding**: Verify TELEGRAM_BOT_TOKEN and that the bot is started
+- **Notifications not working**: Check TELEGRAM_CHANNEL_ID and bot permissions
+- **Google AI errors**: Ensure GOOGLE_API_KEY is valid and has sufficient quota
+- **Time parsing issues**: Use specific times ("tomorrow at 3pm" instead of "later")
+
 ## Useful Resources
 
 ### ADK-TS Framework
@@ -281,6 +320,8 @@ The assistant intelligently routes your requests to the appropriate specialized 
 ### Community
 
 - [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
+- [ADK-TS Builders Community](https://t.me/+Z37x8uf6DLE3ZTQ8)
+- [IQ AI Community](https://t.me/IQAICOM)
 
 ## Contributing
 
@@ -298,16 +339,6 @@ Please see our [Contributing Guide](../../CONTRIBUTION.md) for detailed guidelin
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
-
-## Troubleshooting
-
-### Common Issues
-
-- **Database connection errors**: Ensure PostgreSQL is running and DATABASE_URL is correct
-- **Telegram bot not responding**: Verify TELEGRAM_BOT_TOKEN and that the bot is started
-- **Notifications not working**: Check TELEGRAM_CHANNEL_ID and bot permissions
-- **Google AI errors**: Ensure GOOGLE_API_KEY is valid and has sufficient quota
-- **Time parsing issues**: Use specific times ("tomorrow at 3pm" instead of "later")
 
 ---
 

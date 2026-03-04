@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
+  <img src="https://files.catbox.moe/vumztw.png" alt="ADK-TS Logo" width="80" />
   <br/>
   <h1>Research Assistant</h1>
   <b>A sequential agent pipeline for web research using the <code>ADK-TS</code> framework.</b>
@@ -224,7 +224,8 @@ recommender. Want to skip recommendations? Remove the recommender agent from the
 ### Community
 
 - [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
-- [ADK-TS Telegram](https://t.me/+Z37x8uf6DLE3ZTQ8)
+- [ADK-TS Builders Community](https://t.me/+Z37x8uf6DLE3ZTQ8)
+- [IQ AI Community](https://t.me/IQAICOM)
 
 ## Contributing
 

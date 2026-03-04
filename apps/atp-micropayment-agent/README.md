@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
+  <img src="https://files.catbox.moe/vumztw.png" alt="ADK-TS Logo" width="80" />
   <br/>
  <h1>ATP Micropayment Agent</h1>
  <b>Example agent demonstrating how to build monetized, pay-per-request AI workflows with ADK-TS and x402</b>
@@ -216,6 +216,35 @@ The agent demonstrates micropayment workflows for accessing ATP data. Here's a s
 4. 💸 Wallet automatically pays via x402 protocol
 5. 📊 Server proxies request to ATP API and returns data
 
+## Real-World Use Cases
+
+The **payment-gated agent** pattern in this project generalizes to any scenario where AI agents need to access premium data or services. Here are examples of what you can build by extending this architecture:
+
+### Premium Analytics Platform
+
+Replace ATP endpoints with your own analytics APIs — market data feeds, sentiment analysis, or on-chain metrics. Users pay per query, and the agent handles pricing disclosure, confirmation, and payment automatically.
+
+### Monetized AI Research Assistant
+
+Wire the x402 payment layer to premium data sources (academic databases, financial filings, patent registries). The agent fetches, summarizes, and explains paid content while transparently managing micropayments per request.
+
+### Pay-Per-Use Tool Marketplace
+
+Expose multiple third-party APIs behind x402 — each with its own pricing tier. The agent acts as a unified interface, routing user requests to the right tool and handling payments for each call.
+
+### How to Adapt This Pattern
+
+The core architecture generalizes to any monetized AI service:
+
+| Component          | What to Customize                                      | Example                                                  |
+| ------------------ | ------------------------------------------------------ | -------------------------------------------------------- |
+| **Payment Server** | Add your own x402-protected routes                     | Proxy a premium weather API behind `/api/weather`        |
+| **Agent Tools**    | Create new tools pointing to your paid endpoints       | Add a `GET_RESEARCH` tool for premium document retrieval |
+| **Pricing**        | Set per-endpoint prices in the server config           | Charge $0.02 for basic queries, $0.20 for full reports   |
+| **UX Flow**        | Customize pricing disclosure and confirmation messages | Show estimated total before multi-step paid workflows    |
+
+You can also **add free tiers** — some endpoints without x402 middleware — or **bundle requests** for volume discounts.
+
 ## Available Endpoints
 
 | Endpoint            | Price | Description                            |
@@ -271,6 +300,8 @@ Expected response showing endpoint prices:
 ### Community
 
 - [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
+- [ADK-TS Builders Community](https://t.me/+Z37x8uf6DLE3ZTQ8)
+- [IQ AI Community](https://t.me/IQAICOM)
 
 ## Contributing
 

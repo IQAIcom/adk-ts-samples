@@ -1,8 +1,8 @@
 <div align="center">
-  <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
+  <img src="https://files.catbox.moe/vumztw.png" alt="ADK-TS Logo" width="80" />
   <br/>
   <h1>Crypto Tax Agent</h1>
-  <b>Sample agent demonstrating on-chain transaction analysis and tax reporting with <code>@iqai/adk</code> library</b>
+  <b>Sample agent demonstrating on-chain transaction analysis and tax reporting with the <code>ADK-TS</code> framework</b>
   <br/>
   <i>Multi-Chain • Tax Calculation • Cost Basis • TypeScript</i>
 </div>
@@ -19,7 +19,7 @@ AI-powered crypto tax assistant built with ADK-TS that fetches on-chain transact
 - 📄 **Tax Report Generation**: Creates reports in IRS Form 8949, CSV, and summary formats
 - ⏰ **Time-Period Filtering**: Filter transactions by year or custom date ranges
 - 🧠 **Natural Language Understanding**: Query transactions and reports conversationally
-- 📈 **Built on ADK-TS**: Leverages IQAI Agent Development Kit for reliable AI interactions
+- 📈 **Built on ADK-TS**: Built with ADK-TS for reliable AI interactions
 
 ## Architecture and Workflow
 
@@ -204,6 +204,35 @@ The agent handles complete crypto tax workflows through natural language queries
 - "Export results as CSV"
 - "What's my total capital gains for 2024?"
 
+## Real-World Use Cases
+
+The **fetch → classify → calculate → report** pipeline in this project maps to many financial analysis workflows. Here are examples of what you can build by extending this agent:
+
+### DeFi Yield Tracker
+
+Swap the tax classification logic for yield-tracking rules. The agent fetches staking, lending, and LP positions, classifies reward types (interest, farming rewards, rebases), calculates annualized yields, and generates a consolidated income report.
+
+### Multi-Wallet Portfolio Reconciler
+
+Extend the transaction fetcher to aggregate across multiple wallets and chains. The classifier groups transactions by asset, the calculator tracks cost basis across wallets, and the reporter produces a unified portfolio view with per-wallet breakdowns.
+
+### Airdrop & Income Auditor
+
+Focus the pipeline on income events — airdrops, staking rewards, referral bonuses, and governance token distributions. The agent classifies each event, looks up fair market value at the time of receipt, and generates an income schedule ready for tax filing.
+
+### How to Adapt This Pipeline
+
+The core pattern generalizes to any financial analysis domain:
+
+| Pipeline Step  | What to Customize                                     | Example                                                         |
+| -------------- | ----------------------------------------------------- | --------------------------------------------------------------- |
+| **Fetcher**    | Add data sources (more chains, CEX APIs, CSV imports) | Import Coinbase/Binance trade history via API                   |
+| **Classifier** | Change classification rules for your domain           | Detect LP deposits/withdrawals as non-taxable transfers         |
+| **Calculator** | Swap accounting logic (average cost, specific ID)     | Add average cost basis method for jurisdictions that require it |
+| **Reporter**   | Modify output format and jurisdiction rules           | Generate UK HMRC-compatible reports instead of IRS Form 8949    |
+
+You can also **add steps** — insert a deduplication stage between fetcher and classifier, or add a tax-loss harvesting recommender after the calculator.
+
 ## Tax Methods Explained
 
 ### FIFO (First In, First Out)
@@ -310,6 +339,8 @@ This is a **sample implementation** designed for educational purposes. Known lim
 ### Community
 
 - [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
+- [ADK-TS Builders Community](https://t.me/+Z37x8uf6DLE3ZTQ8)
+- [IQ AI Community](https://t.me/IQAICOM)
 
 ## Contributing
 

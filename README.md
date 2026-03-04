@@ -1,9 +1,9 @@
 <div align="center">
-  <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
+  <img src="https://files.catbox.moe/vumztw.png" alt="ADK-TS Logo" width="80" />
   <br/>
 
   <h1>ADK-TS Samples</h1>
-  <b>Real-world sample projects and agents built with ADK-TS (Agent Development Kit for TypeScript) to demonstrate framework capabilities and best practices.</b>
+  <b>ADK-TS — The TypeScript-Native AI Agent Framework</b>
   <br />
   <i>Sample Projects • Agent Samples • Learning Resources</i>
 
@@ -19,21 +19,21 @@
 
 ---
 
-Welcome to the ADK-TS Samples repository! This collection provides ready-to-use sample projects and agents built with the [Agent Development Kit (ADK) for TypeScript](https://adk.iqai.com), designed to demonstrate real-world use cases and accelerate your development process. These samples cover a range of complexities, from simple conversational agents to complex multi-agent workflows.
+Welcome to the ADK-TS Samples repository! This collection provides ready-to-use sample projects built with [ADK-TS](https://adk.iqai.com), an open-source framework for building production-ready AI agents in TypeScript. These samples cover a range of complexities, from simple conversational agents to complex multi-agent workflows.
 
 ## ✨ Getting Started
 
-This repository contains ADK-TS sample agents and projects. Navigate to the **[agents/](agents/)** folder to see setup instructions and learn more about the available samples.
+This repository contains ADK-TS sample agents and projects. Navigate to the **[apps/](apps/)** folder to see setup instructions and learn more about the available samples.
 
 > [!IMPORTANT]  
-> The samples in this repository are built using **ADK-TS (Agent Development Kit for TypeScript)**. Before you can run any of the samples, you must have ADK-TS installed. For instructions, please refer to the [**ADK-TS Installation Guide**](https://adk.iqai.com/docs/framework/get-started/installation).
+> The samples in this repository are built using **ADK-TS**. Before you can run any of the samples, you must have ADK-TS installed. For instructions, please refer to the [**ADK-TS Installation Guide**](https://adk.iqai.com/docs/framework/get-started/installation).
 
 To learn more, check out the [ADK-TS Documentation](https://adk.iqai.com/docs), and the main [ADK-TS GitHub repository](https://github.com/IQAIcom/adk-ts).
 
 ## 🌳 Repository Structure
 
 ```text
-├── agents/                # Sample agent projects
+├── apps/                  # Sample agent projects
 │   ├── README.md          # Setup and testing guide
 │   └── [sample-projects]/  # Individual example projects
 ├── .github/               # GitHub templates and workflows
@@ -99,6 +99,8 @@ Please check out our [Contributing Guide](CONTRIBUTION.md) for detailed informat
 Join our community to discuss ideas, ask questions, and share your projects:
 
 - [GitHub Discussions](https://github.com/IQAIcom/adk-ts/discussions)
+- [ADK-TS Builders Community](https://t.me/+Z37x8uf6DLE3ZTQ8)
+- [IQ AI Community](https://t.me/IQAICOM)
 
 ## 📜 License
 
