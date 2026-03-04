@@ -54,9 +54,11 @@ export const getRootAgent = async () => {
 			])
 			// Initialize session state with app-level configuration.
 			// The `app:` prefix makes these values shared across all sessions.
+			// In production, replace with a real user identifier (e.g. from auth).
+			// A hardcoded userId causes all users to share the same session state.
 			.withQuickSession({
 				appName: "research_assistant",
-				userId: "user",
+				userId: process.env.USER_ID ?? "user",
 				state: {
 					"app:pipeline_steps": [
 						"researcher",
