@@ -24,11 +24,10 @@ import { beforeAgentCallback, afterAgentCallback } from "../../callbacks";
  */
 
 /**
- * Before-tool callback that enforces the search limit.
- *
- * Tracks the number of web_search calls in temp state. Once the limit is
- * reached, returns an override response instead of executing the tool —
- * the LLM sees the message and moves on to compiling results.
+ * Before-tool callback that enforces the search limit AND prevents
+ * parallel tool calls. GPT-4o tends to batch all 3 searches in one
+ * response — the `search_in_progress` flag blocks the 2nd and 3rd
+ * parallel calls so only one search executes per LLM turn.
  */
 const enforceSearchLimit = async (
 	_tool: BaseTool,
@@ -43,8 +42,27 @@ const enforceSearchLimit = async (
 		};
 	}
 
+	// Block parallel tool calls — only one search per LLM response
+	if (toolContext.state["temp:search_in_progress"]) {
+		return {
+			result: `Only ONE search per turn. You have completed ${count}/${MAX_SEARCHES} searches. Call web_search again in your NEXT response.`,
+		};
+	}
+
 	toolContext.state["temp:search_count"] = count + 1;
-	return undefined; // Allow normal execution
+	toolContext.state["temp:search_in_progress"] = true;
+	return undefined;
+};
+
+/** Clears the in-progress flag after each search so the next turn can search again. */
+const clearSearchFlag = async (
+	_tool: BaseTool,
+	_args: Record<string, any>,
+	toolContext: ToolContext,
+	_toolResponse: Record<string, any>,
+) => {
+	toolContext.state["temp:search_in_progress"] = false;
+	return undefined;
 };
 
 export const getResearcherAgent = () => {
@@ -58,27 +76,32 @@ export const getResearcherAgent = () => {
 		beforeAgentCallback,
 		afterAgentCallback,
 		beforeToolCallback: enforceSearchLimit,
+		afterToolCallback: clearSearchFlag,
 		disallowTransferToParent: true,
 		disallowTransferToPeers: true,
 		instruction: `You are a RESEARCH SPECIALIST. Your ONLY job is to gather comprehensive data on a given topic through web searches.
 
 RESEARCH PROCESS:
-Execute EXACTLY 3 targeted searches using web_search:
+Execute EXACTLY 3 targeted searches using web_search. Call them ONE AT A TIME (not all at once):
 
    SEARCH 1 - Foundation: Broad overview of the topic
    Example query: "[topic] overview fundamentals"
+   → Call web_search, wait for results, then proceed to Search 2.
 
    SEARCH 2 - Depth: Specific details, methods, evidence, or practices
    Example query: "[topic] best practices implementation methods"
+   → Call web_search, wait for results, then proceed to Search 3.
 
    SEARCH 3 - Currency: Latest trends, statistics, and recent developments
    Example query: "[topic] latest trends statistics ${new Date().getFullYear()}"
+   → Call web_search, wait for results, then compile your summary.
+
+IMPORTANT: Make only ONE web_search call per turn. Do NOT batch multiple searches in a single response.
 
 For each search, use these parameters:
 - maxResults: 3
-- includeRawContent: "markdown"
 
-After all 3 searches complete, compile ALL results into a structured summary:
+After all 3 searches complete, compile ALL results from every search into a structured summary:
 
 === RESEARCH DATA ===
 
@@ -97,10 +120,11 @@ For each result:
 ## Research Summary
 - Total sources found: [count]
 - Search queries used: [list all 3]
-- Date of research: [today's date]
+- Date of research: ${new Date().toISOString().split("T")[0]}
 
 RULES:
 - Execute exactly 3 searches - no more, no less
+- Only ONE search per turn - never call web_search multiple times in one response
 - Do NOT analyze or interpret the data - just gather and compile it
 - Do NOT generate recommendations or reports
 - Include ALL source URLs and titles for proper attribution
