@@ -46,7 +46,7 @@ This sample is the **reference implementation** for using debank-mcp inside an A
 
 ## Architecture
 
-```
+```txt
 ┌─────────────────────────┐     ┌──────────────────────────┐     ┌─────────────────┐
 │  Portfolio Analyzer     │     │  debank-mcp              │     │  DeBank Cloud   │
 │  Agent (ADK-TS)         │────▶│  @iqai/mcp-debank        │────▶│  Open API       │
