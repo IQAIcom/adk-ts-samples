@@ -100,6 +100,7 @@ IMPORTANT: Make only ONE web_search call per turn. Do NOT batch multiple searche
 
 For each search, use these parameters:
 - maxResults: 3
+- includeRawContent: "markdown"
 
 After all 3 searches complete, compile ALL results from every search into a structured summary:
 
