@@ -179,6 +179,13 @@ This tool provides AI-generated analysis for informational purposes only. It doe
 
 This DAO Proposal Analyzer is part of the [ADK-TS Samples](https://github.com/IQAIcom/adk-ts-samples) repository.
 
+We welcome contributions to the ADK-TS Samples repository! You can:
+
+- **Add new sample projects** showcasing different ADK-TS features
+- **Improve existing samples** with better documentation, new features, or optimizations
+- **Fix bugs** in current implementations
+- **Update dependencies** and keep samples current
+
 Please see our [Contributing Guide](../../CONTRIBUTION.md) for detailed guidelines.
 
 ## License
@@ -187,4 +194,4 @@ This project is licensed under the MIT License - see the [LICENSE](../../LICENSE
 
 ---
 
-**Ready to analyze DAO proposals?** This project showcases multi-agent orchestration for governance analysis using ADK-TS with real on-chain data integration.
+**🎉 Ready to analyze DAO proposals?** This project showcases multi-agent orchestration for governance analysis using ADK-TS with real on-chain data integration.
