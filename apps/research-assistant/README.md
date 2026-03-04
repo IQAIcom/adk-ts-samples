@@ -30,7 +30,7 @@ with analysis, recommendations, and full source citations.
 - **Composable Architecture**: Easy to add, remove, or swap pipeline steps
 - **Topic Agnostic**: Works with any research topic across all domains
 
-## Architecture
+## Architecture and Workflow
 
 This project demonstrates the **SequentialAgent** pattern in ADK-TS — a pipeline where agents
 execute one after another, each building on the previous agent's output through shared state.
@@ -180,47 +180,17 @@ Swap the WebSearchTool for company-specific data sources (Crunchbase, LinkedIn, 
 build an agent that researches competitors, analyzes their strengths and weaknesses, recommends
 strategic moves, and produces an executive brief.
 
-### Due Diligence Agent
-
-Point the researcher at financial databases and news APIs. The analyst evaluates risks and red
-flags, the recommender produces a go/no-go assessment, and the writer generates an investment memo —
-all from a single company name.
-
 ### Content Marketing Pipeline
 
 Feed in a niche topic. The researcher finds trending content, the analyst identifies audience fit
 and gaps, the recommender suggests content angles and keywords, and the writer produces a
 publish-ready blog post or newsletter.
 
-### Regulatory Compliance Checker
-
-Add a document ingestion tool to the researcher so it can read company policies alongside current
-regulations. The analyst identifies compliance gaps, the recommender prioritizes fixes by risk
-level, and the writer generates a compliance report.
-
 ### Academic Literature Review
 
 Replace WebSearchTool with Semantic Scholar or arXiv APIs. The researcher gathers papers, the
 analyst summarizes methods and findings, the recommender identifies research gaps and future
 directions, and the writer produces a structured literature review.
-
-### Medical Research Summarizer
-
-Connect to PubMed or clinical trial databases. The pipeline analyzes evidence quality, evaluates
-clinical relevance, and produces patient-friendly or clinician-focused summaries — a critical
-real-world need.
-
-### Legal Case Research
-
-Swap in legal databases (CourtListener, Westlaw APIs). The researcher finds relevant case law, the
-analyst identifies precedents, the recommender suggests legal strategy, and the writer produces a
-case brief.
-
-### Product Launch Readiness
-
-The researcher gathers market data and competitor pricing, the analyst evaluates product-market fit,
-the recommender suggests pricing and positioning strategy, and the writer produces a go-to-market
-plan.
 
 ### How to Adapt This Pipeline
 
