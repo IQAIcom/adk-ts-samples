@@ -48,7 +48,9 @@ Before we start, make sure you have:
 - **TypeScript** familiarity (you don't need to be an expert, but you should know interfaces and
   async/await)
 - **pnpm** package manager (or npm/yarn — adjust commands accordingly)
-- An **OpenAI API key** (or another LLM provider supported by ADK-TS)
+- An **LLM API key** — either a [Google AI API key](https://aistudio.google.com/apikey) (free tier
+  available) or an [OpenAI API key](https://platform.openai.com/api-keys). ADK-TS supports both
+  providers out of the box.
 - A **Tavily API key** for web search ([sign up here](https://app.tavily.com/) — they have a
   generous free tier)
 - Basic understanding of what AI agents are (if you've used ChatGPT, you're good)
@@ -200,8 +202,8 @@ config();
 
 export const envSchema = z.object({
 	ADK_DEBUG: z.coerce.boolean().default(false),
-	OPENAI_API_KEY: z.string(),
-	LLM_MODEL: z.string().default("gpt-4o-mini"),
+	GOOGLE_API_KEY: z.string(),
+	LLM_MODEL: z.string().default("gemini-2.5-flash"),
 	TAVILY_API_KEY: z.string(),
 });
 
@@ -211,10 +213,14 @@ export const env = envSchema.parse(process.env);
 Create a `.env` file in your project root:
 
 ```env
-OPENAI_API_KEY=your_openai_api_key_here
-LLM_MODEL=gpt-4o-mini
+GOOGLE_API_KEY=your_google_api_key_here
+LLM_MODEL=gemini-2.5-flash
 TAVILY_API_KEY=your_tavily_api_key_here
 ```
+
+We're using Google's Gemini here, but ADK-TS supports multiple providers. To use OpenAI instead,
+swap `GOOGLE_API_KEY` for `OPENAI_API_KEY` in both the schema and `.env`, and set `LLM_MODEL` to a
+model like `gpt-4o`.
 
 The `TAVILY_API_KEY` is required because the built-in `WebSearchTool` uses Tavily under the hood.
 Sign up at [app.tavily.com](https://app.tavily.com/) for a free API key.
@@ -274,22 +280,27 @@ export const getResearcherAgent = () => {
 		instruction: `You are a RESEARCH SPECIALIST. Your ONLY job is to gather comprehensive data on a given topic through web searches.
 
 RESEARCH PROCESS:
-Execute EXACTLY 3 targeted searches using web_search:
+Execute EXACTLY 3 targeted searches using web_search. Call them ONE AT A TIME (not all at once):
 
    SEARCH 1 - Foundation: Broad overview of the topic
    Example query: "[topic] overview fundamentals"
+   → Call web_search, wait for results, then proceed to Search 2.
 
    SEARCH 2 - Depth: Specific details, methods, evidence, or practices
    Example query: "[topic] best practices implementation methods"
+   → Call web_search, wait for results, then proceed to Search 3.
 
    SEARCH 3 - Currency: Latest trends, statistics, and recent developments
    Example query: "[topic] latest trends statistics ${new Date().getFullYear()}"
+   → Call web_search, wait for results, then compile your summary.
+
+IMPORTANT: Make only ONE web_search call per turn. Do NOT batch multiple searches in a single response.
 
 For each search, use these parameters:
 - maxResults: 3
 - includeRawContent: "markdown"
 
-After all 3 searches complete, compile ALL results into a structured summary:
+After all 3 searches complete, compile ALL results from every search into a structured summary:
 
 === RESEARCH DATA ===
 
@@ -308,10 +319,11 @@ For each result:
 ## Research Summary
 - Total sources found: [count]
 - Search queries used: [list all 3]
-- Date of research: [today's date]
+- Date of research: ${new Date().toISOString().split("T")[0]}
 
 RULES:
 - Execute exactly 3 searches - no more, no less
+- Only ONE search per turn - never call web_search multiple times in one response
 - Do NOT analyze or interpret the data - just gather and compile it
 - Do NOT generate recommendations or reports
 - Include ALL source URLs and titles for proper attribution
@@ -332,9 +344,16 @@ A few design decisions to notice:
 - **`disallowTransferToParent` and `disallowTransferToPeers`**: These prevent the agent from trying
   to delegate work. In a SequentialAgent, each agent should do its own job and finish — not hand off
   to siblings.
+- **Sequential search execution**: The instruction explicitly tells the agent to make ONE search per
+  turn. Some models (like GPT-4o) will try to batch all 3 searches in a single response, which
+  causes problems — the results don't get compiled properly. The "one at a time" instruction,
+  combined with the `beforeToolCallback` enforcement we add in Part 2, prevents this.
 - **Explicit search strategy**: The instruction tells the agent to search with three different
   angles (broad, deep, current). This produces better research coverage than three variations of the
   same query.
+- **Dynamic date injection**: The `${new Date().toISOString().split("T")[0]}` expression injects
+  today's date at agent creation time. Without this, the LLM guesses the date from its training
+  data, which can be years out of date.
 
 ### Step 6: Create the Analyst Agent (Step 2)
 
@@ -675,10 +694,11 @@ This is almost always a state key mismatch. Check that:
 
 ### "The researcher agent makes too many or too few searches"
 
-LLMs don't always follow counting instructions perfectly. If the agent consistently makes fewer than
-3 searches, make the instruction more explicit — the current wording "Execute EXACTLY 3 targeted
-searches" works well. If it makes more, prompt-level fixes are unreliable. The proper solution is a
-`beforeToolCallback` that enforces the limit at the framework level — we cover this in
+LLMs don't always follow counting instructions perfectly. A common issue is models batching all 3
+searches into a single response instead of making them one at a time — this leads to poor result
+compilation. The instruction-level fix ("Make only ONE web_search call per turn") helps, but
+prompt-level fixes are unreliable. The proper solution is a `beforeToolCallback` that enforces both
+the search limit _and_ sequential execution at the framework level — we cover this in
 [Part 2](/building-research-assistant-agent-adk-ts-part-2) under "Before Tool Callback (Search
 Limit)."
 
@@ -700,13 +720,14 @@ your agents are correctly listed in the `.asSequential()` array in the right ord
 ### Swap the LLM per Agent
 
 Not every agent needs the same model. The researcher and recommender can use a cheaper, faster model
-(like `gpt-4o-mini`), while the analyst and writer might benefit from a more capable model (like
-`gpt-4o`). ADK-TS lets you set the `model` property independently on each agent:
+(like `gemini-2.5-flash` or `gpt-4o-mini`), while the analyst and writer might benefit from a more
+capable model (like `gemini-2.5-pro` or `gpt-4o`). ADK-TS lets you set the `model` property
+independently on each agent:
 
 ```typescript
 new LlmAgent({
 	name: "writer_agent",
-	model: "gpt-4o", // More capable model for the final synthesis
+	model: "gemini-2.5-pro", // More capable model for the final synthesis
 	// ...
 });
 ```
@@ -786,10 +807,12 @@ property. Downstream agents read that data using `{state_key}` template syntax i
 instructions. For example, the researcher writes to `search_results`, and the analyst reads from
 `{search_results}` in its instruction.
 
-### Can I use a different LLM provider instead of OpenAI?
+### Can I use a different LLM provider instead of Google?
 
-Yes. ADK-TS supports multiple LLM providers. Change the `model` property on each `LlmAgent` to use a
-different provider's model identifier. The framework handles the provider abstraction.
+Yes. ADK-TS supports multiple LLM providers including OpenAI, Google, and others. Change the `model`
+property on each `LlmAgent` to use a different provider's model identifier (e.g., `gpt-4o` for
+OpenAI), and update your environment variables accordingly. The framework handles the provider
+abstraction.
 
 ### Do I need a Tavily API key to run this project?
 

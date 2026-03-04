@@ -43,9 +43,10 @@ your agent pipeline observable, configurable, and stateful. Let's get into it.
   ID
 - Returning `undefined` from a callback lets the agent run normally; returning a `Content` object
   short-circuits the agent's execution
-- **Tool callbacks** (`beforeToolCallback`) intercept individual tool calls — return a value to
-  override the tool's result without executing it. Use this for enforcing limits, rate controls, or
-  tool-level guardrails
+- **Tool callbacks** (`beforeToolCallback` / `afterToolCallback`) intercept individual tool calls —
+  return a value from `beforeToolCallback` to override the tool's result without executing it. Use
+  `afterToolCallback` for cleanup or post-processing. Together, they enforce limits, prevent parallel
+  tool batching, and provide tool-level guardrails
 - **Session state prefixes** control scope: `app:` (all users/sessions), `user:` (per user), `temp:`
   (not persisted), no prefix (session-scoped)
 - `AgentBuilder.withQuickSession()` lets you pre-initialize state with configuration values before
@@ -96,10 +97,12 @@ The return value matters:
 ### Tool Callbacks: Intercepting Tool Calls
 
 While agent callbacks hook into the _agent's_ lifecycle, **tool callbacks** hook into individual
-_tool calls_. Every `LlmAgent` supports a `beforeToolCallback` that fires before each tool call
-the LLM requests.
+_tool calls_. Every `LlmAgent` supports two tool-level callbacks:
 
-The callback receives three arguments:
+- **`beforeToolCallback`** — fires _before_ each tool call the LLM requests
+- **`afterToolCallback`** — fires _after_ each tool call completes
+
+The `beforeToolCallback` receives three arguments:
 
 - `tool` — the tool instance being called (e.g., `WebSearchTool`)
 - `args` — the arguments the LLM wants to pass to the tool
@@ -111,11 +114,15 @@ The return value determines what happens:
 - Return a `Record<string, any>` → the tool call is **skipped**, and the returned object is sent
   back to the LLM as if it were the tool's actual response
 
+The `afterToolCallback` receives the same three arguments plus a fourth — `toolResponse` — containing
+the tool's actual result. Use it for cleanup, logging, or post-processing tool results.
+
 This is a powerful pattern for enforcing hard limits. In Part 1, we relied on the instruction
-telling the researcher to "execute EXACTLY 3 searches." But LLMs don't always follow counting
-instructions — especially with faster models like `gpt-4o-mini`. A `beforeToolCallback` enforces
-the limit at the framework level: after 3 searches, the callback returns a "limit reached" message
-instead of executing the tool. The LLM sees this message and knows to stop searching.
+telling the researcher to "execute EXACTLY 3 searches" and "make only ONE search per turn." But LLMs
+don't always follow these instructions — many models batch all 3 searches into a single response
+despite being told not to. A `beforeToolCallback` enforces both the total search limit _and_
+sequential execution at the framework level: it blocks parallel searches and caps the total count.
+The `afterToolCallback` complements this by resetting per-turn state after each search completes.
 
 ### Session State Prefixes: Scoped Configuration
 
@@ -280,14 +287,19 @@ for that agent. But for progress tracking, one shared pair works well.
 	description="Subscribe for hands-on tutorials on building production-ready AI agents with TypeScript."
 />
 
-### Step 3: Add a Before Tool Callback to Enforce Search Limits
+### Step 3: Add Tool Callbacks to Enforce Search Limits
 
-In Part 1, the researcher agent's instruction says "Execute EXACTLY 3 searches." But LLMs —
-especially faster models like `gpt-4o-mini` — don't reliably follow counting instructions. In
-practice, the researcher can get stuck in a search loop, making dozens of searches instead of 3.
+In Part 1, the researcher agent's instruction says "Execute EXACTLY 3 searches" and "make only ONE
+web_search call per turn." But LLMs don't reliably follow these instructions. In practice, many
+models — including GPT-4o and Gemini — will batch all 3 searches into a single response, which
+causes two problems: the results don't get compiled properly, and the search limit can be bypassed.
 
-The fix is a `beforeToolCallback` that enforces the limit at the framework level. First, add the
-`MAX_SEARCHES` constant:
+The fix uses two tool callbacks working together:
+
+- A `beforeToolCallback` that enforces both the total search limit _and_ prevents parallel batching
+- An `afterToolCallback` that resets the per-turn flag after each search completes
+
+First, add the `MAX_SEARCHES` constant:
 
 ```typescript
 // src/constants.ts (add to existing file)
@@ -296,7 +308,7 @@ The fix is a `beforeToolCallback` that enforces the limit at the framework level
 export const MAX_SEARCHES = 3;
 ```
 
-Then add the callback to the researcher agent:
+Then add both callbacks to the researcher agent:
 
 ```typescript
 // src/agents/researcher-agent/agent.ts
@@ -308,9 +320,10 @@ import { STATE_KEYS, MAX_SEARCHES } from "../../constants";
 import { beforeAgentCallback, afterAgentCallback } from "../../callbacks";
 
 /**
- * Before-tool callback that enforces the search limit.
- * Tracks the number of web_search calls in temp state. Once the limit is
- * reached, returns an override response instead of executing the tool.
+ * Before-tool callback that enforces the search limit AND prevents
+ * parallel tool calls. Many models batch all 3 searches in one
+ * response — the `search_in_progress` flag blocks the 2nd and 3rd
+ * parallel calls so only one search executes per LLM turn.
  */
 const enforceSearchLimit = async (
 	_tool: BaseTool,
@@ -325,8 +338,27 @@ const enforceSearchLimit = async (
 		};
 	}
 
+	// Block parallel tool calls — only one search per LLM response
+	if (toolContext.state["temp:search_in_progress"]) {
+		return {
+			result: `Only ONE search per turn. You have completed ${count}/${MAX_SEARCHES} searches. Call web_search again in your NEXT response.`,
+		};
+	}
+
 	toolContext.state["temp:search_count"] = count + 1;
-	return undefined; // Allow normal execution
+	toolContext.state["temp:search_in_progress"] = true;
+	return undefined;
+};
+
+/** Clears the in-progress flag after each search so the next turn can search again. */
+const clearSearchFlag = async (
+	_tool: BaseTool,
+	_args: Record<string, any>,
+	toolContext: ToolContext,
+	_toolResponse: Record<string, any>,
+) => {
+	toolContext.state["temp:search_in_progress"] = false;
+	return undefined;
 };
 
 export const getResearcherAgent = () => {
@@ -336,29 +368,41 @@ export const getResearcherAgent = () => {
 		tools: [new WebSearchTool()],
 		beforeAgentCallback,
 		afterAgentCallback,
-		beforeToolCallback: enforceSearchLimit, // ← Enforce search limit
+		beforeToolCallback: enforceSearchLimit, // ← Enforce search limit + sequential execution
+		afterToolCallback: clearSearchFlag, // ← Reset per-turn flag after each search
 		// ...
 	});
 };
 ```
 
-Here's what happens at runtime:
+Here's what happens at runtime when the model tries to batch 3 searches in one response:
 
-1. The LLM requests a `web_search` call → `enforceSearchLimit` fires
-2. It reads `temp:search_count` from state (starts at `0`)
-3. If count < 3: increments the counter in state, returns `undefined` → tool executes normally
-4. If count >= 3: returns an override message → **tool does NOT execute**, the LLM sees the "limit
-   reached" message instead
+1. **Search 1**: `enforceSearchLimit` fires → count is 0, `search_in_progress` is false → allows
+   the search, sets `search_in_progress = true` and increments count to 1
+2. **Search 2** (parallel): `enforceSearchLimit` fires → sees `search_in_progress = true` → returns
+   "only ONE search per turn" override → **tool does NOT execute**
+3. **Search 3** (parallel): same as Search 2 → blocked
+4. Search 1 completes → `clearSearchFlag` fires → sets `search_in_progress = false`
+5. Next LLM turn: model sees one real result + two "one per turn" messages → makes Search 2
+6. Repeat for Search 3
 
-The override message tells the LLM to stop searching and compile results. Because this happens at
-the framework level (not the prompt level), it's 100% reliable regardless of which model you use.
+The `beforeToolCallback` handles two concerns:
 
-Notice the `temp:` prefix on the counter — this ensures the search count isn't persisted to storage.
-It's only relevant during this execution, which is exactly what `temp:` is for.
+- **Total limit**: After 3 searches total, the "limit reached" override fires. The LLM sees the
+  message and stops searching.
+- **Sequential enforcement**: The `search_in_progress` flag ensures only one search executes per LLM
+  turn, even if the model batches multiple tool calls.
 
-This pattern generalizes to any tool limit: API rate controls, cost budgets, or preventing runaway
-tool loops. Anywhere you need a hard stop that can't be prompt-engineered around, a
-`beforeToolCallback` is the answer.
+The `afterToolCallback` complements this by clearing the `search_in_progress` flag after each
+search completes, so the next turn can search again.
+
+Notice the `temp:` prefix on all state keys — this ensures the search count and in-progress flag
+aren't persisted to storage. They're only relevant during this execution, which is exactly what
+`temp:` is for.
+
+This pattern generalizes to any tool limit: API rate controls, cost budgets, sequential execution
+enforcement, or preventing runaway tool loops. Anywhere you need a hard stop that can't be
+prompt-engineered around, tool callbacks are the answer.
 
 ### Step 4: Initialize Session State with App-Level Config
 
@@ -520,7 +564,7 @@ src/
 ├── agents/
 │   ├── agent.ts                        # Root SequentialAgent + session + memory
 │   ├── researcher-agent/
-│   │   └── agent.ts                    # Step 1 (+ callbacks + tool limit)
+│   │   └── agent.ts                    # Step 1 (+ callbacks + tool limit + sequential enforcement)
 │   ├── analysis-report-agent/
 │   │   └── agent.ts                    # Step 2 (+ callbacks)
 │   ├── recommender-agent/
@@ -646,10 +690,10 @@ In a production app serving multiple users, use all four prefix levels:
   state: {
     // App-wide config (all users see this)
     "app:pipeline_steps": ["researcher", "analyst", "recommender", "writer"],
-    "app:supported_models": ["gpt-4o", "gpt-4o-mini"],
+    "app:supported_models": ["gemini-2.5-flash", "gemini-2.5-pro", "gpt-4o"],
 
     // User-specific preferences (persists across sessions for this user)
-    "user:preferred_model": "gpt-4o",
+    "user:preferred_model": "gemini-2.5-flash",
     "user:report_format": "executive",
 
     // Session-specific (default, no prefix)
@@ -787,14 +831,15 @@ agent's output. If the agent has an `outputKey`, the returned content is saved t
 key — just as if the agent had produced it. This is the mechanism for short-circuiting agents, which
 is useful for caching or conditional skipping.
 
-### What's the difference between beforeAgentCallback and beforeToolCallback?
+### What's the difference between agent callbacks and tool callbacks?
 
-`beforeAgentCallback` fires once before the agent starts processing — it hooks into the agent's
-lifecycle. `beforeToolCallback` fires before _each_ tool call the LLM requests — it hooks into
-individual tool executions. An agent might make multiple tool calls in one turn, so
-`beforeToolCallback` can fire many times per agent invocation. Use `beforeAgentCallback` for
-agent-level concerns (logging, validation, conditional skipping) and `beforeToolCallback` for
-tool-level concerns (rate limits, argument validation, result overrides).
+`beforeAgentCallback` / `afterAgentCallback` fire once before/after the agent's entire execution —
+they hook into the agent's lifecycle. `beforeToolCallback` / `afterToolCallback` fire before/after
+_each_ tool call the LLM requests — they hook into individual tool executions. An agent might make
+multiple tool calls across multiple turns, so tool callbacks can fire many times per agent
+invocation. Use agent callbacks for agent-level concerns (logging, validation, conditional skipping)
+and tool callbacks for tool-level concerns (rate limits, sequential execution enforcement, argument
+validation, result overrides, cleanup).
 
 ### What's the difference between `temp:` and no prefix for state keys?
 
