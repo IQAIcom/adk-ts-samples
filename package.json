@@ -1,7 +1,7 @@
 {
 	"name": "@iqai/adk-ts-samples",
 	"version": "1.0.0",
-	"description": "IQAI Agent Development Kit TypeScript samples and agents",
+	"description": "ADK-TS sample projects and agents",
 	"private": true,
 	"scripts": {
 		"format": "biome format . --write && prettier --write '**/*.{md,mdx}'",

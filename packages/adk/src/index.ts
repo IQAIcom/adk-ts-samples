@@ -1,5 +1,5 @@
 /**
- * @iqai/adk - IQAI Agent Development Kit
+ * @iqai/adk - ADK-TS
  *
  * This workspace package re-exports the published @iqai/adk npm package.
  * All agents in this monorepo depend on "workspace:*" which resolves to this package.

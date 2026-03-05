@@ -1,8 +1,8 @@
 <div align="center">
-  <img src="https://files.catbox.moe/vumztw.png" alt="ADK TypeScript Logo" width="100" />
+  <img src="https://files.catbox.moe/vumztw.png" alt="ADK-TS Logo" width="80" />
   <br/>
   <h1>DeBank Portfolio Analyzer</h1>
-  <b>Sample agent that showcases <strong>debank-mcp</strong> — integrate DeBank wallet, portfolio, and DeFi data into your AI agents with <code>@iqai/adk</code>.</b>
+  <b>Sample agent that showcases <strong>debank-mcp</strong> — integrate DeBank wallet, portfolio, and DeFi data into your AI agents with the <code>ADK-TS</code> framework.</b>
   <br/>
   <i>DeBank MCP • Portfolio Analysis • Multi-Chain • DeFi Data</i>
 </div>
@@ -44,20 +44,15 @@ This sample is the **reference implementation** for using debank-mcp inside an A
 
 ---
 
-## Architecture
+## Architecture and Workflow
 
-```
-┌─────────────────────────┐     ┌──────────────────────────┐     ┌─────────────────┐
-│  Portfolio Analyzer     │     │  debank-mcp              │     │  DeBank Cloud   │
-│  Agent (ADK-TS)         │────▶│  @iqai/mcp-debank        │────▶│  Open API       │
-│                         │     │  (MCP Server, stdio)     │     │                 │
-│  • Natural language     │     │  • Exposes DeBank        │     │  • Wallet       │
-│  • Tool orchestration   │     │    endpoints as tools    │     │  • Portfolio    │
-│  • Summaries & insights │     │  • DEBANK_API_KEY        │     │  • Protocols    │
-└─────────────────────────┘     └──────────────────────────┘     └─────────────────┘
-```
+This project demonstrates MCP-powered portfolio analysis using debank-mcp as the data layer:
 
-### Project structure
+1. **Portfolio Analyzer Agent** (`portfolio_analyzer`) - Main conversational agent that interprets user queries and orchestrates tool calls
+2. **debank-mcp** (`@iqai/mcp-debank`) - MCP server exposing DeBank Cloud APIs as tools via stdio transport
+3. **DeBank Cloud API** - Upstream data source for wallet balances, token holdings, protocol positions, and NFTs
+
+### Project Structure
 
 ```text
 src/
@@ -69,9 +64,20 @@ src/
 └── index.ts                  # Demo runner: greet, balance, protocols, NFTs, summary
 ```
 
+### Data Flow
+
+```mermaid
+graph LR
+    Agent["Portfolio Analyzer<br/>Agent (ADK-TS)<br/><br/>• Natural language<br/>• Tool orchestration<br/>• Summaries & insights"]
+    MCP["debank-mcp<br/>@iqai/mcp-debank<br/>(MCP Server, stdio)<br/><br/>• Exposes DeBank<br/>&nbsp;&nbsp;endpoints as tools<br/>• DEBANK_API_KEY"]
+    DeBank["DeBank Cloud<br/>Open API<br/><br/>• Wallet<br/>• Portfolio<br/>• Protocols"]
+
+    Agent -->|MCP calls| MCP -->|API requests| DeBank
+```
+
 ---
 
-## Getting started
+## Getting Started
 
 ### Prerequisites
 
@@ -137,7 +143,7 @@ Use your own wallet address and questions when testing.
 
 ---
 
-## Usage examples
+## Usage Examples
 
 The agent uses debank-mcp tools to answer portfolio questions. Example flow:
 
@@ -160,6 +166,37 @@ The agent uses debank-mcp tools to answer portfolio questions. Example flow:
 
 ---
 
+## Real-World Use Cases
+
+The **MCP-powered portfolio analysis** pattern in this project applies to any workflow that needs on-chain wallet data. Here are examples of what you can build by extending this analyzer:
+
+### Whale Wallet Tracker
+
+Monitor high-value wallets for portfolio changes. The agent periodically fetches balances and protocol positions, detects significant moves (large token transfers, new protocol entries), and alerts users to whale activity.
+
+### DeFi Risk Monitor
+
+Focus the agent on risk analysis. It fetches protocol positions across chains, evaluates exposure concentration, flags high-risk protocols or illiquid positions, and produces a risk dashboard with actionable alerts.
+
+### Portfolio Rebalancing Advisor
+
+Extend the agent to compare current holdings against a target allocation. It fetches live portfolio data, calculates drift from target weights, and recommends specific trades to rebalance — all through natural language.
+
+### How to Adapt This Pattern
+
+The core architecture generalizes to any DeBank-powered agent:
+
+| Component              | What to Customize                                  | Example                                                         |
+| ---------------------- | -------------------------------------------------- | --------------------------------------------------------------- |
+| **MCP Tools**          | Filter or extend which DeBank tools the agent uses | Focus only on protocol positions for a DeFi-specific agent      |
+| **Agent Instructions** | Adjust the system prompt for your analysis focus   | Add risk scoring criteria for a risk monitoring agent           |
+| **Output Format**      | Change how the agent presents results              | Generate structured JSON for a dashboard instead of text        |
+| **Data Sources**       | Combine debank-mcp with other MCP servers          | Add price feed MCP for real-time token pricing alongside DeBank |
+
+You can also **chain agents** — use this analyzer as the first step in a SequentialAgent pipeline that feeds portfolio data into a tax calculator or rebalancing optimizer.
+
+---
+
 ## debank-mcp in this project
 
 Integration lives in `src/agents/portfolio-analyzer-agent/tools.ts`:
@@ -172,7 +209,7 @@ To **reuse debank-mcp in your own agent**: copy the `tools.ts` pattern, ensure `
 
 ---
 
-## Useful resources
+## Useful Resources
 
 ### debank-mcp & DeBank
 
@@ -190,12 +227,18 @@ To **reuse debank-mcp in your own agent**: copy the `tools.ts` pattern, ensure `
 ### Community
 
 - [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
+- [ADK-TS Builders Community](https://t.me/+Z37x8uf6DLE3ZTQ8)
+- [IQ AI Community](https://t.me/IQAICOM)
 
 ---
 
 ## Contributing
 
 This sample is part of [ADK-TS Samples](https://github.com/IQAIcom/adk-ts-samples). Contributions that improve debank-mcp adoption or this reference integration are welcome. See the [Contributing Guide](../../CONTRIBUTION.md) for guidelines.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
 
 ---
 
