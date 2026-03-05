@@ -299,7 +299,7 @@ You can also **add integrations** — connect Google Calendar for syncing remind
 - **Telegram bot not responding**: Verify TELEGRAM_BOT_TOKEN and that the bot is started
 - **Notifications not working**: Check TELEGRAM_CHANNEL_ID and bot permissions
 - **Google AI errors**: Ensure GOOGLE_API_KEY is valid and has sufficient quota
-- **Time parsing issues**: Use specific times ("tomorrow at 3pm" instead of "later")
+- **Time parsing issues**: Use specific times (e.g., "tomorrow at 3pm") instead of vague terms like "later".
 
 ## Useful Resources
 
