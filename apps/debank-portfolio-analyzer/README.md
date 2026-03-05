@@ -44,18 +44,13 @@ This sample is the **reference implementation** for using debank-mcp inside an A
 
 ---
 
-## Architecture
+## Architecture and Workflow
 
-```txt
-┌─────────────────────────┐     ┌──────────────────────────┐     ┌─────────────────┐
-│  Portfolio Analyzer     │     │  debank-mcp              │     │  DeBank Cloud   │
-│  Agent (ADK-TS)         │────▶│  @iqai/mcp-debank        │────▶│  Open API       │
-│                         │     │  (MCP Server, stdio)     │     │                 │
-│  • Natural language     │     │  • Exposes DeBank        │     │  • Wallet       │
-│  • Tool orchestration   │     │    endpoints as tools    │     │  • Portfolio    │
-│  • Summaries & insights │     │  • DEBANK_API_KEY        │     │  • Protocols    │
-└─────────────────────────┘     └──────────────────────────┘     └─────────────────┘
-```
+This project demonstrates MCP-powered portfolio analysis using debank-mcp as the data layer:
+
+1. **Portfolio Analyzer Agent** (`portfolio_analyzer`) - Main conversational agent that interprets user queries and orchestrates tool calls
+2. **debank-mcp** (`@iqai/mcp-debank`) - MCP server exposing DeBank Cloud APIs as tools via stdio transport
+3. **DeBank Cloud API** - Upstream data source for wallet balances, token holdings, protocol positions, and NFTs
 
 ### Project Structure
 
@@ -67,6 +62,17 @@ src/
 │       └── tools.ts          # debank-mcp config & McpToolset setup
 ├── env.ts                    # Environment validation (GOOGLE_API_KEY, DEBANK_API_KEY)
 └── index.ts                  # Demo runner: greet, balance, protocols, NFTs, summary
+```
+
+### Data Flow
+
+```mermaid
+graph LR
+    Agent["Portfolio Analyzer<br/>Agent (ADK-TS)<br/><br/>• Natural language<br/>• Tool orchestration<br/>• Summaries & insights"]
+    MCP["debank-mcp<br/>@iqai/mcp-debank<br/>(MCP Server, stdio)<br/><br/>• Exposes DeBank<br/>&nbsp;&nbsp;endpoints as tools<br/>• DEBANK_API_KEY"]
+    DeBank["DeBank Cloud<br/>Open API<br/><br/>• Wallet<br/>• Portfolio<br/>• Protocols"]
+
+    Agent -->|MCP calls| MCP -->|API requests| DeBank
 ```
 
 ---
