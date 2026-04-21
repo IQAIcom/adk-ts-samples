@@ -186,23 +186,15 @@ export const Drafter = () => {
 	}, [history]);
 
 	useEffect(() => {
-		if (!preview) return;
-		const existing = history.find((h) => h.url === preview.article.url);
-		const entry: HistoryEntry = {
-			id: existing?.id ?? crypto.randomUUID(),
-			url: preview.article.url,
-			tone,
-			platforms,
-			format,
-			threadLength,
-			preview,
-			timestamp: Date.now(),
-		};
-		setHistory((current) => {
-			const without = current.filter((h) => h.url !== entry.url);
-			return [entry, ...without].slice(0, MAX_HISTORY);
-		});
-	}, [preview, tone, platforms, format, threadLength, history]);
+		if (!preview || editableDrafts.length === 0) return;
+		setHistory((current) =>
+			current.map((h) =>
+				h.url === preview.article.url
+					? { ...h, preview: { ...h.preview, drafts: editableDrafts } }
+					: h,
+			),
+		);
+	}, [preview, editableDrafts]);
 
 	const togglePlatform = (p: Platform) => {
 		setPlatforms((cur) =>
@@ -233,6 +225,21 @@ export const Drafter = () => {
 			});
 			setPreview(result);
 			setEditableDrafts(result.drafts);
+			setHistory((current) => {
+				const existing = current.find((h) => h.url === result.article.url);
+				const entry: HistoryEntry = {
+					id: existing?.id ?? crypto.randomUUID(),
+					url: result.article.url,
+					tone,
+					platforms,
+					format,
+					threadLength,
+					preview: result,
+					timestamp: Date.now(),
+				};
+				const without = current.filter((h) => h.url !== entry.url);
+				return [entry, ...without].slice(0, MAX_HISTORY);
+			});
 		} catch (err) {
 			const message = err instanceof Error ? err.message : String(err);
 			setError(`Failed to generate drafts: ${message}`);
