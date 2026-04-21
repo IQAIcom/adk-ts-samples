@@ -16,6 +16,19 @@ import {
 // Singleton runner — avoid re-initializing on every call. The
 // WebFetchCachePlugin is attached to this runner, so the URL cache
 // survives across requests for the lifetime of the process.
+//
+// Trust boundary note (read before reusing this pattern):
+// The cache stores PUBLIC blog HTML, keyed by URL, with no user-scoped
+// headers or cookies forwarded into the server-side fetch. Sharing
+// cached responses across users of the same Next.js server instance is
+// the intended optimization — same public URL, same public content.
+//
+// DO NOT reuse this module-level singleton if the fetched content is
+// user-specific (e.g. URLs behind auth, per-user personalization, or
+// any request that carries session/cookie context). In that case:
+//   - key the cache by `(userId, url)` or a session ID, and/or
+//   - move to an external store (Redis) with namespaced keys, and/or
+//   - build a per-request runner instead of a module singleton.
 let draftRunner: Awaited<ReturnType<typeof getDraftGenerator>> | null = null;
 
 async function ensureDraftRunner() {
