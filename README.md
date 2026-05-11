@@ -83,6 +83,7 @@ If you have any questions or if you found any problems with this repository, ple
 | DeBank Portfolio Analyzer   | Multi-chain portfolio analysis using DeBank data (balances, tokens, protocols, NFTs); debank-mcp adoption | MCP integration, debank-mcp, McpToolset, DeBank API, Single-agent tool orchestration                               | `portfolio`, `debank`, `mcp`, `defi`    | Conversational   | Intermediate | Single Agent | Web3/DeFi       |
 | DAO Proposal Analyzer       | Multi-chain DAO proposal analysis and voting recommendations (Ethereum + Fraxtal L2)                      | Sequential agents, Multi-chain viem integration, Governance analysis, Multi-agent orchestration                    | `dao`, `governance`, `web3`, `voting`   | Workflow         | Advanced     | Multi-agent  | Web3/Governance |
 | Social Media Drafting Agent | Turns any blog URL into LinkedIn, X, and Threads drafts (single post or 2–10 post threads)                | Single LlmAgent, WebFetchTool, cache + retry plugins, Zod output schema, Next.js server actions                    | `content`, `social`, `nextjs`           | Workflow         | Intermediate | Single Agent | General         |
+| Customer Support Agent      | Web chat UI and terminal CLI for Acme Corp support: policy Q&A, live order/account lookup, and escalation | FileOperationsTool, HttpRequestTool, createTool, Session state, React + Vite frontend, Node HTTP server            | `support`, `tools`, `session-state`     | Conversational   | Beginner     | Single Agent | General         |
 
 ## 🤝 Contributing
 
