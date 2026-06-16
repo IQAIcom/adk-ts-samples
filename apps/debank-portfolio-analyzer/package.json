@@ -13,7 +13,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/IQAIcom/adk-ts-samples.git"
+		"url": "git+https://github.com/IQOfficial/adk-ts-samples.git"
 	},
 	"keywords": [
 		"ai",
@@ -29,9 +29,9 @@
 	"author": "IQAI",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/IQAIcom/adk-ts-samples/issues"
+		"url": "https://github.com/IQOfficial/adk-ts-samples/issues"
 	},
-	"homepage": "https://github.com/IQAIcom/adk-ts-samples/tree/main/apps/debank-portfolio-analyzer#readme",
+	"homepage": "https://github.com/IQOfficial/adk-ts-samples/tree/main/apps/debank-portfolio-analyzer#readme",
 	"dependencies": {
 		"@iqai/adk": "0.6.2",
 		"dedent": "^1.7.0",

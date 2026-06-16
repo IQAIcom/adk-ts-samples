@@ -91,7 +91,7 @@ vite.config.ts                     # Vite config with /chat proxy to localhost:3
 1. Clone this repository
 
 ```bash
-git clone https://github.com/IQAIcom/adk-ts-samples.git
+git clone https://github.com/IQOfficial/adk-ts-samples.git
 cd adk-ts-samples/apps/customer-support-agent
 ```
 
@@ -196,8 +196,8 @@ Replace the knowledge-base with IT runbooks and FAQs, and the HTTP tool with Ser
 - [ADK-TS Documentation](https://adk.iqai.com/)
 - [ADK-TS CLI Documentation](https://adk.iqai.com/docs/cli)
 - [Built-in Tools Reference](https://adk.iqai.com/docs/framework/tools/built-in-tools)
-- [ADK-TS Samples Repository](https://github.com/IQAIcom/adk-ts-samples)
-- [ADK-TS GitHub Repository](https://github.com/IQAICOM/adk-ts)
+- [ADK-TS Samples Repository](https://github.com/IQOfficial/adk-ts-samples)
+- [ADK-TS GitHub Repository](https://github.com/IQOfficial/adk-ts)
 
 ### APIs & Services
 
@@ -207,13 +207,13 @@ Replace the knowledge-base with IT runbooks and FAQs, and the HTTP tool with Ser
 
 ### Community
 
-- [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
+- [ADK-TS Discussions](https://github.com/IQOfficial/adk-ts/discussions)
 - [ADK-TS Builders Community](https://t.me/+Z37x8uf6DLE3ZTQ8)
-- [IQ AI Community](https://t.me/IQAICOM)
+- [IQ AI Community](https://t.me/IQOfficial)
 
 ## Contributing
 
-This Customer Support Agent is part of the [ADK-TS Samples](https://github.com/IQAIcom/adk-ts-samples) repository, a collection of example projects demonstrating ADK-TS capabilities.
+This Customer Support Agent is part of the [ADK-TS Samples](https://github.com/IQOfficial/adk-ts-samples) repository, a collection of example projects demonstrating ADK-TS capabilities.
 
 We welcome contributions to the ADK-TS Samples repository! You can:
 

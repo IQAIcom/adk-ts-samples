@@ -12,7 +12,7 @@
 		"adk",
 		"typescript"
 	],
-	"author": "IQAICOM",
+	"author": "IQOfficial",
 	"license": "MIT",
 	"peerDependencies": {
 		"@iqai/adk": "^0.5.6"

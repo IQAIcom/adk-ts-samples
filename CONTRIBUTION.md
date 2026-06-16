@@ -32,7 +32,7 @@ Before contributing, we encourage you to read our [Code of Conduct](CODE_OF_COND
 
 This section guides you through submitting a bug report for existing samples. Following these guidelines helps maintainers and the community understand your report, reproduce the behavior, and find related reports.
 
-Before creating a new issue, **[check existing issues](https://github.com/IQAIcom/adk-ts-samples/issues)** to see if the report exists. If it does, go through the discussion thread and leave a comment instead of opening a new one.
+Before creating a new issue, **[check existing issues](https://github.com/IQOfficial/adk-ts-samples/issues)** to see if the report exists. If it does, go through the discussion thread and leave a comment instead of opening a new one.
 
 If you find a **Closed** issue that is the same as what you are experiencing, open a new issue and include a link to the original issue in the body of your new one.
 
@@ -53,7 +53,7 @@ When reporting issues with samples, be sure to include:
 
 We track new sample requests as GitHub issues using the "Sample Request" template.
 
-Before submitting a new sample request, **[check existing issues](https://github.com/IQAIcom/adk-ts-samples/issues)** to see if a similar request already exists.
+Before submitting a new sample request, **[check existing issues](https://github.com/IQOfficial/adk-ts-samples/issues)** to see if a similar request already exists.
 
 A good sample request should include:
 
@@ -143,7 +143,7 @@ You can contribute by:
 
 #### 1. Fork the repo
 
-Click the fork button at the top right of the [project home page](https://github.com/IQAIcom/adk-ts-samples) to create a copy of this repo in your account.
+Click the fork button at the top right of the [project home page](https://github.com/IQOfficial/adk-ts-samples) to create a copy of this repo in your account.
 
 #### 2. Clone the forked repo
 

@@ -8,11 +8,11 @@
   <i>Sample Projects • Agent Samples • Learning Resources</i>
 
   <p align="center">
-    <a href="https://github.com/IQAIcom/adk-ts/blob/main/LICENSE.md">
+    <a href="https://github.com/IQOfficial/adk-ts/blob/main/LICENSE.md">
       <img src="https://img.shields.io/npm/l/@iqai/adk" alt="License" />
     </a>
-    <a href="https://github.com/IQAIcom/adk-ts-samples">
-      <img src="https://img.shields.io/github/stars/IQAIcom/adk-ts-samples?style=social" alt="GitHub Stars" />
+    <a href="https://github.com/IQOfficial/adk-ts-samples">
+      <img src="https://img.shields.io/github/stars/IQOfficial/adk-ts-samples?style=social" alt="GitHub Stars" />
     </a>
   </p>
 </div>
@@ -28,7 +28,7 @@ This repository contains ADK-TS sample agents and projects. Navigate to the **[a
 > [!IMPORTANT]  
 > The samples in this repository are built using **ADK-TS**. Before you can run any of the samples, you must have ADK-TS installed. For instructions, please refer to the [**ADK-TS Installation Guide**](https://adk.iqai.com/docs/framework/get-started/installation).
 
-To learn more, check out the [ADK-TS Documentation](https://adk.iqai.com/docs), and the main [ADK-TS GitHub repository](https://github.com/IQAIcom/adk-ts).
+To learn more, check out the [ADK-TS Documentation](https://adk.iqai.com/docs), and the main [ADK-TS GitHub repository](https://github.com/IQOfficial/adk-ts).
 
 ## 🌳 Repository Structure
 
@@ -42,7 +42,7 @@ To learn more, check out the [ADK-TS Documentation](https://adk.iqai.com/docs), 
 
 ## ℹ️ Getting Help
 
-If you have any questions or if you found any problems with this repository, please report through [GitHub issues](https://github.com/IQAIcom/adk-ts-samples/issues).
+If you have any questions or if you found any problems with this repository, please report through [GitHub issues](https://github.com/IQOfficial/adk-ts-samples/issues).
 
 ## 🚀 Getting Started
 
@@ -57,7 +57,7 @@ If you have any questions or if you found any problems with this repository, ple
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/IQAIcom/adk-ts-samples.git
+   git clone https://github.com/IQOfficial/adk-ts-samples.git
    cd adk-ts-samples
    ```
 
@@ -100,9 +100,9 @@ Please check out our [Contributing Guide](CONTRIBUTION.md) for detailed informat
 
 Join our community to discuss ideas, ask questions, and share your projects:
 
-- [GitHub Discussions](https://github.com/IQAIcom/adk-ts/discussions)
+- [GitHub Discussions](https://github.com/IQOfficial/adk-ts/discussions)
 - [ADK-TS Builders Community](https://t.me/+Z37x8uf6DLE3ZTQ8)
-- [IQ AI Community](https://t.me/IQAICOM)
+- [IQ AI Community](https://t.me/IQOfficial)
 
 ## 📜 License
 

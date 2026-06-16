@@ -91,7 +91,7 @@ graph LR
 1. **Clone and enter the app**
 
    ```bash
-   git clone https://github.com/IQAIcom/adk-ts-samples.git
+   git clone https://github.com/IQOfficial/adk-ts-samples.git
    cd adk-ts-samples/apps/debank-portfolio-analyzer
    ```
 
@@ -221,20 +221,20 @@ To **reuse debank-mcp in your own agent**: copy the `tools.ts` pattern, ensure `
 
 - [ADK-TS Documentation](https://adk.iqai.com/)
 - [ADK-TS CLI](https://adk.iqai.com/docs/cli)
-- [ADK-TS Samples](https://github.com/IQAIcom/adk-ts-samples)
-- [ADK-TS GitHub](https://github.com/IQAIcom/adk-ts)
+- [ADK-TS Samples](https://github.com/IQOfficial/adk-ts-samples)
+- [ADK-TS GitHub](https://github.com/IQOfficial/adk-ts)
 
 ### Community
 
-- [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
+- [ADK-TS Discussions](https://github.com/IQOfficial/adk-ts/discussions)
 - [ADK-TS Builders Community](https://t.me/+Z37x8uf6DLE3ZTQ8)
-- [IQ AI Community](https://t.me/IQAICOM)
+- [IQ AI Community](https://t.me/IQOfficial)
 
 ---
 
 ## Contributing
 
-This sample is part of [ADK-TS Samples](https://github.com/IQAIcom/adk-ts-samples). Contributions that improve debank-mcp adoption or this reference integration are welcome. See the [Contributing Guide](../../CONTRIBUTION.md) for guidelines.
+This sample is part of [ADK-TS Samples](https://github.com/IQOfficial/adk-ts-samples). Contributions that improve debank-mcp adoption or this reference integration are welcome. See the [Contributing Guide](../../CONTRIBUTION.md) for guidelines.
 
 ## License
 

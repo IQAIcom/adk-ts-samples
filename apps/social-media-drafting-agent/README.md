@@ -116,7 +116,7 @@ src/
 1. Clone this repository
 
 ```bash
-git clone https://github.com/IQAIcom/adk-ts-samples.git
+git clone https://github.com/IQOfficial/adk-ts-samples.git
 cd adk-ts-samples/apps/social-media-drafting-agent
 ```
 
@@ -235,8 +235,8 @@ to gather content from a source and produce it for several output surfaces:
 - [ADK-TS Documentation](https://adk.iqai.com/)
 - [Built-in Tools Reference](https://adk.iqai.com/docs/framework/tools/built-in-tools)
 - [Plugins Reference](https://adk.iqai.com/docs/framework/plugins)
-- [ADK-TS Samples Repository](https://github.com/IQAIcom/adk-ts-samples)
-- [ADK-TS GitHub Repository](https://github.com/IQAICOM/adk-ts)
+- [ADK-TS Samples Repository](https://github.com/IQOfficial/adk-ts-samples)
+- [ADK-TS GitHub Repository](https://github.com/IQOfficial/adk-ts)
 
 ### Next.js
 
@@ -250,13 +250,13 @@ to gather content from a source and produce it for several output surfaces:
 
 ### Community
 
-- [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
+- [ADK-TS Discussions](https://github.com/IQOfficial/adk-ts/discussions)
 - [ADK-TS Builders Community](https://t.me/+Z37x8uf6DLE3ZTQ8)
-- [IQ AI Community](https://t.me/IQAICOM)
+- [IQ AI Community](https://t.me/IQOfficial)
 
 ## Contributing
 
-The Draft Desk is part of the [ADK-TS Samples](https://github.com/IQAIcom/adk-ts-samples)
+The Draft Desk is part of the [ADK-TS Samples](https://github.com/IQOfficial/adk-ts-samples)
 repository, a collection of example projects demonstrating ADK-TS capabilities.
 
 We welcome contributions to the ADK-TS Samples repository! You can:

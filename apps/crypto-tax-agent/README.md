@@ -110,7 +110,7 @@ graph TB
 1. Clone this repository
 
 ```bash
-git clone https://github.com/IQAIcom/adk-ts-samples.git
+git clone https://github.com/IQOfficial/adk-ts-samples.git
 cd adk-ts-samples/apps/crypto-tax-agent
 ```
 
@@ -322,8 +322,8 @@ This is a **sample implementation** designed for educational purposes. Known lim
 
 - [ADK-TS Documentation](https://adk.iqai.com/)
 - [ADK-TS CLI Documentation](https://adk.iqai.com/docs/cli)
-- [ADK-TS Samples Repository](https://github.com/IQAIcom/adk-ts-samples)
-- [ADK-TS GitHub Repository](https://github.com/IQAICOM/adk-ts)
+- [ADK-TS Samples Repository](https://github.com/IQOfficial/adk-ts-samples)
+- [ADK-TS GitHub Repository](https://github.com/IQOfficial/adk-ts)
 
 ### APIs & Services
 
@@ -338,13 +338,13 @@ This is a **sample implementation** designed for educational purposes. Known lim
 
 ### Community
 
-- [ADK-TS Discussions](https://github.com/IQAIcom/adk-ts/discussions)
+- [ADK-TS Discussions](https://github.com/IQOfficial/adk-ts/discussions)
 - [ADK-TS Builders Community](https://t.me/+Z37x8uf6DLE3ZTQ8)
-- [IQ AI Community](https://t.me/IQAICOM)
+- [IQ AI Community](https://t.me/IQOfficial)
 
 ## Contributing
 
-This Crypto Tax Agent is part of the [ADK-TS Samples](https://github.com/IQAIcom/adk-ts-samples) repository, a collection of sample projects demonstrating ADK-TS capabilities.
+This Crypto Tax Agent is part of the [ADK-TS Samples](https://github.com/IQOfficial/adk-ts-samples) repository, a collection of sample projects demonstrating ADK-TS capabilities.
 
 We welcome contributions to the ADK-TS Samples repository! You can:
 
